@@ -1,13 +1,14 @@
 buildscript {
-    ext.booster_version = '4.9.0'
+    apply from: "../config.gradle"
 
     repositories {
         mavenCentral()
         google()
         jcenter()
     }
+
     dependencies {
-            classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlin_version}"
     }
 }
 
@@ -33,9 +34,9 @@ dependencies {
     compileOnly localGroovy()
     compileOnly gradleApi()
 
-    implementation "com.android.tools.build:gradle:7.1.3"
+    implementation "com.android.tools.build:gradle:${rootProject.ext.agp_module_verson}"
     /* 👇👇👇👇 引用这两个模块 👇👇👇👇 */
     kapt "com.google.auto.service:auto-service:1.0"
-    implementation "com.didiglobal.booster:booster-api:${booster_version}"
-    implementation "com.didiglobal.booster:booster-transform-asm:${booster_version}"
+    implementation "com.didiglobal.booster:booster-api:${rootProject.ext.booster_version}"
+    implementation "com.didiglobal.booster:booster-transform-asm:${rootProject.ext.booster_version}"
 }

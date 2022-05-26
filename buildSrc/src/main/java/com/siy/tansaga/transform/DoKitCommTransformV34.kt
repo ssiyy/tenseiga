@@ -11,10 +11,7 @@ class DoKitCommTransformV34(project: Project) : TansagaBaseTransform(project) {
     override val transformers = listOf<Transformer>(
         DoKitAsmTransformer(
             listOf(
-              /*  CommClassTransformer(),
-                BigImgClassTransformer(),
-                GSMClassTransformer(),
-                EnterMSClassTransformer()*/
+                AsmMetaParserTransform()
             )
         )
     )

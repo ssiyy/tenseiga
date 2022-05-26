@@ -14,10 +14,7 @@ class DoKitCommTransform(androidProject: Project) : TansagaBaseTransform(android
     override val transformers = listOf<Transformer>(
         DoKitAsmTransformer(
             listOf(
-              /*  CommClassTransformer(),
-                BigImgClassTransformer(),
-                GSMClassTransformer(),
-                EnterMSClassTransformer()*/
+                AsmMetaParserTransform()
             )
         )
     )

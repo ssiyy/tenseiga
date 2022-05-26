@@ -1,20 +1,17 @@
-package com.siy.tansaga
+package com.siy.tansaga.transform
 
 
 import com.android.build.api.transform.*
 import com.android.build.api.transform.Status.*
 import com.android.dex.DexFormat
-import com.android.dx.command.dexer.Main
-import com.didichuxing.doraemonkit.plugin.transform.DoKitBaseTransform
 import com.didiglobal.booster.gradle.*
 import com.didiglobal.booster.kotlinx.NCPU
 import com.didiglobal.booster.kotlinx.file
 import com.didiglobal.booster.kotlinx.green
 import com.didiglobal.booster.kotlinx.red
-import com.didiglobal.booster.transform.AbstractKlassPool
-import com.didiglobal.booster.transform.ArtifactManager
-import com.didiglobal.booster.transform.TransformContext
-import com.didiglobal.booster.transform.artifacts
+import com.didiglobal.booster.transform.*
+import com.didiglobal.booster.transform.util.CompositeCollector
+import com.didiglobal.booster.transform.util.collect
 import com.didiglobal.booster.transform.util.transform
 import com.siy.tansaga.ext.dex
 import java.io.File
@@ -26,7 +23,7 @@ import java.util.concurrent.*
  *
  * @author johnsonlee
  */
-internal class DoKitTransformInvocation(
+internal class BoosterTransformInvocation(
     private val delegate: TransformInvocation,
     internal val transform: TansagaBaseTransform
 ) : TransformInvocation by delegate, TransformContext, ArtifactManager {
@@ -34,6 +31,8 @@ internal class DoKitTransformInvocation(
     private val project = transform.project
 
     private val outputs = CopyOnWriteArrayList<File>()
+
+    private val collectors = CopyOnWriteArrayList<Collector<*>>()
 
     override val name: String = delegate.context.variantName
 
@@ -59,8 +58,7 @@ internal class DoKitTransformInvocation(
         }
     }
 
-    override val klassPool: AbstractKlassPool =
-        object : AbstractKlassPool(compileClasspath, transform.bootKlassPool) {}
+    override val klassPool: AbstractKlassPool = object : AbstractKlassPool(compileClasspath, transform.bootKlassPool) {}
 
     override val applicationId = delegate.applicationId
 
@@ -76,9 +74,31 @@ internal class DoKitTransformInvocation(
 
     override fun get(type: String) = variant.artifacts.get(type)
 
+    override fun <R> registerCollector(collector: Collector<R>) {
+        this.collectors += collector
+    }
+
+    override fun <R> unregisterCollector(collector: Collector<R>) {
+        this.collectors -= collector
+    }
+
     internal fun doFullTransform() = doTransform(this::transformFully)
 
     internal fun doIncrementalTransform() = doTransform(this::transformIncrementally)
+
+    private fun lookAhead(executor: ExecutorService): Set<File> {
+        return this.inputs.asSequence().map {
+            it.jarInputs + it.directoryInputs
+        }.flatten().map { input ->
+            executor.submit(Callable {
+                input.file.takeIf { file ->
+                    file.collect(CompositeCollector(collectors)).isNotEmpty()
+                }
+            })
+        }.mapNotNull {
+            it.get()
+        }.toSet()
+    }
 
     private fun onPreTransform() {
         transform.transformers.forEach {
@@ -92,13 +112,21 @@ internal class DoKitTransformInvocation(
         }
     }
 
-    private fun doTransform(block: (ExecutorService) -> Iterable<Future<*>>) {
+    private fun doTransform(block: (ExecutorService, Set<File>) -> Iterable<Future<*>>) {
         this.outputs.clear()
-        this.onPreTransform()
+        this.collectors.clear()
 
         val executor = Executors.newFixedThreadPool(NCPU)
+
+        this.onPreTransform()
+
+        // Look ahead to determine which input need to be transformed even incremental build
+        val outOfDate = this.lookAhead(executor).onEach {
+            project.logger.info("✨ ${it.canonicalPath} OUT-OF-DATE ")
+        }
+
         try {
-            block(executor).forEach {
+            block(executor, outOfDate).forEach {
                 it.get()
             }
         } finally {
@@ -113,34 +141,30 @@ internal class DoKitTransformInvocation(
         }
     }
 
-    private fun transformFully(executor: ExecutorService) = this.inputs.map {
+    private fun transformFully(executor: ExecutorService, @Suppress("UNUSED_PARAMETER") outOfDate: Set<File>) = this.inputs.map {
         it.jarInputs + it.directoryInputs
     }.flatten().map { input ->
         executor.submit {
             val format = if (input is DirectoryInput) Format.DIRECTORY else Format.JAR
             outputProvider?.let { provider ->
                 project.logger.info("Transforming ${input.file}")
-                input.transform(
-                    provider.getContentLocation(
-                        input.name,
-                        input.contentTypes,
-                        input.scopes,
-                        format
-                    )
-                )
+                input.transform(provider.getContentLocation(input.name, input.contentTypes, input.scopes, format))
             }
         }
     }
 
-    private fun transformIncrementally(executor: ExecutorService) = this.inputs.map { input ->
-        input.jarInputs.filter { it.status != NOTCHANGED }.map { jarInput ->
+    private fun transformIncrementally(executor: ExecutorService, outOfDate: Set<File>) = this.inputs.map { input ->
+        input.jarInputs.filter {
+            it.status != NOTCHANGED || outOfDate.contains(it.file)
+        }.map { jarInput ->
             executor.submit {
                 doIncrementalTransform(jarInput)
             }
-        } + input.directoryInputs.filter { it.changedFiles.isNotEmpty() }.map { dirInput ->
-            val base = dirInput.file.toURI()
+        } + input.directoryInputs.filter {
+            it.changedFiles.isNotEmpty() || outOfDate.contains(it.file)
+        }.map { dirInput ->
             executor.submit {
-                doIncrementalTransform(dirInput, base)
+                doIncrementalTransform(dirInput, dirInput.file.toURI())
             }
         }
     }.flatten()
@@ -149,17 +173,10 @@ internal class DoKitTransformInvocation(
     private fun doIncrementalTransform(jarInput: JarInput) {
         when (jarInput.status) {
             REMOVED -> jarInput.file.delete()
-            CHANGED, ADDED -> {
+            else -> {
                 project.logger.info("Transforming ${jarInput.file}")
                 outputProvider?.let { provider ->
-                    jarInput.transform(
-                        provider.getContentLocation(
-                            jarInput.name,
-                            jarInput.contentTypes,
-                            jarInput.scopes,
-                            Format.JAR
-                        )
-                    )
+                    jarInput.transform(provider.getContentLocation(jarInput.name, jarInput.contentTypes, jarInput.scopes, Format.JAR))
                 }
             }
         }
@@ -172,12 +189,7 @@ internal class DoKitTransformInvocation(
                 REMOVED -> {
                     project.logger.info("Deleting $file")
                     outputProvider?.let { provider ->
-                        provider.getContentLocation(
-                            dirInput.name,
-                            dirInput.contentTypes,
-                            dirInput.scopes,
-                            Format.DIRECTORY
-                        ).parentFile.listFiles()?.asSequence()
+                        provider.getContentLocation(dirInput.name, dirInput.contentTypes, dirInput.scopes, Format.DIRECTORY).parentFile.listFiles()?.asSequence()
                             ?.filter { it.isDirectory }
                             ?.map { File(it, dirInput.file.toURI().relativize(file.toURI()).path) }
                             ?.filter { it.exists() }
@@ -185,15 +197,10 @@ internal class DoKitTransformInvocation(
                     }
                     file.delete()
                 }
-                ADDED, CHANGED -> {
+                else -> {
                     project.logger.info("Transforming $file")
                     outputProvider?.let { provider ->
-                        val root = provider.getContentLocation(
-                            dirInput.name,
-                            dirInput.contentTypes,
-                            dirInput.scopes,
-                            Format.DIRECTORY
-                        )
+                        val root = provider.getContentLocation(dirInput.name, dirInput.contentTypes, dirInput.scopes, Format.DIRECTORY)
                         val output = File(root, base.relativize(file.toURI()).path)
                         outputs += output
                         file.transform(output) { bytecode ->
@@ -206,34 +213,24 @@ internal class DoKitTransformInvocation(
     }
 
     private fun doVerify() {
-        outputs.sortedBy(File::nameWithoutExtension).forEach { output ->
-            val out = temporaryDir.file(output.name)
-            val rc = out.dex(
-                output,
-                variant.extension.defaultConfig.targetSdkVersion?.apiLevel
-                    ?: DexFormat.API_NO_EXTENDED_OPCODES
-            )
-            println("${if (rc != 0) red("✗") else green("✓")} $output")
-            out.deleteRecursively()
+        outputs.sortedBy(File::nameWithoutExtension).forEach { input ->
+            val output = temporaryDir.file(input.name)
+            val rc = input.dex(output, variant.extension.defaultConfig.targetSdkVersion?.apiLevel ?: DexFormat.API_NO_EXTENDED_OPCODES)
+            println("${if (rc != 0) red("✗") else green("✓")} $input")
+            output.deleteRecursively()
         }
     }
 
     private fun QualifiedContent.transform(output: File) {
         outputs += output
-        try {
-            this.file.dokitTransform(output) { bytecode ->
-                bytecode.transform()
-            }
-        } catch (e: Exception) {
-            "e===>${e.message}".println()
-            e.printStackTrace()
+        this.file.transform(output) { bytecode ->
+            bytecode.transform()
         }
-
     }
 
     private fun ByteArray.transform(): ByteArray {
         return transform.transformers.fold(this) { bytes, transformer ->
-            transformer.transform(this@DoKitTransformInvocation, bytes)
+            transformer.transform(this@BoosterTransformInvocation, bytes)
         }
     }
 }

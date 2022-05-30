@@ -1,29 +1,18 @@
 package com.siy.tansaga.transform
 
-import com.android.build.api.transform.DirectoryInput
-import com.android.build.api.transform.Format
 import com.android.build.api.transform.TransformInvocation
 import com.didiglobal.booster.kotlinx.asIterable
-import com.didiglobal.booster.kotlinx.redirect
-import com.didiglobal.booster.kotlinx.search
-import com.didiglobal.booster.kotlinx.touch
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.ClassTransformer
-import com.didiglobal.booster.transform.util.transform
-import com.google.wireless.android.sdk.stats.ApplyChangesAgentError
-import com.siy.tansaga.base.annotations.Filter
-import com.siy.tansaga.base.annotations.Replace
-import com.siy.tansaga.base.annotations.TargetClass
+import com.siy.tansaga.entity.ProxyInfo
 import com.siy.tansaga.entity.ReplaceInfo
+import com.siy.tansaga.entity.TExtension
 import com.siy.tansaga.ext.*
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodInsnNode
 import java.io.File
-import java.io.PrintWriter
-import kotlin.streams.toList
 
 
 /**
@@ -34,13 +23,17 @@ import kotlin.streams.toList
 class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
 
     /**
-     * 替代的结构体
+     * 替换方法
      */
     private val replaceInfos = mutableListOf<ReplaceInfo>()
 
+    /**
+     * 代理的类
+     */
+    private val proxyInfos = mutableListOf<ProxyInfo>()
 
     override fun onPreTransform(context: TransformContext) {
-        if (extension.replaces.isNullOrEmpty()) {
+        if (extension.replaces.isNullOrEmpty() || extension.proxys.isNullOrEmpty()) {
             return
         }
 
@@ -51,48 +44,94 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
         }.filter {
             it.isDirectory
         }.forEach {
+            //处理替换
             extension.replaces.all { rp ->
+                errOut("replace:$rp")
                 val hookClass = File(it, rp.hookClass?.trim()?.replace(".", "\\").plus(".class"))
+                errOut("replace:${hookClass.absoluteFile}-${hookClass.exists()}")
                 if (hookClass.exists()) {
                     hookClass.inputStream().use { fs ->
                         val cn = ClassNode()
                         ClassReader(fs).accept(cn, 0)
                         cn.methods.forEach { mn ->
                             if (mn.name == rp.hookMethod) {
-                                replaceInfos.add(ReplaceInfo(rp.targetClass!!.replace(".","/"), rp.name, cn.name, mn, null))
+                                replaceInfos.add(
+                                    ReplaceInfo(
+                                        rp.targetClass!!.replace(".", "/"),
+                                        rp.name,
+                                        cn.name,
+                                        mn,
+                                        rp.filters
+                                    )
+                                )
                             }
                         }
                     }
                 }
             }
+
+            //处理代理
+            extension.proxys.all { rp ->
+                errOut("proxy:$rp")
+                val hookClass = File(it, rp.hookClass?.trim()?.replace(".", "\\").plus(".class"))
+                errOut("proxy:${hookClass.absoluteFile}-${hookClass.exists()}")
+                if (hookClass.exists()) {
+                    hookClass.inputStream().use { fs ->
+                        val cn = ClassNode()
+                        ClassReader(fs).accept(cn, 0)
+                        cn.methods.forEach { mn ->
+                            errOut("${mn.name}------${rp.hookMethod}----------------")
+                            if (mn.name == rp.hookMethod) {
+
+                                proxyInfos.add(
+                                    ProxyInfo(
+                                        rp.targetClass!!.replace(".", "/"),
+                                        rp.name,
+                                        cn.name,
+                                        mn,
+                                        rp.filters
+                                    )
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
         }
     }
 
 
     override fun transform(context: TransformContext, klass: ClassNode): ClassNode {
-        if(replaceInfos.map {
-            it.hookClass
-        }.contains(klass.name)){
-            return klass
-        }
 
-        return replaceMethod( klass)
+
+        val proxyCn = proxyMethod(klass)
+
+        val replaceCn = repacleMethod(proxyCn)
+
+        return replaceCn
     }
 
 
-    private fun replaceMethod( klass: ClassNode): ClassNode {
-        if (replaceInfos.isNotEmpty()) {
+    private fun proxyMethod(klass: ClassNode): ClassNode {
+        if (proxyInfos.map {
+                it.hookClass
+            }.contains(klass.name)) {
+            return klass
+        }
+
+        if (proxyInfos.isNotEmpty()) {
             klass.methods.forEach { methodNode ->
                 methodNode.instructions
                     ?.iterator()
                     ?.asIterable()
                     ?.filterIsInstance(MethodInsnNode::class.java)
                     ?.forEach { methodInsnNode ->
-                        for (info in replaceInfos) {
+                        for (info in proxyInfos) {
                             //    val sameDesc = methodInsnNode.desc == info.targetDesc
                             val sameOwner = methodInsnNode.owner == info.targetClass
                             val sameName = methodInsnNode.name == info.targetMethod
-                            if(sameName){
+                            if (sameName) {
                                 errOut("${methodInsnNode.owner} --- ${methodInsnNode.desc} --- ${methodInsnNode.name}")
                             }
                             if (/*sameDesc && */sameOwner && sameName) {
@@ -116,12 +155,27 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
         }
     }
 
+    private fun repacleMethod(klass: ClassNode): ClassNode {
+        if (replaceInfos.map {
+                it.hookClass
+            }.contains(klass.name)) {
+            return klass
+        }
+
+        return klass
+    }
 
 
     override fun onPostTransform(context: TransformContext) {
         super.onPostTransform(context)
 
-        replaceInfos.forEach {
+        errOut("代理：\n")
+        proxyInfos.forEach {
+            errOut(it.toString())
+        }
+
+        errOut("替换：\n")
+        proxyInfos.forEach {
             errOut(it.toString())
         }
     }

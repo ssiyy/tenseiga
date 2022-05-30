@@ -47,11 +47,23 @@ dependencies {
 
 
 TExtension {
-    replaces {
+    proxys {
+        //代理系统的方法
         makeText {
             targetClass = "android.widget.Toast"
-            hookMethod = "hookJ"
+            hookMethod = "proxyHook"
             hookClass = "com.siy.tansaga.HookJava"
+            filter "com.ha"
+        }
+    }
+
+    replaces {
+        //修改方法体
+        showToast {
+            targetClass = "com.siy.tansaga.MainActivity"
+            hookMethod = "replaceHook"
+            hookClass = "com.siy.tansaga.HookJava"
+            filter "com.ha"
         }
     }
 }

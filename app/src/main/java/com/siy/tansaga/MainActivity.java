@@ -18,11 +18,27 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.hook).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.proxyHook).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //代理系统方法
                 Toast.makeText(MainActivity.this, "hook toast", Toast.LENGTH_LONG).show();
             }
         });
+
+
+        findViewById(R.id.replaceHook).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //替换非系统方法实现
+               showToast("hi hi~~~");
+            }
+        });
+
+    }
+
+
+    private void showToast(String str){
+        Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
     }
 }

@@ -1,5 +1,6 @@
-package com.siy.tansaga.ext
+package com.siy.tansaga.entity
 
+import com.siy.tansaga.ext.join
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project
@@ -13,26 +14,40 @@ import org.gradle.api.Project
 
 
 open class ReplaceParam
+/**
+ *被替换的方法名字
+ */
     (val name: String) {
+    /**
+     * 被替换方法所在的类
+     */
     var targetClass: String? = null
+
+    /**
+     * hook方法
+     */
     var hookMethod: String? = null
+
+    /**
+     * hook所在的类
+     */
     var hookClass: String? = null
-    internal var filter: List<String> = listOf()
+    internal var filters: List<String> = listOf()
 
     /**
      * 过滤的包名
      */
-    fun filter(vararg classes: String) {
-        this.filter = classes.toList()
+    fun filter(vararg filters: String) {
+        this.filters = filters.toList()
     }
 
 
     override fun toString(): String {
-        return "ReplaceInfo{ targetClass=$targetClass, " +
+        return "ReplaceParam{ targetClass=$targetClass, " +
+                "targetMethod=$name, " +
                 "hookMethod=$hookMethod, " +
                 "hookClass=$hookClass, " +
-                "sourceMethod=$name, "+
-                "filter=${filter.j}"
+                "filter=${filters.join(",")}"
     }
 }
 
@@ -42,7 +57,13 @@ open class TExtension @JvmOverloads constructor(
 ) {
     val replaces = project.container(ReplaceParam::class.java)
 
+    val proxys = project.container(ReplaceParam::class.java)
+
     fun replaces(action: Action<NamedDomainObjectContainer<ReplaceParam>>) {
         action.execute(replaces)
+    }
+
+    fun proxys(action: Action<NamedDomainObjectContainer<ReplaceParam>>) {
+        action.execute(proxys)
     }
 }

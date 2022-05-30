@@ -31,17 +31,13 @@ fun <T> Iterable<T>.stream(): Stream<T> = StreamSupport.stream(spliterator(), fa
 fun <T> Iterable<T>.parallelStream(): Stream<T> = StreamSupport.stream(spliterator(), true)
 
 
-fun <T> Collection<T>.join(j:String):String {
-  return  if(this.isNullOrEmpty()){
-        ""
-    }else{
-        this.foldIndexed(this.get(0).toString()){ index, acc, item ->
-                if (index == 0){
-                    acc
-                }else{
-                    "${acc}$j${item}"
-                }
+fun <T> Iterable<T>.join(j: String): String {
+    return this.foldIndexed("") { index, acc, item ->
+        if (index == 0) {
+            "$item"
+        } else {
+            "${acc}$j${item}"
         }
-    }
 
+    }
 }

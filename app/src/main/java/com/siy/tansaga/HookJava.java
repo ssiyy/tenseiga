@@ -12,22 +12,14 @@ import com.siy.tansaga.base.annotations.TargetClass;
  * @since 2022/5/30
  */
 public class HookJava {
-    @Replace(value = "makeText")
-    @TargetClass(value = "android.widget.Toast")
-    public static Toast hookJ(Context context, CharSequence c, int d){
-        return   Toast.makeText(context, "xxxx", d);
+
+    public static Toast proxyHook(Context context, CharSequence c, int d) {
+        return Toast.makeText(context, "proxyHook", d);
     }
 
 
-
-    /**
-     * Fix {@code WindowManager$BadTokenException} for Android N
-     *
-     * @param toast
-     *         The original toast
-     */
-    public static void show(final Toast toast) {
-     toast.setText("xxxxxxxx");
-     toast.show();
+    public static void replaceHook(Context context, String str) {
+        Toast.makeText(context, "replaceHook", Toast.LENGTH_LONG).show();
     }
+
 }

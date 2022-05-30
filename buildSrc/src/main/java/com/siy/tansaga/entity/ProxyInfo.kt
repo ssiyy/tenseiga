@@ -12,7 +12,7 @@ import org.objectweb.asm.tree.MethodNode
  * @author  Siy
  * @since  2022/5/26
  */
-data class ReplaceInfo(
+data class ProxyInfo(
     /**
      * 被替换的类
      */

@@ -39,7 +39,7 @@ data class ReplaceInfo(
      */
     val targetDesc: String
         get() {
-        return sourceMethod.desc
+            return sourceMethod.desc
         }
 
     private val local = object : ThreadLocal<MethodNode>() {
@@ -51,5 +51,15 @@ data class ReplaceInfo(
 
     fun threadLocalNode(): MethodNode? {
         return local.get()
+    }
+
+
+    override fun toString(): String {
+        return "ReplaceInfo{ targetClass=$targetClass, " +
+                "replace=$replace, " +
+                "sourceClass=$sourceClass, " +
+                "sourceMethod=$sourceMethod, " +
+                "targetDesc=$targetDesc, " +
+                "filter=$filter}"
     }
 }

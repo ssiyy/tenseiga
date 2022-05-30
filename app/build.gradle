@@ -44,3 +44,14 @@ dependencies {
 
     implementation project(':tansaga-base')
 }
+
+
+TExtension {
+    replaces {
+        makeText {
+            targetClass = "android.widget.Toast"
+            replace = "hookJ"
+            hookClass = "com.siy.tansaga.HookJava"
+        }
+    }
+}

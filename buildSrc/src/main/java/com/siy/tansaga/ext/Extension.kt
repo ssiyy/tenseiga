@@ -17,13 +17,22 @@ open class ReplaceParam
     var targetClass: String? = null
     var hookMethod: String? = null
     var hookClass: String? = null
+    internal var filter: List<String> = listOf()
+
+    /**
+     * 过滤的包名
+     */
+    fun filter(vararg classes: String) {
+        this.filter = classes.toList()
+    }
 
 
     override fun toString(): String {
         return "ReplaceInfo{ targetClass=$targetClass, " +
                 "hookMethod=$hookMethod, " +
                 "hookClass=$hookClass, " +
-                "sourceMethod=$name, "
+                "sourceMethod=$name, "+
+                "filter=${filter.j}"
     }
 }
 

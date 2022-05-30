@@ -20,16 +20,16 @@ data class ReplaceInfo(
     /**
      * 被替换的方法名
      */
-    val replace: String,
+    val targetMethod: String,
 
     /**
      * 替换的类
      */
-    val sourceClass: String,
+    val hookClass: String,
     /**
      * 替换的方法
      */
-    val sourceMethod: MethodNode,
+    val hookMethod: MethodNode,
     /**
      * 需要替换哪些用了targetClass 的 replace的包
      */
@@ -41,13 +41,13 @@ data class ReplaceInfo(
      */
     val targetDesc: String
         get() {
-            return sourceMethod.desc
+            return hookMethod.desc
         }
 
     private val local = object : ThreadLocal<MethodNode>() {
         @Synchronized
         override fun initialValue(): MethodNode {
-            return AsmUtil.clone(sourceMethod)
+            return AsmUtil.clone(hookMethod)
         }
     }
 
@@ -58,9 +58,9 @@ data class ReplaceInfo(
 
     override fun toString(): String {
         return "ReplaceInfo{ targetClass=$targetClass, " +
-                "replace=$replace, " +
-                "sourceClass=$sourceClass, " +
-                "sourceMethod=$sourceMethod, " +
+                "targetMethod=$targetMethod, " +
+                "hookClass=$hookClass, " +
+                "hookMethod=${hookMethod.name}, " +
                 "targetDesc=$targetDesc, " +
                 "filter=$filter}"
     }

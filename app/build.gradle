@@ -50,7 +50,7 @@ TExtension {
     replaces {
         makeText {
             targetClass = "android.widget.Toast"
-            replace = "show"
+            hookMethod = "hookJ"
             hookClass = "com.siy.tansaga.HookJava"
         }
     }

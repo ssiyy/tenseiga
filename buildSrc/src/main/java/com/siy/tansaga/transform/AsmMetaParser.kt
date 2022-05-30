@@ -58,8 +58,8 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
                         val cn = ClassNode()
                         ClassReader(fs).accept(cn, 0)
                         cn.methods.forEach { mn ->
-                            if (mn.name == rp.replace) {
-                                replaceInfos.add(ReplaceInfo(rp.targetClass!!.replace(".","/"), rp.replace!!, cn.name, mn, null))
+                            if (mn.name == rp.hookMethod) {
+                                replaceInfos.add(ReplaceInfo(rp.targetClass!!.replace(".","/"), rp.name, cn.name, mn, null))
                             }
                         }
                     }
@@ -71,16 +71,16 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
 
     override fun transform(context: TransformContext, klass: ClassNode): ClassNode {
         if(replaceInfos.map {
-            it.sourceClass
+            it.hookClass
         }.contains(klass.name)){
             return klass
         }
 
-        return replaceMethod(context, klass)
+        return replaceMethod( klass)
     }
 
 
-    private fun replaceMethod(context: TransformContext, klass: ClassNode): ClassNode {
+    private fun replaceMethod( klass: ClassNode): ClassNode {
         if (replaceInfos.isNotEmpty()) {
             klass.methods.forEach { methodNode ->
                 methodNode.instructions
@@ -91,16 +91,16 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
                         for (info in replaceInfos) {
                             //    val sameDesc = methodInsnNode.desc == info.targetDesc
                             val sameOwner = methodInsnNode.owner == info.targetClass
-                            val sameName = methodInsnNode.name == info.replace
+                            val sameName = methodInsnNode.name == info.targetMethod
                             if(sameName){
                                 errOut("${methodInsnNode.owner} --- ${methodInsnNode.desc} --- ${methodInsnNode.name}")
                             }
                             if (/*sameDesc && */sameOwner && sameName) {
                                 methodInsnNode.run {
                                     errOut("命中了before:--${owner}---------${name}---${desc}---${opcode}----${itf}-----")
-                                    owner = info.sourceClass
-                                    name = info.sourceMethod.name
-                                    desc = info.sourceMethod.desc
+                                    owner = info.hookClass
+                                    name = info.hookMethod.name
+                                    desc = info.hookMethod.desc
                                     opcode = Opcodes.INVOKESTATIC
                                     itf = false
 

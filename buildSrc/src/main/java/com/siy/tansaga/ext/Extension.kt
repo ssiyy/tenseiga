@@ -14,14 +14,14 @@ import org.gradle.api.Project
 
 open class ReplaceParam
     (val name: String) {
-    var replace: String? = null
     var targetClass: String? = null
+    var hookMethod: String? = null
     var hookClass: String? = null
 
 
     override fun toString(): String {
         return "ReplaceInfo{ targetClass=$targetClass, " +
-                "replace=$replace, " +
+                "hookMethod=$hookMethod, " +
                 "hookClass=$hookClass, " +
                 "sourceMethod=$name, "
     }

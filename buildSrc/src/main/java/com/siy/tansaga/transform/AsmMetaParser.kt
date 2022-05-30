@@ -54,15 +54,12 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
             extension.replaces.all { rp ->
                 val hookClass = File(it, rp.hookClass?.trim()?.replace(".", "\\").plus(".class"))
                 if (hookClass.exists()) {
-                    errOut("hookcass:${hookClass.absolutePath}")
                     hookClass.inputStream().use { fs ->
                         val cn = ClassNode()
                         ClassReader(fs).accept(cn, 0)
-
                         cn.methods.forEach { mn ->
-                            errOut("methodNOde:${mn.name}")
                             if (mn.name == rp.replace) {
-                                replaceInfos.add(ReplaceInfo(rp.targetClass!!, rp.replace!!, cn.name, mn, null))
+                                replaceInfos.add(ReplaceInfo(rp.targetClass!!.replace(".","/"), rp.replace!!, cn.name, mn, null))
                             }
                         }
                     }
@@ -72,25 +69,18 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
     }
 
 
-
-
     override fun transform(context: TransformContext, klass: ClassNode): ClassNode {
-        replaceMethod(context, klass)
-      /*  klass.methods.forEach { method ->
-            method.instructions?.iterator()?.asIterable()?.filterIsInstance(MethodInsnNode::class.java)?.filter {
-                it.opcode == Opcodes.INVOKEVIRTUAL && it.name == "show" && it.desc == "()V" && (it.owner == TOAST || context.klassPool.get(TOAST).isAssignableFrom(it.owner))
-            }?.forEach {
-                it.optimize(klass, method)
-            }
+        if(replaceInfos.map {
+            it.sourceClass
+        }.contains(klass.name)){
+            return klass
         }
-        return klass*/
 
-
-        return klass
+        return replaceMethod(context, klass)
     }
 
 
-    private fun replaceMethod(context: TransformContext, klass: ClassNode) {
+    private fun replaceMethod(context: TransformContext, klass: ClassNode): ClassNode {
         if (replaceInfos.isNotEmpty()) {
             klass.methods.forEach { methodNode ->
                 methodNode.instructions
@@ -99,10 +89,13 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
                     ?.filterIsInstance(MethodInsnNode::class.java)
                     ?.forEach { methodInsnNode ->
                         for (info in replaceInfos) {
-                            val sameDesc = methodInsnNode.desc == info.targetDesc
+                            //    val sameDesc = methodInsnNode.desc == info.targetDesc
                             val sameOwner = methodInsnNode.owner == info.targetClass
                             val sameName = methodInsnNode.name == info.replace
-                            if (sameDesc && sameOwner && sameName) {
+                            if(sameName){
+                                errOut("${methodInsnNode.owner} --- ${methodInsnNode.desc} --- ${methodInsnNode.name}")
+                            }
+                            if (/*sameDesc && */sameOwner && sameName) {
                                 methodInsnNode.run {
                                     errOut("命中了before:--${owner}---------${name}---${desc}---${opcode}----${itf}-----")
                                     owner = info.sourceClass
@@ -116,10 +109,13 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
                             }
                         }
                     }
-
             }
+            return klass
+        } else {
+            return klass
         }
     }
+
 
 
     override fun onPostTransform(context: TransformContext) {
@@ -129,10 +125,4 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
             errOut(it.toString())
         }
     }
-
 }
-
-
-private const val TOAST = "android/widget/Toast"
-
-private const val SHADOW_TOAST = "com/didiglobal/booster/instrument/ShadowToast"

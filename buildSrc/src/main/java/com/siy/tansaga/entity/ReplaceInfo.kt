@@ -6,6 +6,8 @@ import org.objectweb.asm.tree.MethodNode
 
 /**
  *
+ * classJar语法
+ *
  * @author  Siy
  * @since  2022/5/26
  */

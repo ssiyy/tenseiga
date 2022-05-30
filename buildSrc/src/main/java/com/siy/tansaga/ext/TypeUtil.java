@@ -2,6 +2,8 @@ package com.siy.tansaga.ext;
 
 import org.objectweb.asm.Opcodes;
 
+import jdk.internal.org.objectweb.asm.tree.MethodNode;
+
 /**
  * Created by gengwanpeng on 17/3/31.
  */
@@ -55,6 +57,18 @@ public class TypeUtil {
 
     public static boolean isAbstract(int access){
         return (access & Opcodes.ACC_ABSTRACT) == Opcodes.ACC_ABSTRACT;
+    }
+
+    public static boolean isNative(int access){
+        return (access & Opcodes.ACC_NATIVE) == Opcodes.ACC_NATIVE;
+    }
+
+    public static boolean isInitMethod(String methodName){
+        return "<init>".equals(methodName);
+    }
+
+    public static boolean isCInitMethod(String methodName){
+        return "<clinit>".equals(methodName);
     }
 
     public static boolean isSynthetic(int access){

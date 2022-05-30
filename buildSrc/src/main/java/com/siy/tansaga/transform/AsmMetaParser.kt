@@ -8,10 +8,11 @@ import com.siy.tansaga.entity.ProxyInfo
 import com.siy.tansaga.entity.ReplaceInfo
 import com.siy.tansaga.entity.TExtension
 import com.siy.tansaga.ext.*
+import com.sun.org.apache.bcel.internal.generic.ILOAD
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.tree.ClassNode
-import org.objectweb.asm.tree.MethodInsnNode
+import org.objectweb.asm.Type
+import org.objectweb.asm.tree.*
 import java.io.File
 
 
@@ -31,6 +32,15 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
      * 代理的类
      */
     private val proxyInfos = mutableListOf<ProxyInfo>()
+
+    private fun isNormalMethod(method: MethodNode): Boolean {
+        val isAbstract = TypeUtil.isAbstract(method.access)
+        val isNative = TypeUtil.isNative(method.access)
+        val isInitMethod = TypeUtil.isInitMethod(method.name)
+        val isclinitMethod = TypeUtil.isCInitMethod(method.name)
+
+        return !(isAbstract || isNative || isInitMethod || isclinitMethod)
+    }
 
     override fun onPreTransform(context: TransformContext) {
         if (extension.replaces.isNullOrEmpty() || extension.proxys.isNullOrEmpty()) {
@@ -53,7 +63,9 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
                     hookClass.inputStream().use { fs ->
                         val cn = ClassNode()
                         ClassReader(fs).accept(cn, 0)
-                        cn.methods.forEach { mn ->
+                        cn.methods.filter {
+                            isNormalMethod(it)
+                        }.forEach { mn ->
                             if (mn.name == rp.hookMethod) {
                                 replaceInfos.add(
                                     ReplaceInfo(
@@ -79,7 +91,9 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
                     hookClass.inputStream().use { fs ->
                         val cn = ClassNode()
                         ClassReader(fs).accept(cn, 0)
-                        cn.methods.forEach { mn ->
+                        cn.methods.filter {
+                            isNormalMethod(it)
+                        }.forEach { mn ->
                             errOut("${mn.name}------${rp.hookMethod}----------------")
                             if (mn.name == rp.hookMethod) {
 
@@ -160,6 +174,32 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
                 it.hookClass
             }.contains(klass.name)) {
             return klass
+        }
+
+        replaceInfos.forEach {info->
+            if (info.targetClass == klass.name) {
+               klass.methods.forEach {
+                   if (it.name == info.targetMethod){
+                       it.instructions.clear()
+
+
+                       val type = Type.getType(it.desc)
+                       val args = type.argumentTypes
+//                       val returnType = type.returnType
+                       val il = InsnList();
+                       args.forEach { t->
+                           if (t.sort >=Type.BOOLEAN && t.sort <=Type.INT){
+                               il.add(VarInsnNode(Opcodes.ILOAD,1))
+                           }else if(t.sort == Type.FLOAT){
+                               il.add(VarInsnNode(Opcodes.ILOAD,1))
+                           }
+                       }
+
+
+
+                   }
+               }
+            }
         }
 
         return klass

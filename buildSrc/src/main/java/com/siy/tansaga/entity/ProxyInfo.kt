@@ -58,7 +58,7 @@ data class ProxyInfo(
 
 
     override fun toString(): String {
-        return "ReplaceInfo{ targetClass=$targetClass, " +
+        return "ProxyInfo{ targetClass=$targetClass, " +
                 "targetMethod=$targetMethod, " +
                 "hookClass=$hookClass, " +
                 "hookMethod=${hookMethod.name}, " +

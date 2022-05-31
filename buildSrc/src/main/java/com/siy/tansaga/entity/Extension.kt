@@ -47,12 +47,12 @@ open class ReplaceParam
                 "targetMethod=$name, " +
                 "hookMethod=$hookMethod, " +
                 "hookClass=$hookClass, " +
-                "filter=${filters.join(",")}"
+                "filter=${filters.join(",")}}"
     }
 }
 
 
-open class TExtension @JvmOverloads constructor(
+open class TExtension constructor(
     project: Project
 ) {
     val replaces = project.container(ReplaceParam::class.java)
@@ -66,4 +66,7 @@ open class TExtension @JvmOverloads constructor(
     fun proxys(action: Action<NamedDomainObjectContainer<ReplaceParam>>) {
         action.execute(proxys)
     }
+
+    fun isEmpty() = replaces.isNullOrEmpty() && proxys.isNullOrEmpty()
+
 }

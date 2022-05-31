@@ -59,7 +59,7 @@ TExtension {
 
     replaces {
         //修改方法体
-        showToast {
+        printLog {
             targetClass = "com.siy.tansaga.MainActivity"
             hookMethod = "replaceHook"
             hookClass = "com.siy.tansaga.HookJava"

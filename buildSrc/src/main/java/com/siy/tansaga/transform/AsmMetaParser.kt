@@ -8,12 +8,12 @@ import com.siy.tansaga.entity.ProxyInfo
 import com.siy.tansaga.entity.ReplaceInfo
 import com.siy.tansaga.entity.TExtension
 import com.siy.tansaga.ext.*
-import com.sun.org.apache.bcel.internal.generic.ILOAD
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import java.io.File
+import java.lang.reflect.Method
 
 
 /**
@@ -176,29 +176,33 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
             return klass
         }
 
-        replaceInfos.forEach {info->
+        replaceInfos.forEach { info ->
             if (info.targetClass == klass.name) {
-               klass.methods.forEach {
-                   if (it.name == info.targetMethod){
-                       it.instructions.clear()
+                var targetMethod: MethodNode? = null
+                klass.methods.forEach {
+                    if (it.name == info.targetMethod) {
+                        targetMethod = it
+                    }
+                }
+
+                targetMethod?.let {
+                    //创建一个新的方法去掉用hook的方法
+                    val methodInsn = MethodInsnNode(
+                        if (TypeUtil.isStatic(info.hookMethod.access)) Opcodes.INVOKESTATIC else Opcodes
+                            .INVOKEVIRTUAL, info.hookClass, info.hookMethod.name, info.hookMethod.desc
+                    )
+                    val newMethodNode = createMethod(Opcodes.ACC_PRIVATE, "xxxfdhdffdfswr_aafd", it.desc, null, methodInsn)
+                    klass.methods.add(newMethodNode)
 
 
-                       val type = Type.getType(it.desc)
-                       val args = type.argumentTypes
-//                       val returnType = type.returnType
-                       val il = InsnList();
-                       args.forEach { t->
-                           if (t.sort >=Type.BOOLEAN && t.sort <=Type.INT){
-                               il.add(VarInsnNode(Opcodes.ILOAD,1))
-                           }else if(t.sort == Type.FLOAT){
-                               il.add(VarInsnNode(Opcodes.ILOAD,1))
-                           }
-                       }
+                    //替换到原来方法的方法体，去调用新创建的方法
+                    val methodInsn1 = MethodInsnNode(
+                        if (TypeUtil.isStatic(it.access)) Opcodes.INVOKESTATIC else Opcodes
+                            .INVOKEVIRTUAL, klass.name, newMethodNode.name, newMethodNode.desc
+                    )
+                    replaceMethodBody(it, methodInsn1)
+                }
 
-
-
-                   }
-               }
             }
         }
 
@@ -218,5 +222,62 @@ class AsmMetaParserTransform(val extension: TExtension) : ClassTransformer {
         proxyInfos.forEach {
             errOut(it.toString())
         }
+    }
+
+    private fun replaceMethodBody(method: MethodNode, action: AbstractInsnNode) {
+        method.instructions.clear()
+        val insnList = InsnList();
+        //加载参数
+        val params = Type.getArgumentTypes(method.desc)
+        var index = 0;
+        if (!TypeUtil.isStatic(method.access)) {
+            index++
+            insnList.add(VarInsnNode(Opcodes.ALOAD, 0))
+        }
+
+        for (t in params) {
+            insnList.add(VarInsnNode(t.getOpcode(Opcodes.ILOAD), index))
+            index += t.size
+        }
+
+        //操作
+        insnList.add(action)
+
+        //返回值
+        val ret = Type.getReturnType(method.desc)
+        insnList.add(InsnNode(ret.getOpcode(Opcodes.IRETURN)))
+        method.instructions.add(insnList)
+    }
+
+    /**
+     * 创建一个方法
+     */
+    private fun createMethod(access: Int, name: String, desc: String, exceptions: Array<String>?, action: AbstractInsnNode):
+            MethodNode {
+        val methodNode = MethodNode(access, name, desc, null, exceptions)
+        val insnList = InsnList()
+
+        //加载参数
+        val params = Type.getArgumentTypes(desc)
+        var index = 0;
+        if (!TypeUtil.isStatic(access)) {
+            index++
+            insnList.add(VarInsnNode(Opcodes.ALOAD, 0))
+        }
+
+        for (t in params) {
+            insnList.add(VarInsnNode(t.getOpcode(Opcodes.ILOAD), index))
+            index += t.size
+        }
+
+        //操作
+        insnList.add(action)
+
+        //返回值
+        val ret = Type.getReturnType(desc)
+        insnList.add(InsnNode(ret.getOpcode(Opcodes.IRETURN)))
+
+        methodNode.instructions.add(insnList)
+        return methodNode
     }
 }

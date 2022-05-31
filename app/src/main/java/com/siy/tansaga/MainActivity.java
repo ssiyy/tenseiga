@@ -1,6 +1,7 @@
 package com.siy.tansaga;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -31,14 +32,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //替换非系统方法实现
-               showToast("hi hi~~~");
+                printLog("hi hi~~~");
             }
         });
 
     }
 
 
-    private void showToast(String str){
-        Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+    private void printLog(String str) {
+        Log.e("siy", str);
     }
 }

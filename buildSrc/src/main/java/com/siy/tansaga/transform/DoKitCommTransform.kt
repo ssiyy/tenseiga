@@ -16,7 +16,7 @@ class DoKitCommTransform(androidProject: Project,t: TExtension) : TansagaBaseTra
     override val transformers = listOf<Transformer>(
         DoKitAsmTransformer(
             listOf(
-                AsmMetaParserTransform(t)
+                TansagaTransform(t)
             )
         )
     )

@@ -13,7 +13,7 @@ class DoKitCommTransformV34(project: Project,t: TExtension) : TansagaBaseTransfo
     override val transformers = listOf<Transformer>(
         DoKitAsmTransformer(
             listOf(
-                AsmMetaParserTransform(t)
+                TansagaTransform(t)
             )
         )
     )

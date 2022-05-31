@@ -29,7 +29,7 @@ import java.lang.reflect.Method
  * @author  Siy
  * @since  2022/5/26
  */
-class AsmMetaParserTransform(private val extension: TExtension) : ClassTransformer {
+class TansagaTransform(private val extension: TExtension) : ClassTransformer {
 
     private var transformInfo: TransformInfo? = null
 

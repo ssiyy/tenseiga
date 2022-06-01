@@ -70,14 +70,12 @@ TExtension {
             targetClass = "com.siy.tansaga.OrginJava"
             hookMethod = "hookPrintLog"
             hookClass = "com.siy.tansaga.HookJava"
-            filter "com.ha"
         }
 
         plussss {
             targetClass = "com.siy.tansaga.OrginJava"
             hookMethod = "replacePlus"
             hookClass = "com.siy.tansaga.HookJava"
-            filter "com.ha"
         }
     }
 }

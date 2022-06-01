@@ -46,15 +46,17 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
      */
     private var klass: ClassNode? = null
 
+
     override fun visitorClassNode(klass: ClassNode) {
         super.visitorClassNode(klass)
 
-        //todo 这里
-
-        if (!proxyInfos.map {
-                it.hookClass
-            }.contains(klass.name)) {
-            this.klass = klass
+        proxyInfos.flatMap {
+            it.filterPattern
+        }.forEach {
+            if (it.matcher(klass.name).matches()) {
+                this.klass = klass
+                return
+            }
         }
     }
 
@@ -97,7 +99,10 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
      *
      * @return 返回新生成的方法
      */
-    private fun copyHookMethodAndReplacePlaceholder(info: ProxyInfo, methodNode: MethodInsnNode): MethodNode {
+    private fun copyHookMethodAndReplacePlaceholder(
+        info: ProxyInfo,
+        methodNode: MethodInsnNode
+    ): MethodNode {
         //新生成一个方法，把hook方法拷贝过来，方法变成静态方法，替换里面Origin,This占位符
         return createMethod(
             Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC,

@@ -1,19 +1,18 @@
 package com.siy.tansaga
 
-import com.android.aaptcompiler.AaptResourceType
-import com.siy.tansaga.base.Origin
+import com.siy.tansaga.base.Invoker
+import com.siy.tansaga.base.Self
 import com.siy.tansaga.ext.PrimitiveUtil
 import com.siy.tansaga.ext.TypeUtil
 import com.siy.tansaga.interfaces.NodeReplacer
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
-import org.objectweb.asm.tree.AbstractInsnNode
-import org.objectweb.asm.tree.MethodInsnNode
-import org.objectweb.asm.tree.MethodNode
-import org.objectweb.asm.tree.TypeInsnNode
+import org.objectweb.asm.tree.*
 
 
 const val OP_CALL = Int.MAX_VALUE - 5555
+
+const val GET_CALLER = OP_CALL - 1
 
 const val JAVA_LANG_OBJECT = "java/lang/Object"
 
@@ -24,9 +23,14 @@ private const val REFERENCE = 2
 private const val PRIMITIVE = 3
 
 
-class AopMethodAdjuster constructor(private val sourcesClass: String, private val methodNode: MethodNode) {
+class AopMethodAdjuster constructor(
+    private val sourcesClass: String,
+    private val methodNode: MethodNode
+) {
 
-    private val CALL_REPLACER = CallReplacer(methodNode)
+    private val CALL_REPLACER = InvokerReplacer(methodNode)
+
+    private val THIS_REPLACER = SelfReplacer(methodNode)
 
     init {
         val desc = methodNode.desc
@@ -56,10 +60,12 @@ class AopMethodAdjuster constructor(private val sourcesClass: String, private va
             override fun replace(node: MethodInsnNode) = node
         }
 
-        if (owner == Origin.CLASS_NAME) {
-            if (name.startsWith("call")) {
+        if (owner == Invoker.CLASS_NAME) {
+            if (name.startsWith(Invoker.FUN_PREFIX)) {
                 replacer = CALL_REPLACER
             }
+        } else if (owner == Self.CLASS_NAME) {
+            replacer = THIS_REPLACER
         }
         return replacer.replace(node)
     }
@@ -67,7 +73,7 @@ class AopMethodAdjuster constructor(private val sourcesClass: String, private va
 }
 
 
-private class CallReplacer constructor(private val methodNode: MethodNode) : NodeReplacer {
+private class InvokerReplacer constructor(private val methodNode: MethodNode) : NodeReplacer {
 
     private var retType: Int = 0
 
@@ -144,6 +150,27 @@ private class CallReplacer constructor(private val methodNode: MethodNode) : Nod
         if (methodInsnNode.name != PrimitiveUtil.unboxMethod(returnDesc)) {
             illegalState("Please don't unbox by your self.")
         }
+    }
+
+}
+
+private class SelfReplacer(private val methodNode: MethodNode) : NodeReplacer {
+
+    override fun replace(node: MethodInsnNode): AbstractInsnNode {
+        when (node.name) {
+            "get" -> {
+                if (TypeUtil.isStatic(methodNode.access)) {
+                    illegalState("static method shouldn't call This's function")
+                }
+                val varInsnNode = VarInsnNode(Opcodes.ALOAD, 0)
+                methodNode.instructions.set(node, varInsnNode)
+                return varInsnNode
+            }
+            "getCaller" -> {
+                node.opcode = GET_CALLER
+            }
+        }
+        return node
     }
 
 }

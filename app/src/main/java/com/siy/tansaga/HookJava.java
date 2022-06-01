@@ -3,7 +3,7 @@ package com.siy.tansaga;
 import android.content.Context;
 import android.widget.Toast;
 
-import com.siy.tansaga.base.Origin;
+import com.siy.tansaga.base.Invoker;
 
 /**
  * @author Siy
@@ -18,7 +18,7 @@ public class HookJava {
 
     public void hookPrintLog(String str) {
         int a = 1 + 1;
-        Origin.callVoid();
+        Invoker.invoke();
         Toast.makeText(App.INSTANCE, "replaceHook", Toast.LENGTH_LONG).show();
     }
 
@@ -26,8 +26,8 @@ public class HookJava {
 
     public int replacePlus(int a) {
         int c = 1 + 1;
-        int d = c+ (int)Origin.call()+(int)Origin.call();
-        Toast.makeText(App.INSTANCE, "replacePlus"+d+(int)Origin.call(), Toast.LENGTH_LONG).show();
+        int d = c+ (int)Invoker.invoke()+(int)Invoker.invoke();
+        Toast.makeText(App.INSTANCE, "replacePlus"+d+(int)Invoker.invoke(), Toast.LENGTH_LONG).show();
         return d;
     }
 

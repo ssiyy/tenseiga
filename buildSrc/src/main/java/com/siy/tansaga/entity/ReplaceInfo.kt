@@ -1,7 +1,6 @@
 package com.siy.tansaga.entity
 
 import com.siy.tansaga.ext.AsmUtil
-import com.siy.tansaga.ext.join
 import org.objectweb.asm.tree.MethodNode
 
 
@@ -31,10 +30,7 @@ data class ReplaceInfo(
      * 替换的方法
      */
     val hookMethod: MethodNode,
-    /**
-     * 需要替换哪些用了targetClass 的 replace的包
-     */
-    var filter: List<String> = listOf()
+
 ) {
 
     /**
@@ -62,7 +58,6 @@ data class ReplaceInfo(
                 "targetMethod=$targetMethod, " +
                 "hookClass=$hookClass, " +
                 "hookMethod=${hookMethod.name}, " +
-                "targetDesc=$targetDesc, " +
-                "filter=${filter.join(",")}}"
+                "targetDesc=$targetDesc}"
     }
 }

@@ -3,9 +3,7 @@ package com.siy.tansaga
 import com.siy.tansaga.entity.*
 import com.siy.tansaga.ext.TypeUtil
 import com.siy.tansaga.ext.TypeUtil.isNormalMethod
-import com.siy.tansaga.ext.errOut
 import com.siy.tansaga.interfaces.TransformParser
-import org.gradle.internal.impldep.bsh.commands.dir
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodNode
@@ -51,8 +49,7 @@ class TansagaParser : TransformParser {
                                     rp.targetClass!!.replace(".", "/"),
                                     rp.name,
                                     cn.name,
-                                    mn,
-                                    rp.filters
+                                    mn
                                 )
                             )
                         }
@@ -69,7 +66,7 @@ class TansagaParser : TransformParser {
     /**
      * 解析出代理的info
      */
-    private fun parseProxyInfo(file: File, proxysParams: Collection<ReplaceParam>, infos: TransformInfo) {
+    private fun parseProxyInfo(file: File, proxysParams: Collection<ProxyParam>, infos: TransformInfo) {
         proxysParams.forEach { pp ->
             val hookClass = File(file, pp.hookClass?.trim()?.replace(".", "\\").plus(".class"))
             if (hookClass.exists()) {

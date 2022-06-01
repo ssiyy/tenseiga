@@ -13,7 +13,7 @@ import org.gradle.api.Project
  */
 
 
-open class ReplaceParam
+open class ProxyParam
 /**
  *被替换的方法名字
  */
@@ -43,11 +43,41 @@ open class ReplaceParam
 
 
     override fun toString(): String {
-        return "ReplaceParam{ targetClass=$targetClass, " +
+        return "ProxyParam{ targetClass=$targetClass, " +
                 "targetMethod=$name, " +
                 "hookMethod=$hookMethod, " +
                 "hookClass=$hookClass, " +
                 "filter=${filters.join(",")}}"
+    }
+}
+
+
+open class ReplaceParam
+/**
+ *被替换的方法名字
+ */
+    (val name: String) {
+    /**
+     * 被替换方法所在的类
+     */
+    var targetClass: String? = null
+
+    /**
+     * hook方法
+     */
+    var hookMethod: String? = null
+
+    /**
+     * hook所在的类
+     */
+    var hookClass: String? = null
+
+
+    override fun toString(): String {
+        return "ReplaceParam{ targetClass=$targetClass, " +
+                "targetMethod=$name, " +
+                "hookMethod=$hookMethod, " +
+                "hookClass=$hookClass}"
     }
 }
 
@@ -57,13 +87,13 @@ open class TExtension constructor(
 ) {
     val replaces = project.container(ReplaceParam::class.java)
 
-    val proxys = project.container(ReplaceParam::class.java)
+    val proxys = project.container(ProxyParam::class.java)
 
     fun replaces(action: Action<NamedDomainObjectContainer<ReplaceParam>>) {
         action.execute(replaces)
     }
 
-    fun proxys(action: Action<NamedDomainObjectContainer<ReplaceParam>>) {
+    fun proxys(action: Action<NamedDomainObjectContainer<ProxyParam>>) {
         action.execute(proxys)
     }
 

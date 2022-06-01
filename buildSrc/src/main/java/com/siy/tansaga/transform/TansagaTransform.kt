@@ -2,6 +2,7 @@ package com.siy.tansaga.transform
 
 import com.android.build.api.transform.TransformInvocation
 import com.didiglobal.booster.kotlinx.asIterable
+import com.didiglobal.booster.kotlinx.touch
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.ClassTransformer
 import com.siy.tansaga.BaseClassNodeTransform
@@ -21,6 +22,7 @@ import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 import org.stringtemplate.v4.compiler.Bytecode.instructions
 import java.io.File
+import java.io.PrintWriter
 import java.lang.reflect.Method
 
 
@@ -31,9 +33,13 @@ import java.lang.reflect.Method
  */
 class TansagaTransform(private val extension: TExtension) : ClassTransformer {
 
+    private lateinit var logger: PrintWriter
+
     private var transformInfo: TransformInfo? = null
 
     override fun onPreTransform(context: TransformContext) {
+        this.logger = getReport(context, "report.txt").touch().printWriter()
+
         (context as? TransformInvocation)?.inputs?.asSequence()?.map {
             it.jarInputs + it.directoryInputs
         }?.flatten()?.map { input ->
@@ -42,7 +48,14 @@ class TansagaTransform(private val extension: TExtension) : ClassTransformer {
             it.isDirectory
         }?.let {
             transformInfo = TansagaParser().parse(extension, it.iterator())
+
+            logger.println(transformInfo.toString())
         }
+    }
+
+    override fun onPostTransform(context: TransformContext) {
+        super.onPostTransform(context)
+        this.logger.close()
     }
 
     private fun registerTransform(): ClassNodeTransform? {

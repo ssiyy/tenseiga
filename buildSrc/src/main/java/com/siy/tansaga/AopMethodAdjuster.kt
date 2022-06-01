@@ -128,7 +128,7 @@ private class CallReplacer constructor(private val methodNode: MethodNode) : Nod
         if (typeInsnNode.opcode != Opcodes.CHECKCAST) {
             illegalState("Returned Object type should be cast to origin type immediately.")
         }
-        if (typeInsnNode.desc == returnDesc) {
+        if (typeInsnNode.desc != returnDesc) {
             illegalState("Casted type is expected to be " + returnDesc + " , but is " + typeInsnNode.desc)
         }
     }

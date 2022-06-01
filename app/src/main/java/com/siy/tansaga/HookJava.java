@@ -21,11 +21,20 @@ public class HookJava {
     }
 
 
-    public  void replaceHook( String str) {
+    public void replaceHook(String str) {
+        int a = 1 + 1;
         Origin.callVoid();
         Toast.makeText(App.INSTANCE, "replaceHook", Toast.LENGTH_LONG).show();
     }
 
+
+
+    public int replacePlus(int a) {
+        int c = 1 + 1;
+        int d = c+ (int)Origin.call()+(int)Origin.call();
+        Toast.makeText(App.INSTANCE, "replacePlus"+d+(int)Origin.call(), Toast.LENGTH_LONG).show();
+        return d;
+    }
 
 
 }

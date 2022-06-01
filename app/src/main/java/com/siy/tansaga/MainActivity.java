@@ -32,14 +32,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //替换非系统方法实现
-                printLog("hi hi~~~");
+                new OrginJava().printLog("hi hi~~~");
+            }
+        });
+
+        findViewById(R.id.replacePlus).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //替换非系统方法实现
+                new OrginJava().plussss(100);
             }
         });
 
     }
 
 
-    private void printLog(String str) {
-        Log.e("siy", str);
-    }
 }

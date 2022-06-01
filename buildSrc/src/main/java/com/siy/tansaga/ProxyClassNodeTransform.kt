@@ -49,6 +49,8 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
     override fun visitorClassNode(klass: ClassNode) {
         super.visitorClassNode(klass)
 
+        //todo 这里
+
         if (!proxyInfos.map {
                 it.hookClass
             }.contains(klass.name)) {

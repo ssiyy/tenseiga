@@ -1,6 +1,5 @@
 package com.siy.tansaga
 
-import com.didiglobal.booster.transform.asm.ClassTransformer
 import com.siy.tansaga.interfaces.ClassNodeTransform
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodInsnNode

@@ -3,6 +3,7 @@ package com.siy.tansaga.entity
 import com.siy.tansaga.ext.AsmUtil
 import com.siy.tansaga.ext.join
 import org.objectweb.asm.tree.MethodNode
+import java.util.regex.Pattern
 
 
 /**
@@ -36,6 +37,14 @@ data class ProxyInfo(
      */
     var filter: List<String> = listOf()
 ) {
+
+    val filterPattern = mutableListOf<Pattern>()
+
+    init {
+        filter.forEach {
+            filterPattern.add(Pattern.compile(it))
+        }
+    }
 
     /**
      * 替换目标方法的desc

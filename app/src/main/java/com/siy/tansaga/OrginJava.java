@@ -16,4 +16,8 @@ public class OrginJava {
         int b = a + a + 12;
         return b + 5;
     }
+
+    private void proxyHook(){
+        plussss(1);
+    }
 }

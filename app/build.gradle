@@ -55,13 +55,20 @@ TExtension {
             hookClass = "com.siy.tansaga.HookJava"
             filter "com.ha"
         }
+
+        plussss {
+            targetClass = "com.siy.tansaga.OrginJava"
+            hookMethod = "replacePlus"
+            hookClass = "com.siy.tansaga.HookJava"
+            filter "com.ha"
+        }
     }
 
     replaces {
         //修改方法体
         printLog {
             targetClass = "com.siy.tansaga.OrginJava"
-            hookMethod = "replaceHook"
+            hookMethod = "hookPrintLog"
             hookClass = "com.siy.tansaga.HookJava"
             filter "com.ha"
         }

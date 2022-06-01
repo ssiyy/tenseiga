@@ -1,9 +1,6 @@
 package com.siy.tansaga
 
-import com.didiglobal.booster.transform.asm.asIterable
 import com.didiglobal.booster.transform.asm.filter
-import com.didiglobal.booster.transform.asm.find
-import com.didiglobal.booster.transform.asm.findAll
 import com.siy.tansaga.entity.ReplaceInfo
 import com.siy.tansaga.ext.TypeUtil
 import com.siy.tansaga.ext.createMethod
@@ -12,12 +9,38 @@ import com.siy.tansaga.interfaces.ClassNodeTransform
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
-import java.lang.IllegalStateException
 
 
 /**
  *
- * 现在逻辑：清空原来的方法->创建一个新的方法里面调用hook方法->原来的方法调用新的方法
+ *替换的基本逻辑就是下面的啦
+ *
+ *  public void printLog(String str) {
+ *       Log.e("siy", str);
+ *   }
+ *              |
+ *              |
+ *              |
+ *              ↓
+ *
+ *  public void printLog(String str) {
+ *     com_siy_tansaga_HookJava_replaceHook(this, str);
+ *  }
+ *
+ * private void printLog$___backup___(String var1) {
+ *     Log.e("siy", var1);
+ *  }
+ *
+ *
+ *  private static void com_siy_tansaga_HookJava_hookPrintLog(OrginJava var0, String var1) {
+ *     boolean var2 = true;
+ *     var0.printLog$___backup___(var1);
+ *     Toast.makeText(App.INSTANCE, "replaceHook", 1).show();
+ *  }
+ *
+ *
+ *
+ *
  *
  * @author  Siy
  * @since  2022/5/31
@@ -43,8 +66,11 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
         super.visitorMethod(method)
         klass?.let { clazz ->
             replaceInfos.forEach { info ->
-                if (info.targetMethod == method.name && info.targetDesc == method.desc) {
-                    //判断一下hook和真实方法是不是都是静态的
+                val sameOwner = clazz.name == info.targetClass
+                val sameName = info.targetMethod == method.name
+                val sameDesc = info.targetDesc == method.desc
+                if (sameOwner && sameName && sameDesc) {
+                    //判断一下hook方法和真实方法是不是都是静态的
                     if (((info.hookMethod.access xor method.access) and Opcodes.ACC_STATIC) != 0) {
                         throw IllegalStateException(
                             info.hookClass + "." + info.hookMethod.name + " should have the same static flag with "
@@ -87,6 +113,14 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
         }
     }
 
+    /**
+     *
+     *
+     * @param info 替换相关信息的数据体
+     * @param methodNode 替换Origin方法调用的方法
+     *
+     * @return 返回新生成的方法
+     */
     private fun copyHookMethodAndReplacePlaceholder(info: ReplaceInfo, methodNode: MethodNode): MethodNode {
         //新生成一个方法，把hook方法拷贝过来，方法变成静态方法，替换里面Origin,This占位符
         return createMethod(
@@ -100,7 +134,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
                 it.opcode == OP_CALL
             }
 
-            callInsns.forEach {opcall->
+            callInsns.forEach { opcall ->
                 val ns = loadArgsAndInvoke(methodNode)
                 insns.insertBefore(opcall, ns)
                 insns.remove(opcall)
@@ -116,6 +150,8 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
      * 加载方法参数并且调用方法
      *
      * @param methodNode 需要调用的方法
+     *
+     * @return 返回加载参数和方法调用的指令集
      */
     private fun loadArgsAndInvoke(methodNode: MethodNode): InsnList {
         val insns = InsnList()

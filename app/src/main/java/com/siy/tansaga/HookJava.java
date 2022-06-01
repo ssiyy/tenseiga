@@ -1,14 +1,9 @@
 package com.siy.tansaga;
 
 import android.content.Context;
-import android.os.Build;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.siy.tansaga.base.Origin;
-import com.siy.tansaga.base.Self;
-import com.siy.tansaga.base.annotations.Replace;
-import com.siy.tansaga.base.annotations.TargetClass;
 
 /**
  * @author Siy
@@ -21,7 +16,7 @@ public class HookJava {
     }
 
 
-    public void replaceHook(String str) {
+    public void hookPrintLog(String str) {
         int a = 1 + 1;
         Origin.callVoid();
         Toast.makeText(App.INSTANCE, "replaceHook", Toast.LENGTH_LONG).show();

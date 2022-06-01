@@ -8,6 +8,8 @@ package com.siy.tansaga.base
  */
 object Origin {
 
+    val CLASS_NAME = Origin.javaClass.name.replace('.', '/')
+
     @JvmStatic
     fun callVoid() = Unit
 

@@ -81,6 +81,14 @@ public class TypeUtil {
         return !(isAbstract || isNative || isInitMethod || isclinitMethod);
     }
 
+    public static int getOpcodeByAccess(int access){
+        if (isStatic(access)){
+            return Opcodes.INVOKESTATIC;
+        }else{
+            return Opcodes.INVOKEVIRTUAL;
+        }
+    }
+
     public static boolean isSynthetic(int access){
         return (access & Opcodes.ACC_SYNTHETIC) == Opcodes.ACC_SYNTHETIC;
     }

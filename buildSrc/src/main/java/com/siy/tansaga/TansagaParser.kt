@@ -45,6 +45,7 @@ class TansagaParser : TransformParser {
                         TypeUtil.isNormalMethod(it)
                     }.forEach { mn ->
                         if (mn.name == rp.hookMethod) {
+                            transformPlaceholder(cn.name, mn)
                             infos.replaceInfo.add(
                                 ReplaceInfo(
                                     rp.targetClass!!.replace(".", "/"),
@@ -61,6 +62,10 @@ class TansagaParser : TransformParser {
         }
     }
 
+    private fun transformPlaceholder(sourceClass: String, methodNode: MethodNode) {
+        AopMethodAdjuster(sourceClass, methodNode).adjust()
+    }
+
     /**
      * 解析出代理的info
      */
@@ -75,6 +80,7 @@ class TansagaParser : TransformParser {
                         isNormalMethod(it)
                     }.forEach { mn ->
                         if (mn.name == pp.hookMethod) {
+                            transformPlaceholder(cn.name, mn)
                             infos.proxyInfo.add(
                                 ProxyInfo(
                                     pp.targetClass!!.replace(".", "/"),

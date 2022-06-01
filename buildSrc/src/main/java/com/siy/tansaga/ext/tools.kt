@@ -19,10 +19,10 @@ fun createMethod(
     access: Int,
     name: String,
     desc: String,
-    exceptions: Array<String>?,
+    exceptions: List<String>?,
     action: ((InsnList) -> Unit)
 ): MethodNode {
-    val methodNode = MethodNode(access, name, desc, null, exceptions)
+    val methodNode = MethodNode(access, name, desc, null, exceptions?.toTypedArray())
     val insnList = InsnList()
 
     //加载参数
@@ -51,6 +51,9 @@ fun createMethod(
 
 /**
  * 替换方法体
+ * @param method 需要替换的方法
+ *
+ * @param action 新的方法提
  */
 fun replaceMethodBody(method: MethodNode, action: ((InsnList) -> Unit)) {
     method.instructions.clear()

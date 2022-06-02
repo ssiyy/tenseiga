@@ -1,5 +1,6 @@
 package com.siy.tansaga.interfaces
 
+import com.didiglobal.booster.transform.TransformContext
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
@@ -12,12 +13,12 @@ import org.objectweb.asm.tree.MethodNode
  */
 interface ClassNodeTransform {
 
-    fun visitorClassNode(klass:ClassNode)
+    fun visitorClassNode(context: TransformContext, klass: ClassNode)
 
 
-    fun visitorMethod(method:MethodNode)
+    fun visitorMethod(context: TransformContext, method: MethodNode)
 
 
-    fun visitorInsnMethod(insnMethod: MethodInsnNode)
+    fun visitorInsnMethod(context: TransformContext, insnMethod: MethodInsnNode)
 
 }

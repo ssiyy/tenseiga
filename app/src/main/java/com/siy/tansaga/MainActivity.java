@@ -2,6 +2,7 @@ package com.siy.tansaga;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,8 +23,7 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.proxyHook).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//               new OriginJava().proxy(3,2);
-                new OriginJava().replace(3,2);
+                new OriginJava().proxy(1, 2);
             }
         });
 
@@ -31,18 +31,17 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.replaceHook).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new OriginJava().replace(3,2);
-//                new OriginJava().proxy(3,2);
+                new OriginJava().replace(3, 2);
             }
         });
 
-      /*  findViewById(R.id.replacePlus).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.proxyHookSys).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //替换非系统方法实现
-                new OrginJava().plussss(100);
+                String str = getString(R.string.app_name);
+                Toast.makeText(MainActivity.this, str, Toast.LENGTH_SHORT).show();
             }
-        });*/
+        });
 
     }
 

@@ -17,8 +17,9 @@ public class OriginJava {
 
     public int proxy(int a, int b) {
         Log.e("siy","OriginJava-proxy-");
-        return a + b;
+        return a+b;
     }
+
 
 
 

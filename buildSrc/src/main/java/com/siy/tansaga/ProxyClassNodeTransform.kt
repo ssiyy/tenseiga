@@ -1,5 +1,6 @@
 package com.siy.tansaga
 
+import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.filter
 import com.siy.tansaga.entity.ProxyInfo
 import com.siy.tansaga.ext.TypeUtil
@@ -47,27 +48,36 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
     private var klass: ClassNode? = null
 
 
-    override fun visitorClassNode(klass: ClassNode) {
-        super.visitorClassNode(klass)
+    override fun visitorClassNode(context: TransformContext, klass: ClassNode) {
+        super.visitorClassNode(context, klass)
 
-        proxyInfos.flatMap {
+        proxyInfos.map {
             it.filterPattern
         }.forEach {
-            if (it.matcher(klass.name).matches()) {
+            if (it.isNullOrEmpty()) {
                 this.klass = klass
                 return
+            } else {
+                it.forEach { pattern ->
+                    if (pattern.matcher(klass.name).matches()) {
+                        this.klass = klass
+                        return
+                    }
+                }
             }
         }
     }
 
 
-    override fun visitorInsnMethod(insnMethod: MethodInsnNode) {
-        super.visitorInsnMethod(insnMethod)
+    override fun visitorInsnMethod(context: TransformContext, insnMethod: MethodInsnNode) {
+        super.visitorInsnMethod(context, insnMethod)
         klass?.let { clazz ->
             for (info in proxyInfos) {
-                val sameOwner = insnMethod.owner == info.targetClass
+                val sameOwner = (insnMethod.owner == info.targetClass) || (context.klassPool[info.targetClass].isAssignableFrom
+                    (insnMethod.owner))
                 val sameName = insnMethod.name == info.targetMethod
                 val sameDesc = insnMethod.desc == info.targetDesc
+
                 if (sameOwner && sameName && sameDesc) {
                     //判断一下hook方法和真实方法是不是都是静态的
                     if (TypeUtil.isStatic(info.hookMethod.access) != (insnMethod.opcode == Opcodes.INVOKESTATIC)) {

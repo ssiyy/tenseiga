@@ -1,5 +1,6 @@
 package com.siy.tansaga
 
+import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.filter
 import com.siy.tansaga.entity.ReplaceInfo
 import com.siy.tansaga.ext.TypeUtil
@@ -53,8 +54,8 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
      */
     private var klass: ClassNode? = null
 
-    override fun visitorClassNode(klass: ClassNode) {
-        super.visitorClassNode(klass)
+    override fun visitorClassNode(context: TransformContext, klass: ClassNode) {
+        super.visitorClassNode(context, klass)
         if (replaceInfos.map {
                 it.targetClass
             }.contains(klass.name)) {
@@ -62,11 +63,12 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
         }
     }
 
-    override fun visitorMethod(method: MethodNode) {
-        super.visitorMethod(method)
+    override fun visitorMethod(context: TransformContext, method: MethodNode) {
+        super.visitorMethod(context, method)
         klass?.let { clazz ->
             replaceInfos.forEach { info ->
-                val sameOwner = clazz.name == info.targetClass
+                val sameOwner =
+                    clazz.name == info.targetClass || (context.klassPool[info.targetClass].isAssignableFrom(clazz.name))
                 val sameName = info.targetMethod == method.name
                 val sameDesc = info.targetDesc == method.desc
                 if (sameOwner && sameName && sameDesc) {
@@ -131,7 +133,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
         ) {
             val insns = info.hookMethod.instructions
 
-            val callInsns = insns.filter {insn->
+            val callInsns = insns.filter { insn ->
                 insn.opcode == OP_CALL
             }
             callInsns.forEach { opcall ->
@@ -140,11 +142,11 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
                 insns.remove(opcall)
             }
 
-            val getCallerInsns = insns.filter {insn->
+            val getCallerInsns = insns.filter { insn ->
                 insn.opcode == GET_CALLER
             }
 
-            getCallerInsns .forEach {
+            getCallerInsns.forEach {
 
             }
 

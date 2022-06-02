@@ -48,34 +48,23 @@ dependencies {
 
 TExtension {
     proxys {
-        //代理系统的方法
-        makeText {
-            targetClass = "android.widget.Toast"
-            hookMethod = "proxyHook"
-            hookClass = "com.siy.tansaga.HookJava"
-            filter "com.ha"
+        proxy {
+            targetClass = "com.siy.tansaga.test.OriginJava"
+            hookMethod = "hookProxy"
+            hookClass = "com.siy.tansaga.test.HookJava"
+            filter "com.siy.tansaga.*"
         }
 
-        plussss {
-            targetClass = "com.siy.tansaga.OrginJava"
-            hookMethod = "replacePlus"
-            hookClass = "com.siy.tansaga.HookJava"
-            filter "com.ha"
-        }
+
     }
 
     replaces {
-        //修改方法体
-        printLog {
-            targetClass = "com.siy.tansaga.OrginJava"
-            hookMethod = "hookPrintLog"
-            hookClass = "com.siy.tansaga.HookJava"
+        replace {
+            targetClass = "com.siy.tansaga.test.OriginJava"
+            hookMethod = "hookReplace"
+            hookClass = "com.siy.tansaga.test.HookJava"
         }
 
-        plussss {
-            targetClass = "com.siy.tansaga.OrginJava"
-            hookMethod = "replacePlus"
-            hookClass = "com.siy.tansaga.HookJava"
-        }
+
     }
 }

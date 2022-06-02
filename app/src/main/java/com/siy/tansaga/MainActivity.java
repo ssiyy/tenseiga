@@ -1,12 +1,12 @@
 package com.siy.tansaga;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.siy.tansaga.test.OriginJava;
 
 /**
  * @author Siy
@@ -22,8 +22,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.proxyHook).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //代理系统方法
-                Toast.makeText(MainActivity.this, "hook toast", Toast.LENGTH_LONG).show();
+//               new OriginJava().proxy(3,2);
+                new OriginJava().replace(3,2);
             }
         });
 
@@ -31,18 +31,18 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.replaceHook).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //替换非系统方法实现
-                new OrginJava().printLog("hi hi~~~");
+                new OriginJava().replace(3,2);
+//                new OriginJava().proxy(3,2);
             }
         });
 
-        findViewById(R.id.replacePlus).setOnClickListener(new View.OnClickListener() {
+      /*  findViewById(R.id.replacePlus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //替换非系统方法实现
                 new OrginJava().plussss(100);
             }
-        });
+        });*/
 
     }
 

@@ -24,6 +24,6 @@ class TransformInfo {
             it.toString()
         }.join("\n")
 
-        return "replaceInfoStr\n${replaceInfoStr} \n\n proxyInfoStr\n${proxyInfoStr}"
+        return "replaceInfoStr:\n${replaceInfoStr} \n\nproxyInfoStr:\n${proxyInfoStr}"
     }
 }

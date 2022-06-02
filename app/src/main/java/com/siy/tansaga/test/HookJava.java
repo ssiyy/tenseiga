@@ -2,6 +2,7 @@ package com.siy.tansaga.test;
 
 import android.util.Log;
 
+import com.siy.tansaga.R;
 import com.siy.tansaga.base.Invoker;
 import com.siy.tansaga.base.Self;
 
@@ -26,9 +27,9 @@ public class HookJava {
 
     public int hookProxy(int a, int b) {
         Log.e("siy", "HookJava-hookProxy-");
-       // OriginJava originJava = (OriginJava) Self.get();
-       // int c = originJava.proxy(1,2);
-
+        // OriginJava originJava = (OriginJava) Self.get();
+        // int c = originJava.proxy(1,2);
+        Invoker.invoke();
         return a - b;
     }
 
@@ -41,8 +42,10 @@ public class HookJava {
      */
     public String hookProxySys(int resId) {
         Log.e("siy", "HookJava-hookProxySys-");
-     //   Context context = (Context) Self.get();
-     //   context.getString(R.string.next);
-        return   "aaaaaaaa";//context.getString(R.string.next);
+       // Context context = (Context) Self.get();
+//        context.getString(R.string.next);  //不要这么调用，如果需要调用Invoker.invoke()
+        resId = R.string.next;
+        String changeStr = (String) Invoker.invoke();
+        return changeStr;
     }
 }

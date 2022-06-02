@@ -48,18 +48,18 @@ dependencies {
 
 TExtension {
     proxys {
-        proxy {
+     /*   proxy {
             targetClass = "com.siy.tansaga.test.OriginJava"
             hookMethod = "hookProxy"
             hookClass = "com.siy.tansaga.test.HookJava"
             filter "com.siy.tansaga.*"
-        }
+        }*/
         
         getString {
             targetClass = "android.content.Context"
             hookMethod = "hookProxySys"
             hookClass = "com.siy.tansaga.test.HookJava"
-
+            filter "com.siy.tansaga.*"
         }
 
     }

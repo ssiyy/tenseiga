@@ -26,20 +26,23 @@ public class HookJava {
 
     public int hookProxy(int a, int b) {
         Log.e("siy", "HookJava-hookProxy-");
-        OriginJava originJava = (OriginJava) Self.get();
-        originJava.showToast();
+       // OriginJava originJava = (OriginJava) Self.get();
+       // int c = originJava.proxy(1,2);
 
-        return a-b;
+        return a - b;
     }
 
 
     /**
      * 用来代理系统的方法
+     *
      * @param resId
      * @return
      */
-    public  String hookProxySys( int resId) {
+    public String hookProxySys(int resId) {
         Log.e("siy", "HookJava-hookProxySys-");
-        return "hookProxySys";
+     //   Context context = (Context) Self.get();
+     //   context.getString(R.string.next);
+        return   "aaaaaaaa";//context.getString(R.string.next);
     }
 }

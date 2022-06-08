@@ -70,7 +70,14 @@ class TansagaTransform(private val extension: TExtension) : ClassTransformer {
 
     override fun transform(context: TransformContext, klass: ClassNode): ClassNode {
         val classNodeTransform = registerTransform() ?: return klass
+//        if (klass )
 
+
+        if (isInnerClass(klass)){
+            return klass
+        }
+     //   errOut("${klass.name}--${isInnerClass(klass)}- ${klass.outerClass} -- ${klass.outerMethod}")
+//        klass.in
         klass.let {
             classNodeTransform.visitorClassNode(context, it)
             it
@@ -84,4 +91,9 @@ class TansagaTransform(private val extension: TExtension) : ClassTransformer {
         }
         return klass
     }
+
+    /**
+     *是否是内部内
+     */
+    private fun isInnerClass(klass: ClassNode) = klass.outerClass != null
 }

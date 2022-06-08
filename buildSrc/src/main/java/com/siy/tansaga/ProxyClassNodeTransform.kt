@@ -80,7 +80,8 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
                 val sameDesc = insnMethod.desc == info.targetDesc
 
                 if (sameOwner && sameName && sameDesc) {
-                    errOut("--${clazz.name}--${insnMethod.owner}--${insnMethod.name}--${insnMethod.desc}-:${(insnMethod.owner 
+                    errOut("xxxxxxxxxxxxxxxxxxxxxxxxxxx--${clazz.name}--${insnMethod.owner}--${insnMethod.name}--${insnMethod
+                        .desc}-:${(insnMethod.owner 
                             == info.targetClass)}--${(context.klassPool[info.targetClass].isAssignableFrom (insnMethod.owner))}--\n\n")
                     //判断一下hook方法和真实方法是不是都是静态的
                     if (TypeUtil.isStatic(info.hookMethod.access) != (insnMethod.opcode == Opcodes.INVOKESTATIC)) {
@@ -136,6 +137,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
 
             it.add(insns)
         }.also {
+            errOut("名字：${klass?.name}外部内：${klass?.outerClass}内部呢：${klass?.innerClasses}")
             klass?.methods?.add(it)
         }
     }

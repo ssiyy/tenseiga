@@ -42,10 +42,11 @@ public class HookJava {
      */
     public String hookProxySys(int resId) {
         Log.e("siy", "HookJava-hookProxySys-");
-       // Context context = (Context) Self.get();
-//        context.getString(R.string.next);  //不要这么调用，如果需要调用Invoker.invoke()
         resId = R.string.next;
         String changeStr = (String) Invoker.invoke();
         return changeStr;
+
+
+//        return "woshi shui ";
     }
 }

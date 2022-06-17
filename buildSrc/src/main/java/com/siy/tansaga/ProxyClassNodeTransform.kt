@@ -80,9 +80,13 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
                 val sameDesc = insnMethod.desc == info.targetDesc
 
                 if (sameOwner && sameName && sameDesc) {
+
+
                     errOut("xxxxxxxxxxxxxxxxxxxxxxxxxxx--${clazz.name}--${insnMethod.owner}--${insnMethod.name}--${insnMethod
                         .desc}-:${(insnMethod.owner 
                             == info.targetClass)}--${(context.klassPool[info.targetClass].isAssignableFrom (insnMethod.owner))}--\n\n")
+
+
                     //判断一下hook方法和真实方法是不是都是静态的
                     if (TypeUtil.isStatic(info.hookMethod.access) != (insnMethod.opcode == Opcodes.INVOKESTATIC)) {
                         throw IllegalStateException(

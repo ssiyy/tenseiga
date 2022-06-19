@@ -38,10 +38,13 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.proxyUser).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2)));
+               onProxyUserClick();
             }
         });
+    }
 
 
+    private void onProxyUserClick(){
+        Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2)));
     }
 }

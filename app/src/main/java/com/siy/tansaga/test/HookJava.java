@@ -44,9 +44,9 @@ public class HookJava {
     @SuppressWarnings("unused")
     public int hookProxy(int a, int b) {
         Log.e("siy", "HookJava-hookProxy-");
-//        int total = (int) Invoker.invoke();
-//        return total - b;
-        return 6 - b;
+        int total = (int) Invoker.invoke();
+        return total - b;
+//        return 6 - b;
     }
 
 
@@ -60,8 +60,8 @@ public class HookJava {
     public String hookProxySys(int resId) {
         Log.e("siy", "HookJava-hookProxySys-");
         resId = R.string.next;
-        String changeStr = (String) Invoker.invoke();
-        return changeStr;
-//        return "woshi shui ";
+//        String changeStr = (String) Invoker.invoke();
+//        return changeStr;
+        return "woshi shui ";
     }
 }

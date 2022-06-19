@@ -11,42 +11,56 @@ import com.siy.tansaga.base.Self;
  * @since 2022/6/2
  */
 public class HookJava {
+
+    /**
+     * 用来replace {@link OriginJava#replace(int, int)}
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    @SuppressWarnings("unused")
     public int hookReplace(int a, int b) {
         Log.e("siy", "HookJava-hookReplace-");
-        OriginJava originJava = (OriginJava) Self.get();
-        originJava.showToast();
+//        OriginJava originJava = (OriginJava) Self.get();
+//        originJava.showToast();
 
         //我们可以在这儿修改参数
-        a = a + 5;
-        b = b + 5;
+//        a = a + 5;
+//        b = b + 5;
         int orgResult = (int) Invoker.invoke();
 
-        Log.e("siy", "orginResult:" + orgResult);
-        return a - b;
+//        Log.e("siy", "orginResult:" + orgResult);
+        return orgResult - b;
     }
 
+    /**
+     * 代理用户方法 {@link OriginJava#proxy(int, int)}
+     *
+     * @param a
+     * @param b
+     * @return
+     */
+    @SuppressWarnings("unused")
     public int hookProxy(int a, int b) {
         Log.e("siy", "HookJava-hookProxy-");
-        // OriginJava originJava = (OriginJava) Self.get();
-        // int c = originJava.proxy(1,2);
-        Invoker.invoke();
-        return a - b;
+//        int total = (int) Invoker.invoke();
+        return 6 - b;
     }
 
 
     /**
-     * 用来代理系统的方法
+     * 用来代理系统的方法{@link android.content.Context#getString(int)}
      *
      * @param resId
      * @return
      */
+    @SuppressWarnings("unused")
     public String hookProxySys(int resId) {
         Log.e("siy", "HookJava-hookProxySys-");
         resId = R.string.next;
         String changeStr = (String) Invoker.invoke();
         return changeStr;
-
-
 //        return "woshi shui ";
     }
 }

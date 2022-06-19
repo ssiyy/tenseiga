@@ -9,16 +9,6 @@
     tools:context=".MainActivity">
 
 
-    <TextView
-        android:id="@+id/proxyHook"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="30dp"
-        android:padding="20dp"
-        android:text="proxyHook"
-        android:textColor="@color/black"
-        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/replaceHook"
@@ -27,18 +17,29 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
         android:padding="20dp"
-        android:text="replaceHook"
+        android:text="修改方法"
         android:textColor="@color/black"
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/proxyHookSys"
+        android:id="@+id/proxySys"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="30dp"
         android:padding="20dp"
-        android:text="proxyHookSys"
+        android:text="代理系统方法"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/proxyUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:padding="20dp"
+        android:text="代理用户方法"
         android:textColor="@color/black"
         android:textSize="20sp" />
 

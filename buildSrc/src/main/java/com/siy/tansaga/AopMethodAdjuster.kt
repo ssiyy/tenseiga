@@ -12,8 +12,6 @@ import org.objectweb.asm.tree.*
 
 const val OP_CALL = Int.MAX_VALUE - 5555
 
-const val GET_CALLER = OP_CALL - 1
-
 const val JAVA_LANG_OBJECT = "java/lang/Object"
 
 private const val VOID = 1
@@ -165,9 +163,6 @@ private class SelfReplacer(private val methodNode: MethodNode) : NodeReplacer {
                 val varInsnNode = VarInsnNode(Opcodes.ALOAD, 0)
                 methodNode.instructions.set(node, varInsnNode)
                 return varInsnNode
-            }
-            "getCaller" -> {
-                node.opcode = GET_CALLER
             }
         }
         return node

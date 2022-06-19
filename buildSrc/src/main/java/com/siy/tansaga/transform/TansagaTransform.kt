@@ -11,6 +11,7 @@ import com.siy.tansaga.TansagaParser
 import com.siy.tansaga.entity.TExtension
 import com.siy.tansaga.entity.TransformInfo
 import com.siy.tansaga.ext.TypeUtil
+import com.siy.tansaga.ext.errOut
 import com.siy.tansaga.interfaces.ClassNodeTransform
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodInsnNode
@@ -57,11 +58,15 @@ class TansagaTransform(private val extension: TExtension) : ClassTransformer {
         var classNodeTransform: ClassNodeTransform? = null
 
         if (transformInfo?.replaceInfo?.isNotEmpty() == true) {
-            classNodeTransform = ReplaceClassNodeTransform(transformInfo?.replaceInfo ?: listOf(), classNodeTransform)
+            classNodeTransform = ReplaceClassNodeTransform(
+                transformInfo?.replaceInfo ?: listOf(),
+                classNodeTransform
+            )
         }
 
         if (transformInfo?.proxyInfo?.isNotEmpty() == true) {
-            classNodeTransform = ProxyClassNodeTransform(transformInfo?.proxyInfo ?: listOf(), classNodeTransform)
+            classNodeTransform =
+                ProxyClassNodeTransform(transformInfo?.proxyInfo ?: listOf(), classNodeTransform)
         }
 
         return classNodeTransform
@@ -78,7 +83,8 @@ class TansagaTransform(private val extension: TExtension) : ClassTransformer {
             TypeUtil.isNormalMethod(it)
         }?.flatMap {
             classNodeTransform.visitorMethod(context, it)
-            it?.instructions?.iterator()?.asIterable()?.filterIsInstance(MethodInsnNode::class.java) ?: arrayListOf()
+            it?.instructions?.iterator()?.asIterable()?.filterIsInstance(MethodInsnNode::class.java)
+                ?: arrayListOf()
         }?.forEach {
             classNodeTransform.visitorInsnMethod(context, it)
         }

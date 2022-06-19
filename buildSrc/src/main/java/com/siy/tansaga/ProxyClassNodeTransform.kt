@@ -81,12 +81,6 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
 
                 if (sameOwner && sameName && sameDesc) {
 
-
-                    errOut("xxxxxxxxxxxxxxxxxxxxxxxxxxx--${clazz.name}--${insnMethod.owner}--${insnMethod.name}--${insnMethod
-                        .desc}-:${(insnMethod.owner 
-                            == info.targetClass)}--${(context.klassPool[info.targetClass].isAssignableFrom (insnMethod.owner))}--\n\n")
-
-
                     //判断一下hook方法和真实方法是不是都是静态的
                     if (TypeUtil.isStatic(info.hookMethod.access) != (insnMethod.opcode == Opcodes.INVOKESTATIC)) {
                         throw IllegalStateException(
@@ -113,13 +107,13 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
      *
      *
      * @param info 替换相关信息的数据体
-     * @param methodNode 替换Origin方法调用的方法
+     * @param methodInsnNode 替换Origin方法调用的方法
      *
      * @return 返回新生成的方法
      */
     private fun copyHookMethodAndReplacePlaceholder(
         info: ProxyInfo,
-        methodNode: MethodInsnNode
+        methodInsnNode: MethodInsnNode
     ): MethodNode {
         //新生成一个方法，把hook方法拷贝过来，方法变成静态方法，替换里面Origin,This占位符
         return createMethod(
@@ -129,12 +123,12 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             info.hookMethod.exceptions
         ) {
             val insns = info.hookMethod.instructions
-            val callInsns = insns.filter {
-                it.opcode == OP_CALL
+            val callInsns = insns.filter {insn->
+                insn.opcode == OP_CALL
             }
 
             callInsns.forEach { opcall ->
-                val ns = loadArgsAndInvoke(methodNode)
+                val ns = loadArgsAndInvoke(methodInsnNode)
                 insns.insertBefore(opcall, ns)
                 insns.remove(opcall)
             }
@@ -149,17 +143,18 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
     /**
      * 加载方法参数并且调用方法
      *
-     * @param methodNode 需要调用的方法
+     * @param methodInsnNode 需要调用的方法
      *
      * @return 返回加载参数和方法调用的指令集
      */
-    private fun loadArgsAndInvoke(methodNode: MethodInsnNode): InsnList {
+    private fun loadArgsAndInvoke(methodInsnNode: MethodInsnNode): InsnList {
         val insns = InsnList()
 
         //加载参数
-        val params = Type.getArgumentTypes(methodNode.desc)
+        val params = Type.getArgumentTypes(methodInsnNode.desc)
         var index = 0;
-        if (!TypeUtil.isStatic(methodNode.opcode)) {
+//        if (!TypeUtil.isStatic(methodInsnNode.opcodace)) {
+        if (methodInsnNode.opcode != Opcodes.INVOKESTATIC){
             index++
             insns.add(VarInsnNode(Opcodes.ALOAD, 0))
         }
@@ -168,7 +163,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             insns.add(VarInsnNode(t.getOpcode(Opcodes.ILOAD), index))
             index += t.size
         }
-        insns.add(MethodInsnNode(methodNode.opcode, klass?.name, methodNode.name, methodNode.desc))
+        insns.add(MethodInsnNode(methodInsnNode.opcode, klass?.name, methodInsnNode.name, methodInsnNode.desc))
         return insns
     }
 }

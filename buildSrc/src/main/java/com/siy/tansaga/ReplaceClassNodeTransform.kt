@@ -132,7 +132,6 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
             info.hookMethod.exceptions
         ) {
             val insns = info.hookMethod.instructions
-
             val callInsns = insns.filter { insn ->
                 insn.opcode == OP_CALL
             }
@@ -140,14 +139,6 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
                 val ns = loadArgsAndInvoke(methodNode)
                 insns.insertBefore(opcall, ns)
                 insns.remove(opcall)
-            }
-
-            val getCallerInsns = insns.filter { insn ->
-                insn.opcode == GET_CALLER
-            }
-
-            getCallerInsns.forEach {
-
             }
 
             it.add(insns)

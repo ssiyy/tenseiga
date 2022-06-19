@@ -45,6 +45,7 @@ public class HookJava {
     public int hookProxy(int a, int b) {
         Log.e("siy", "HookJava-hookProxy-");
 //        int total = (int) Invoker.invoke();
+//        return total - b;
         return 6 - b;
     }
 

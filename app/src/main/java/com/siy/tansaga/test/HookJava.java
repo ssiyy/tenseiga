@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.siy.tansaga.R;
 import com.siy.tansaga.base.Invoker;
-import com.siy.tansaga.base.Self;
 
 /**
  * @author Siy

@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void onProxyUserClick(){
+        Log.e("siy","onProxyUserClick");
         Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2)));
     }
 }

@@ -1,6 +1,5 @@
 package com.siy.tansaga.transform
 
-import com.android.build.api.transform.Format
 import com.android.build.api.transform.TransformInvocation
 import com.didiglobal.booster.kotlinx.asIterable
 import com.didiglobal.booster.kotlinx.touch
@@ -9,16 +8,13 @@ import com.didiglobal.booster.transform.asm.ClassTransformer
 import com.siy.tansaga.ProxyClassNodeTransform
 import com.siy.tansaga.ReplaceClassNodeTransform
 import com.siy.tansaga.TansagaParser
+import com.siy.tansaga.asmtools.forDebug
 import com.siy.tansaga.entity.TExtension
 import com.siy.tansaga.entity.TransformInfo
 import com.siy.tansaga.ext.TypeUtil
 import com.siy.tansaga.interfaces.ClassNodeTransform
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodInsnNode
-import org.objectweb.asm.util.ASMifier
-import org.objectweb.asm.util.Textifier
-import org.objectweb.asm.util.TraceClassVisitor
-import java.io.File
 import java.io.PrintWriter
 
 
@@ -87,39 +83,13 @@ class TansagaTransform(private val extension: TExtension) : ClassTransformer {
             classNodeTransform.visitorInsnMethod(context, it)
         }
 
-        transformInfo?.proxyInfo?.forEach {
-            if (it.targetClass == klass.name){
-                logger.println("\n")
-                val asmCode = true
-                // (2) 打印结果
-                val printer = if (asmCode) ASMifier() else Textifier()
-                val traceClassVisitor = TraceClassVisitor(null, printer, logger)
-                val cl = ClassNode()
-
-                klass.accept(cl)
-//                cl.accept(traceClassVisitor)
-            }
-        }
-
         return klass
     }
 
 
     override fun onPostTransform(context: TransformContext) {
         super.onPostTransform(context)
-
-       val provider =  (context as? TransformInvocation)!!.outputProvider
-        (context as? TransformInvocation)?.inputs?.asSequence()?.map {
-            it.jarInputs + it.directoryInputs
-        }?.flatten()?.map { input ->
-            input
-        }?.map {dirInput->
-            val root = provider.getContentLocation(dirInput.name, dirInput.contentTypes, dirInput.scopes, Format.DIRECTORY)
-            val output = File(root, base.relativize(file.toURI()).path)
-        }
-
-
+        forDebug(context, transformInfo, logger)
         this.logger.close()
     }
-
 }

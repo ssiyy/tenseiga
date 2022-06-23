@@ -59,10 +59,6 @@ class TansagaParser : TransformParser {
         }
     }
 
-    private fun transformPlaceholder(sourceClass: String, methodNode: MethodNode) {
-        AopMethodAdjuster(sourceClass, methodNode).adjust()
-    }
-
     /**
      * 解析出代理的info
      */
@@ -92,5 +88,13 @@ class TansagaParser : TransformParser {
                 }
             }
         }
+    }
+
+
+    /**
+     * 转换一下占位符
+     */
+    private fun transformPlaceholder(sourceClass: String, methodNode: MethodNode) {
+        AopMethodAdjuster(sourceClass, methodNode).adjust()
     }
 }

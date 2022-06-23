@@ -19,7 +19,7 @@ open class ProxyParam
  */
     (val name: String) {
     /**
-     * 被替换方法所在的类
+     * 被替换方法所在的类,ClassFile类表示法
      */
     var targetClass: String? = null
 

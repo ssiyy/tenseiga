@@ -127,8 +127,15 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             }
 
             callInsns.forEach { opcall ->
+                (opcall.previous as? VarInsnNode)?.let {
+                    loadNewArgs(it, insns)
+                }
+
+                //加载参数
                 val ns = loadArgsAndInvoke(methodInsnNode)
+                //插入到Invoker.invoke之前
                 insns.insertBefore(opcall, ns)
+                //删除Invoker.invoke
                 insns.remove(opcall)
             }
 
@@ -137,6 +144,45 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             errOut("名字：${klass?.name}外部内：${klass?.outerClass}内部呢：${klass?.innerClasses}")
             klass?.methods?.add(it)
         }
+    }
+
+    /**
+     * DUP
+     * ICONST_5
+     * BIPUSH 33
+     * INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;
+     * AASTORE
+     * ASTORE 2
+     *
+     * ALOAD 2
+     * ICONST_2
+     * AALOAD
+     * ASTORE 3
+     *
+     * methodVisitor.visitInsn(DUP);
+     * methodVisitor.visitInsn(ICONST_5);
+     * methodVisitor.visitIntInsn(BIPUSH, 33);
+     * methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+     * methodVisitor.visitInsn(AASTORE);
+     * methodVisitor.visitVarInsn(ASTORE, 2);
+     *
+     * methodVisitor.visitVarInsn(ALOAD, 2);
+     * methodVisitor.visitInsn(ICONST_2);
+     * methodVisitor.visitInsn(AALOAD);
+     * methodVisitor.visitVarInsn(ASTORE, 3);
+     *
+     */
+    private fun loadNewArgs(varInsnNode: VarInsnNode, insns: InsnList) {
+        //把参数数组加载进来
+        val solt = varInsnNode.`var`
+        insns.add(VarInsnNode(Opcodes.ALOAD, solt))
+
+        //加载数组的第一个参数
+        insns.add(InsnNode(Opcodes.ICONST_0))
+        insns.add(InsnNode(Opcodes.AALOAD))
+
+        //把第一个参数存储到第一个变量
+        insns.add(VarInsnNode(Opcodes.ISTORE, 1))
     }
 
     /**

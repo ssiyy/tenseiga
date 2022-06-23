@@ -27,6 +27,8 @@ public class MainActivityDumpBad implements Opcodes {
 
         classWriter.visitInnerClass("com/siy/tansaga/R$id", "com/siy/tansaga/R", "id", ACC_PUBLIC | ACC_FINAL | ACC_STATIC);
 
+        classWriter.visitInnerClass("com/siy/tansaga/R$string", "com/siy/tansaga/R", "string", ACC_PUBLIC | ACC_FINAL | ACC_STATIC);
+
         classWriter.visitInnerClass("android/view/View$OnClickListener", "android/view/View", "OnClickListener", ACC_PUBLIC | ACC_STATIC | ACC_ABSTRACT | ACC_INTERFACE);
 
         {
@@ -82,56 +84,78 @@ public class MainActivityDumpBad implements Opcodes {
             methodVisitor.visitEnd();
         }
         {
-            methodVisitor = classWriter.visitMethod(ACC_PRIVATE, "onProxyUserClick", "()V", null, null);
+            methodVisitor = classWriter.visitMethod(ACC_PRIVATE, "proxySys", "()V", null, null);
             methodVisitor.visitCode();
             methodVisitor.visitLdcInsn("siy");
-            methodVisitor.visitLdcInsn("onProxyUserClick");
-            methodVisitor.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
-            methodVisitor.visitInsn(POP);
-            methodVisitor.visitLdcInsn("siy");
-            methodVisitor.visitTypeInsn(NEW, "com/siy/tansaga/test/OriginJava");
-            methodVisitor.visitInsn(DUP);
-            methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/siy/tansaga/test/OriginJava", "<init>", "()V", false);
-            methodVisitor.visitInsn(ICONST_1);
-            methodVisitor.visitInsn(ICONST_2);
-            methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tansaga/MainActivity", "com_siy_tansaga_test_HookJava_hookProxy", "(Lcom/siy/tansaga/test/OriginJava;II)I", false);
-            methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/String", "valueOf", "(I)Ljava/lang/String;", false);
+            methodVisitor.visitVarInsn(ALOAD, 0);
+            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "com/siy/tansaga/MainActivity", "getBaseContext", "()Landroid/content/Context;", false);
+            methodVisitor.visitLdcInsn(new Integer(2131689501));
+            methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tansaga/MainActivity", "com_siy_tansaga_test_HookJava_hookProxySys", "(Landroid/content/Context;I)Ljava/lang/String;", false);
             methodVisitor.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
             methodVisitor.visitInsn(POP);
             methodVisitor.visitInsn(RETURN);
-            methodVisitor.visitMaxs(4, 1);
+            methodVisitor.visitMaxs(3, 1);
             methodVisitor.visitEnd();
         }
         {
             methodVisitor = classWriter.visitMethod(ACC_STATIC | ACC_SYNTHETIC, "access$000", "(Lcom/siy/tansaga/MainActivity;)V", null, null);
             methodVisitor.visitCode();
             methodVisitor.visitVarInsn(ALOAD, 0);
-            methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/siy/tansaga/MainActivity", "onProxyUserClick", "()V", false);
+            methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/siy/tansaga/MainActivity", "proxySys", "()V", false);
             methodVisitor.visitInsn(RETURN);
             methodVisitor.visitMaxs(1, 1);
             methodVisitor.visitEnd();
         }
         {
-            methodVisitor = classWriter.visitMethod(ACC_PRIVATE | ACC_STATIC, "com_siy_tansaga_test_HookJava_hookProxy", "(Lcom/siy/tansaga/test/OriginJava;II)I", null, null);
+            methodVisitor = classWriter.visitMethod(ACC_PRIVATE | ACC_STATIC, "com_siy_tansaga_test_HookJava_hookProxySys", "(Landroid/content/Context;I)Ljava/lang/String;", null, null);
             methodVisitor.visitCode();
             methodVisitor.visitVarInsn(ALOAD, 0);
             methodVisitor.visitVarInsn(ILOAD, 1);
-            methodVisitor.visitVarInsn(ILOAD, 2);
-            methodVisitor.visitLdcInsn("siy");
-            methodVisitor.visitLdcInsn("HookJava-hookProxy-");
-            methodVisitor.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
-            methodVisitor.visitInsn(POP);
-            methodVisitor.visitVarInsn(ALOAD, 0);
-            methodVisitor.visitVarInsn(ILOAD, 1);
-            methodVisitor.visitVarInsn(ILOAD, 2);
-            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "com/siy/tansaga/MainActivity", "proxy", "(II)I", false);
-            methodVisitor.visitVarInsn(ISTORE, 3);
-            methodVisitor.visitVarInsn(ILOAD, 3);
-            methodVisitor.visitVarInsn(ILOAD, 2);
-            methodVisitor.visitInsn(ISUB);
-            methodVisitor.visitInsn(IRETURN);
-            methodVisitor.visitInsn(IRETURN);
-            methodVisitor.visitMaxs(6, 4);
+            methodVisitor.visitIntInsn(BIPUSH, 6);
+            methodVisitor.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitInsn(ICONST_0);
+            methodVisitor.visitLdcInsn(new Integer(2131689594));
+            methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+            methodVisitor.visitInsn(AASTORE);
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitInsn(ICONST_1);
+            methodVisitor.visitLdcInsn("abc");
+            methodVisitor.visitInsn(AASTORE);
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitInsn(ICONST_2);
+            methodVisitor.visitTypeInsn(NEW, "com/siy/tansaga/test/OriginJava");
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/siy/tansaga/test/OriginJava", "<init>", "()V", false);
+            methodVisitor.visitInsn(AASTORE);
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitInsn(ICONST_3);
+            methodVisitor.visitIntInsn(BIPUSH, 6);
+            methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+            methodVisitor.visitInsn(AASTORE);
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitInsn(ICONST_4);
+            methodVisitor.visitTypeInsn(NEW, "android/view/View");
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitFieldInsn(GETSTATIC, "com/siy/tansaga/App", "INSTANCE", "Landroid/app/Application;");
+            methodVisitor.visitMethodInsn(INVOKESPECIAL, "android/view/View", "<init>", "(Landroid/content/Context;)V", false);
+            methodVisitor.visitInsn(AASTORE);
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitInsn(ICONST_5);
+            methodVisitor.visitIntInsn(BIPUSH, 33);
+            methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+            methodVisitor.visitInsn(AASTORE);
+            methodVisitor.visitVarInsn(ASTORE, 2);
+            methodVisitor.visitVarInsn(ALOAD, 2);
+            methodVisitor.visitInsn(ICONST_0);
+            methodVisitor.visitInsn(AALOAD);
+            methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Integer");
+            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
+            methodVisitor.visitVarInsn(ISTORE, 1);
+            methodVisitor.visitLdcInsn("");
+            methodVisitor.visitInsn(ARETURN);
+            methodVisitor.visitInsn(ARETURN);
+            methodVisitor.visitMaxs(8, 3);
             methodVisitor.visitEnd();
         }
         classWriter.visitEnd();

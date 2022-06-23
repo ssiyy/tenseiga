@@ -81,54 +81,6 @@ public class MainActivityDump implements Opcodes {
             methodVisitor.visitMaxs(4, 2);
             methodVisitor.visitEnd();
         }
-        {
-            methodVisitor = classWriter.visitMethod(ACC_PRIVATE, "onProxyUserClick", "()V", null, null);
-            methodVisitor.visitCode();
-            methodVisitor.visitLdcInsn("siy");
-            methodVisitor.visitLdcInsn("onProxyUserClick");
-            methodVisitor.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
-            methodVisitor.visitInsn(POP);
-            methodVisitor.visitLdcInsn("siy");
-            methodVisitor.visitTypeInsn(NEW, "com/siy/tansaga/test/OriginJava");
-            methodVisitor.visitInsn(DUP);
-            methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/siy/tansaga/test/OriginJava", "<init>", "()V", false);
-            methodVisitor.visitInsn(ICONST_1);
-            methodVisitor.visitInsn(ICONST_2);
-            methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tansaga/MainActivity", "com_siy_tansaga_test_HookJava_hookProxy", "(Lcom/siy/tansaga/test/OriginJava;II)I", false);
-            methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/String", "valueOf", "(I)Ljava/lang/String;", false);
-            methodVisitor.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
-            methodVisitor.visitInsn(POP);
-            methodVisitor.visitInsn(RETURN);
-            methodVisitor.visitMaxs(4, 1);
-            methodVisitor.visitEnd();
-        }
-        {
-            methodVisitor = classWriter.visitMethod(ACC_STATIC | ACC_SYNTHETIC, "access$000", "(Lcom/siy/tansaga/MainActivity;)V", null, null);
-            methodVisitor.visitCode();
-            methodVisitor.visitVarInsn(ALOAD, 0);
-            methodVisitor.visitMethodInsn(INVOKESPECIAL, "com/siy/tansaga/MainActivity", "onProxyUserClick", "()V", false);
-            methodVisitor.visitInsn(RETURN);
-            methodVisitor.visitMaxs(1, 1);
-            methodVisitor.visitEnd();
-        }
-        {
-            methodVisitor = classWriter.visitMethod(ACC_PRIVATE | ACC_STATIC, "com_siy_tansaga_test_HookJava_hookProxy", "(Lcom/siy/tansaga/test/OriginJava;II)I", null, null);
-            methodVisitor.visitCode();
-            methodVisitor.visitVarInsn(ALOAD, 0);
-            methodVisitor.visitVarInsn(ILOAD, 1);
-            methodVisitor.visitVarInsn(ILOAD, 2);
-            methodVisitor.visitLdcInsn("siy");
-            methodVisitor.visitLdcInsn("HookJava-hookProxy-");
-            methodVisitor.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
-            methodVisitor.visitInsn(POP);
-            methodVisitor.visitIntInsn(BIPUSH, 6);
-            methodVisitor.visitVarInsn(ILOAD, 2);
-            methodVisitor.visitInsn(ISUB);
-            methodVisitor.visitInsn(IRETURN);
-            methodVisitor.visitInsn(IRETURN);
-            methodVisitor.visitMaxs(5, 3);
-            methodVisitor.visitEnd();
-        }
         classWriter.visitEnd();
 
         return classWriter.toByteArray();

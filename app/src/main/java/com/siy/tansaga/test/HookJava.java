@@ -1,9 +1,11 @@
 package com.siy.tansaga.test;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.siy.tansaga.R;
 import com.siy.tansaga.base.Invoker;
+import com.siy.tansaga.base.Self;
 
 /**
  * @author Siy
@@ -21,15 +23,13 @@ public class HookJava {
     @SuppressWarnings("unused")
     public int hookReplace(int a, int b) {
         Log.e("siy", "HookJava-hookReplace-");
-//        OriginJava originJava = (OriginJava) Self.get();
-//        originJava.showToast();
+
+        //获取实例方法所在的对象
+        OriginJava originJava = (OriginJava) Self.get();
+        originJava.showToast();
 
         //我们可以在这儿修改参数
-//        a = a + 5;
-//        b = b + 5;
         int orgResult = (int) Invoker.invoke();
-
-//        Log.e("siy", "orginResult:" + orgResult);
         return orgResult - b;
     }
 
@@ -43,9 +43,13 @@ public class HookJava {
     @SuppressWarnings("unused")
     public int hookProxy(int a, int b) {
         Log.e("siy", "HookJava-hookProxy-");
+
+        //获取实例方法所在的对象
+        OriginJava originJava = (OriginJava) Self.get();
+        originJava.showToast();
+
         int total = (int) Invoker.invoke();
         return total - b;
-//        return 6 - b;
     }
 
 
@@ -58,9 +62,13 @@ public class HookJava {
     @SuppressWarnings("unused")
     public String hookProxySys(int resId) {
         Log.e("siy", "HookJava-hookProxySys-");
+
+        //获取实例方法所在的对象
+        Context context = (Context) Self.get();
+        Log.e("siy", context.getCacheDir().getAbsolutePath());
+
+        //在这儿修改方法
         resId = R.string.next;
-//        String changeStr = (String) Invoker.invoke();
-//        return changeStr;
-        return "woshi shui ";
+        return (String) Invoker.invoke();
     }
 }

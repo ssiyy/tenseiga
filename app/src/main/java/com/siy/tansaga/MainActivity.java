@@ -20,10 +20,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.replaceHook).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.replaceUser).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              Log.e("siy",String.valueOf(  new OriginJava().replace(3, 2)));
+                Log.e("siy", String.valueOf(new OriginJava().replace(3, 2)));
             }
         });
 
@@ -38,14 +38,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.proxyUser).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               onProxyUserClick();
+                Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2)));
             }
         });
-    }
-
-
-    private void onProxyUserClick(){
-        Log.e("siy","onProxyUserClick");
-        Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2)));
     }
 }

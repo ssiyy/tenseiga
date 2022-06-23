@@ -22,6 +22,9 @@ public class OriginJava {
     }
 
 
+    /**
+     * 用来给this调用得
+     */
     public void showToast() {
         Toast.makeText(App.INSTANCE, "OriginJava-showToast", Toast.LENGTH_SHORT).show();
     }

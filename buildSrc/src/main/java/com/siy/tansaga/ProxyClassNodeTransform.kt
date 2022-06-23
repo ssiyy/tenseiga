@@ -74,8 +74,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
         super.visitorInsnMethod(context, insnMethod)
         klass?.let { clazz ->
             for (info in proxyInfos) {
-                val sameOwner = (insnMethod.owner == info.targetClass) || (context.klassPool[info.targetClass].isAssignableFrom
-                    (insnMethod.owner))
+                val sameOwner = (insnMethod.owner == info.targetClass) || (context.klassPool[info.targetClass].isAssignableFrom(insnMethod.owner))
                 val sameName = insnMethod.name == info.targetMethod
                 val sameDesc = insnMethod.desc == info.targetDesc
 
@@ -123,7 +122,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             info.hookMethod.exceptions
         ) {
             val insns = info.hookMethod.instructions
-            val callInsns = insns.filter {insn->
+            val callInsns = insns.filter { insn ->
                 insn.opcode == OP_CALL
             }
 
@@ -153,7 +152,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
         //加载参数
         val params = Type.getArgumentTypes(methodInsnNode.desc)
         var index = 0;
-        if (methodInsnNode.opcode != Opcodes.INVOKESTATIC){
+        if (methodInsnNode.opcode != Opcodes.INVOKESTATIC) {
             index++
             insns.add(VarInsnNode(Opcodes.ALOAD, 0))
         }

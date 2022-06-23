@@ -11,16 +11,18 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/grup_round_conner"
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/replaceHook"
+            android:id="@+id/replaceUser"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
             android:padding="20dp"
-            android:text="修改方法"
+            android:text="修改用户方法"
             android:textColor="@color/black"
             android:textSize="20sp" />
 
@@ -30,6 +32,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:background="@drawable/grup_round_conner"
         android:orientation="vertical">
 
         <TextView

@@ -153,7 +153,6 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
         //加载参数
         val params = Type.getArgumentTypes(methodInsnNode.desc)
         var index = 0;
-//        if (!TypeUtil.isStatic(methodInsnNode.opcodace)) {
         if (methodInsnNode.opcode != Opcodes.INVOKESTATIC){
             index++
             insns.add(VarInsnNode(Opcodes.ALOAD, 0))
@@ -163,7 +162,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             insns.add(VarInsnNode(t.getOpcode(Opcodes.ILOAD), index))
             index += t.size
         }
-        insns.add(MethodInsnNode(methodInsnNode.opcode, klass?.name, methodInsnNode.name, methodInsnNode.desc))
+        insns.add(MethodInsnNode(methodInsnNode.opcode, methodInsnNode.owner, methodInsnNode.name, methodInsnNode.desc))
         return insns
     }
 }

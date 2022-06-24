@@ -18,12 +18,6 @@ object Invoker {
      */
     const val FUN_PREFIX = "invoke"
 
-    /**
-     * 带有返回值的调用
-     */
-    @JvmStatic
-    fun invoke() = Any()
-
     @JvmStatic
     fun invoke(vararg params: Any) = Any()
 

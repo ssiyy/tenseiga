@@ -1,9 +1,7 @@
 package com.siy.tansaga.test;
 
 import android.util.Log;
-import android.view.View;
 
-import com.siy.tansaga.App;
 import com.siy.tansaga.R;
 import com.siy.tansaga.base.Invoker;
 import com.siy.tansaga.base.Self;
@@ -62,21 +60,33 @@ public class HookJava {
      */
     @SuppressWarnings("unused")
     public String hookProxySys(int resId) {
-//        Log.e("siy", "HookJava-hookProxySys-");
+        Log.e("siy", "HookJava-hookProxySys-");
 
         //获取实例方法所在的对象
-//        Context context = (Context) Self.get();
-//        Log.e("siy", context.getCacheDir().getAbsolutePath());
+       /* Context context = (Context) Self.get();
+        Log.e("siy", context.getCacheDir().getAbsolutePath());*/
 
+        int o = 11111;
 
-//        Object[] heihei = {R.string.next,"abc",new OriginJava(),6,new View(App.INSTANCE),33};
+        String a = "a";
 
-//        resId = (int) heihei[0];
+        String b = "b";
+
+        String e = (String) Invoker.invoke(R.string.next); //next
+
+        String d = a + b;  //ab
 
         //在这儿修改方法
-        return (String) Invoker.invoke(R.string.next,"abc",new OriginJava(),6,new View(App.INSTANCE),33);
-//        return "";
-//        resId = R.string.next;
-//        return (String) Invoker.invoke();
+
+        String f = e + d; //nextab
+
+        int g = o+2;
+        return f;
     }
+
+
+    private void testx(){
+        Object[] aa = {};
+    }
+
 }

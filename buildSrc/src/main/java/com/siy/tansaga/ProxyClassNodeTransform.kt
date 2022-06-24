@@ -8,7 +8,6 @@ import com.siy.tansaga.ext.createMethod
 import com.siy.tansaga.ext.errOut
 import com.siy.tansaga.interfaces.ClassNodeTransform
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 
 
@@ -121,23 +120,29 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             TypeUtil.descToStatic(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
             info.hookMethod.exceptions
         ) {
-            val insns = info.hookMethod.instructions
+
+            var hookMethod = info.hookMethod
+            val newMethodNode = MethodNode(Opcodes.ASM7, hookMethod.access, hookMethod.name, hookMethod.desc, hookMethod.signature, hookMethod.exceptions.toTypedArray())
+            val mv = AddLocalVarAdapter(Opcodes.ASM7, newMethodNode, hookMethod.access, hookMethod.name, hookMethod.desc)
+            hookMethod.accept(mv)
+            hookMethod = newMethodNode
+
+            val insns = hookMethod.instructions
+
             val callInsns = insns.filter { insn ->
                 insn.opcode == OP_CALL
             }
 
             callInsns.forEach { opcall ->
-                (opcall.previous as? VarInsnNode)?.let {
-                    loadNewArgs(it, insns)
-                }
-
                 //加载参数
-                val ns = loadArgsAndInvoke(methodInsnNode)
+                val ns = loadArgsAndInvoke(opcall, methodInsnNode, mv.slotIndex)
                 //插入到Invoker.invoke之前
                 insns.insertBefore(opcall, ns)
                 //删除Invoker.invoke
                 insns.remove(opcall)
             }
+
+
 
             it.add(insns)
         }.also {
@@ -146,44 +151,6 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
         }
     }
 
-    /**
-     * DUP
-     * ICONST_5
-     * BIPUSH 33
-     * INVOKESTATIC java/lang/Integer.valueOf (I)Ljava/lang/Integer;
-     * AASTORE
-     * ASTORE 2
-     *
-     * ALOAD 2
-     * ICONST_2
-     * AALOAD
-     * ASTORE 3
-     *
-     * methodVisitor.visitInsn(DUP);
-     * methodVisitor.visitInsn(ICONST_5);
-     * methodVisitor.visitIntInsn(BIPUSH, 33);
-     * methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
-     * methodVisitor.visitInsn(AASTORE);
-     * methodVisitor.visitVarInsn(ASTORE, 2);
-     *
-     * methodVisitor.visitVarInsn(ALOAD, 2);
-     * methodVisitor.visitInsn(ICONST_2);
-     * methodVisitor.visitInsn(AALOAD);
-     * methodVisitor.visitVarInsn(ASTORE, 3);
-     *
-     */
-    private fun loadNewArgs(varInsnNode: VarInsnNode, insns: InsnList) {
-        //把参数数组加载进来
-        val solt = varInsnNode.`var`
-        insns.add(VarInsnNode(Opcodes.ALOAD, solt))
-
-        //加载数组的第一个参数
-        insns.add(InsnNode(Opcodes.ICONST_0))
-        insns.add(InsnNode(Opcodes.AALOAD))
-
-        //把第一个参数存储到第一个变量
-        insns.add(VarInsnNode(Opcodes.ISTORE, 1))
-    }
 
     /**
      * 加载方法参数并且调用方法
@@ -192,21 +159,31 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
      *
      * @return 返回加载参数和方法调用的指令集
      */
-    private fun loadArgsAndInvoke(methodInsnNode: MethodInsnNode): InsnList {
+    private fun loadArgsAndInvoke(opCall: AbstractInsnNode, methodInsnNode: MethodInsnNode, slotIndex:Int): InsnList {
         val insns = InsnList()
 
-        //加载参数
-        val params = Type.getArgumentTypes(methodInsnNode.desc)
-        var index = 0;
+
+        (opCall.previous as? InsnNode)?.let {
+            if (it.opcode == Opcodes.AASTORE) {
+                insns.add(VarInsnNode(Opcodes.ASTORE, slotIndex))
+            }
+        }
+
         if (methodInsnNode.opcode != Opcodes.INVOKESTATIC) {
-            index++
             insns.add(VarInsnNode(Opcodes.ALOAD, 0))
         }
 
-        for (t in params) {
-            insns.add(VarInsnNode(t.getOpcode(Opcodes.ILOAD), index))
-            index += t.size
+        (opCall.previous as? InsnNode)?.let {
+            if (it.opcode == Opcodes.AASTORE) {
+                insns.add(VarInsnNode(Opcodes.ALOAD, slotIndex))
+                insns.add(InsnNode(Opcodes.ICONST_0))
+                insns.add(InsnNode(Opcodes.AALOAD))
+                insns.add(TypeInsnNode(Opcodes.CHECKCAST, "java/lang/Integer"));
+                insns.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false));
+
+            }
         }
+
         insns.add(MethodInsnNode(methodInsnNode.opcode, methodInsnNode.owner, methodInsnNode.name, methodInsnNode.desc))
         return insns
     }

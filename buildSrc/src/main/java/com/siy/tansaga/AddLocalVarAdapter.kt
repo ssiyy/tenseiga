@@ -19,8 +19,9 @@ class AddLocalVarAdapter(
     descriptor: String
 ) : AdviceAdapter(api, mv, access, name, descriptor) {
 
-    private var mSlotIndex = 0
-    val slotIndex = mSlotIndex;
+    private var mSlotIndex = -1
+    val slotIndex
+        get() = mSlotIndex
 
 
     override fun onMethodEnter() {

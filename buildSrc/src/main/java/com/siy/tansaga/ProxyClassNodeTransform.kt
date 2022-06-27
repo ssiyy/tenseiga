@@ -3,11 +3,12 @@ package com.siy.tansaga
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.filter
 import com.siy.tansaga.entity.ProxyInfo
+import com.siy.tansaga.ext.PrimitiveUtil
 import com.siy.tansaga.ext.TypeUtil
 import com.siy.tansaga.ext.createMethod
-import com.siy.tansaga.ext.errOut
 import com.siy.tansaga.interfaces.ClassNodeTransform
 import org.objectweb.asm.Opcodes
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 
 
@@ -143,10 +144,8 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             }
 
 
-
             it.add(insns)
         }.also {
-            errOut("名字：${klass?.name}外部内：${klass?.outerClass}内部呢：${klass?.innerClasses}")
             klass?.methods?.add(it)
         }
     }
@@ -159,32 +158,62 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
      *
      * @return 返回加载参数和方法调用的指令集
      */
-    private fun loadArgsAndInvoke(opCall: AbstractInsnNode, methodInsnNode: MethodInsnNode, slotIndex:Int): InsnList {
+    private fun loadArgsAndInvoke(opCall: AbstractInsnNode, methodInsnNode: MethodInsnNode, slotIndex: Int): InsnList {
         val insns = InsnList()
 
-
+        //判断一下call之前的opcode是不是数组，如果是就保存一下
         (opCall.previous as? InsnNode)?.let {
             if (it.opcode == Opcodes.AASTORE) {
                 insns.add(VarInsnNode(Opcodes.ASTORE, slotIndex))
             }
         }
 
+        //判断一下调用的方法是不是静态的，如果不是静态就先加载一下this参数
         if (methodInsnNode.opcode != Opcodes.INVOKESTATIC) {
             insns.add(VarInsnNode(Opcodes.ALOAD, 0))
         }
 
+        //加载方法传入参数
+        val params = Type.getArgumentTypes(methodInsnNode.desc)
         (opCall.previous as? InsnNode)?.let {
             if (it.opcode == Opcodes.AASTORE) {
-                insns.add(VarInsnNode(Opcodes.ALOAD, slotIndex))
-                insns.add(InsnNode(Opcodes.ICONST_0))
-                insns.add(InsnNode(Opcodes.AALOAD))
-                insns.add(TypeInsnNode(Opcodes.CHECKCAST, "java/lang/Integer"));
-                insns.add(MethodInsnNode(Opcodes.INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false));
-
+                params.forEachIndexed { index, type ->
+                    insns.add(VarInsnNode(Opcodes.ALOAD, slotIndex))
+                    when (index) {
+                        0 -> insns.add(InsnNode(Opcodes.ICONST_0))
+                        1 -> insns.add(InsnNode(Opcodes.ICONST_1))
+                        2 -> insns.add(InsnNode(Opcodes.ICONST_2))
+                        3 -> insns.add(InsnNode(Opcodes.ICONST_3))
+                        4 -> insns.add(InsnNode(Opcodes.ICONST_4))
+                        5 -> insns.add(InsnNode(Opcodes.ICONST_5))
+                        in 6..127 -> insns.add(IntInsnNode(Opcodes.BIPUSH, index))
+                        in 128..255 -> insns.add(IntInsnNode(Opcodes.SIPUSH, index))
+                    }
+                    insns.add(InsnNode(Opcodes.AALOAD))
+                    if (PrimitiveUtil.isPrimitive(type.descriptor)) {
+                        //如果是基本类型，就要拆箱成基本变量
+                        val owner = PrimitiveUtil.box(type.descriptor)
+                        insns.add(TypeInsnNode(Opcodes.CHECKCAST, PrimitiveUtil.virtualType(owner)))
+                        insns.add(
+                            MethodInsnNode(
+                                Opcodes.INVOKEVIRTUAL,
+                                PrimitiveUtil.virtualType(owner),
+                                PrimitiveUtil.unboxMethod(owner),
+                                "()${type.descriptor}",
+                                false
+                            )
+                        )
+                    } else {
+                        //如果不是基本数据类型，是引用类型
+                        insns.add(TypeInsnNode(Opcodes.CHECKCAST, type.internalName))
+                    }
+                }
             }
         }
 
         insns.add(MethodInsnNode(methodInsnNode.opcode, methodInsnNode.owner, methodInsnNode.name, methodInsnNode.desc))
         return insns
     }
+
+
 }

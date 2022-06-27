@@ -136,7 +136,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
 
             callInsns.forEach { opcall ->
                 //加载参数
-                val ns = loadArgsAndInvoke(opcall, methodInsnNode, mv.slotIndex)
+                val ns = loadArgsAndInvoke(methodInsnNode, mv.slotIndex)
                 //插入到Invoker.invoke之前
                 insns.insertBefore(opcall, ns)
                 //删除Invoker.invoke
@@ -156,17 +156,14 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
      *
      * @param methodInsnNode 需要调用的方法
      *
+     * @param slotIndex
+     *
      * @return 返回加载参数和方法调用的指令集
      */
-    private fun loadArgsAndInvoke(opCall: AbstractInsnNode, methodInsnNode: MethodInsnNode, slotIndex: Int): InsnList {
+    private fun loadArgsAndInvoke(methodInsnNode: MethodInsnNode, slotIndex: Int): InsnList {
         val insns = InsnList()
 
-        //判断一下call之前的opcode是不是数组，如果是就保存一下
-        (opCall.previous as? InsnNode)?.let {
-            if (it.opcode == Opcodes.AASTORE) {
-                insns.add(VarInsnNode(Opcodes.ASTORE, slotIndex))
-            }
-        }
+        insns.add(VarInsnNode(Opcodes.ASTORE, slotIndex))
 
         //判断一下调用的方法是不是静态的，如果不是静态就先加载一下this参数
         if (methodInsnNode.opcode != Opcodes.INVOKESTATIC) {
@@ -175,45 +172,39 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
 
         //加载方法传入参数
         val params = Type.getArgumentTypes(methodInsnNode.desc)
-        (opCall.previous as? InsnNode)?.let {
-            if (it.opcode == Opcodes.AASTORE) {
-                params.forEachIndexed { index, type ->
-                    insns.add(VarInsnNode(Opcodes.ALOAD, slotIndex))
-                    when (index) {
-                        0 -> insns.add(InsnNode(Opcodes.ICONST_0))
-                        1 -> insns.add(InsnNode(Opcodes.ICONST_1))
-                        2 -> insns.add(InsnNode(Opcodes.ICONST_2))
-                        3 -> insns.add(InsnNode(Opcodes.ICONST_3))
-                        4 -> insns.add(InsnNode(Opcodes.ICONST_4))
-                        5 -> insns.add(InsnNode(Opcodes.ICONST_5))
-                        in 6..127 -> insns.add(IntInsnNode(Opcodes.BIPUSH, index))
-                        in 128..255 -> insns.add(IntInsnNode(Opcodes.SIPUSH, index))
-                    }
-                    insns.add(InsnNode(Opcodes.AALOAD))
-                    if (PrimitiveUtil.isPrimitive(type.descriptor)) {
-                        //如果是基本类型，就要拆箱成基本变量
-                        val owner = PrimitiveUtil.box(type.descriptor)
-                        insns.add(TypeInsnNode(Opcodes.CHECKCAST, PrimitiveUtil.virtualType(owner)))
-                        insns.add(
-                            MethodInsnNode(
-                                Opcodes.INVOKEVIRTUAL,
-                                PrimitiveUtil.virtualType(owner),
-                                PrimitiveUtil.unboxMethod(owner),
-                                "()${type.descriptor}",
-                                false
-                            )
-                        )
-                    } else {
-                        //如果不是基本数据类型，是引用类型
-                        insns.add(TypeInsnNode(Opcodes.CHECKCAST, type.internalName))
-                    }
-                }
+        params.forEachIndexed { index, type ->
+            insns.add(VarInsnNode(Opcodes.ALOAD, slotIndex))
+            when (index) {
+                0 -> insns.add(InsnNode(Opcodes.ICONST_0))
+                1 -> insns.add(InsnNode(Opcodes.ICONST_1))
+                2 -> insns.add(InsnNode(Opcodes.ICONST_2))
+                3 -> insns.add(InsnNode(Opcodes.ICONST_3))
+                4 -> insns.add(InsnNode(Opcodes.ICONST_4))
+                5 -> insns.add(InsnNode(Opcodes.ICONST_5))
+                in 6..127 -> insns.add(IntInsnNode(Opcodes.BIPUSH, index))
+                in 128..255 -> insns.add(IntInsnNode(Opcodes.SIPUSH, index))
+            }
+            insns.add(InsnNode(Opcodes.AALOAD))
+            if (PrimitiveUtil.isPrimitive(type.descriptor)) {
+                //如果是基本类型，就要拆箱成基本变量
+                val owner = PrimitiveUtil.box(type.descriptor)
+                insns.add(TypeInsnNode(Opcodes.CHECKCAST, PrimitiveUtil.virtualType(owner)))
+                insns.add(
+                    MethodInsnNode(
+                        Opcodes.INVOKEVIRTUAL,
+                        PrimitiveUtil.virtualType(owner),
+                        PrimitiveUtil.unboxMethod(owner),
+                        "()${type.descriptor}",
+                        false
+                    )
+                )
+            } else {
+                //如果不是基本数据类型，是引用类型
+                insns.add(TypeInsnNode(Opcodes.CHECKCAST, type.internalName))
             }
         }
 
         insns.add(MethodInsnNode(methodInsnNode.opcode, methodInsnNode.owner, methodInsnNode.name, methodInsnNode.desc))
         return insns
     }
-
-
 }

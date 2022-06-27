@@ -3,6 +3,7 @@ package com.siy.tansaga
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.filter
 import com.siy.tansaga.entity.ReplaceInfo
+import com.siy.tansaga.ext.PrimitiveUtil
 import com.siy.tansaga.ext.TypeUtil
 import com.siy.tansaga.ext.createMethod
 import com.siy.tansaga.ext.replaceMethodBody
@@ -131,12 +132,21 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
             TypeUtil.descToStatic(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
             info.hookMethod.exceptions
         ) {
-            val insns = info.hookMethod.instructions
+            var hookMethod = info.hookMethod
+            val newMethodNode = MethodNode(Opcodes.ASM7, hookMethod.access, hookMethod.name, hookMethod.desc, hookMethod.signature, hookMethod.exceptions.toTypedArray())
+            val mv = AddLocalVarAdapter(Opcodes.ASM7, newMethodNode, hookMethod.access, hookMethod.name, hookMethod.desc)
+            hookMethod.accept(mv)
+            hookMethod = newMethodNode
+
+
+            val insns = hookMethod.instructions
+
             val callInsns = insns.filter { insn ->
                 insn.opcode == OP_CALL
             }
+
             callInsns.forEach { opcall ->
-                val ns = loadArgsAndInvoke(methodNode)
+                val ns = loadArgsAndInvoke(methodNode, mv.slotIndex)
                 insns.insertBefore(opcall, ns)
                 insns.remove(opcall)
             }
@@ -152,26 +162,55 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
      *
      * @param methodNode 需要调用的方法
      *
+     * @param slotIndex
+     *
      * @return 返回加载参数和方法调用的指令集
      */
-    private fun loadArgsAndInvoke(methodNode: MethodNode): InsnList {
+    private fun loadArgsAndInvoke(methodNode: MethodNode, slotIndex: Int): InsnList {
         val insns = InsnList()
 
-        //加载参数
-        val params = Type.getArgumentTypes(methodNode.desc)
-        var index = 0;
+        insns.add(VarInsnNode(Opcodes.ASTORE, slotIndex))
+
         if (!TypeUtil.isStatic(methodNode.access)) {
-            index++
             insns.add(VarInsnNode(Opcodes.ALOAD, 0))
         }
 
-        for (t in params) {
-            insns.add(VarInsnNode(t.getOpcode(Opcodes.ILOAD), index))
-            index += t.size
+        //加载方法传入参数
+        val params = Type.getArgumentTypes(methodNode.desc)
+        params.forEachIndexed { index, type ->
+            insns.add(VarInsnNode(Opcodes.ALOAD, slotIndex))
+            when (index) {
+                0 -> insns.add(InsnNode(Opcodes.ICONST_0))
+                1 -> insns.add(InsnNode(Opcodes.ICONST_1))
+                2 -> insns.add(InsnNode(Opcodes.ICONST_2))
+                3 -> insns.add(InsnNode(Opcodes.ICONST_3))
+                4 -> insns.add(InsnNode(Opcodes.ICONST_4))
+                5 -> insns.add(InsnNode(Opcodes.ICONST_5))
+                in 6..127 -> insns.add(IntInsnNode(Opcodes.BIPUSH, index))
+                in 128..255 -> insns.add(IntInsnNode(Opcodes.SIPUSH, index))
+            }
+            insns.add(InsnNode(Opcodes.AALOAD))
+            if (PrimitiveUtil.isPrimitive(type.descriptor)) {
+                //如果是基本类型，就要拆箱成基本变量
+                val owner = PrimitiveUtil.box(type.descriptor)
+                insns.add(TypeInsnNode(Opcodes.CHECKCAST, PrimitiveUtil.virtualType(owner)))
+                insns.add(
+                    MethodInsnNode(
+                        Opcodes.INVOKEVIRTUAL,
+                        PrimitiveUtil.virtualType(owner),
+                        PrimitiveUtil.unboxMethod(owner),
+                        "()${type.descriptor}",
+                        false
+                    )
+                )
+            } else {
+                //如果不是基本数据类型，是引用类型
+                insns.add(TypeInsnNode(Opcodes.CHECKCAST, type.internalName))
+            }
         }
+
+
         insns.add(MethodInsnNode(TypeUtil.getOpcodeByAccess(methodNode.access), klass?.name, methodNode.name, methodNode.desc))
         return insns
     }
-
-
 }

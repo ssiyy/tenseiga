@@ -1,6 +1,5 @@
 package com.siy.tansaga.entity
 
-import com.siy.tansaga.ext.AsmUtil
 import com.siy.tansaga.base.tools.join
 import org.objectweb.asm.tree.MethodNode
 import java.util.regex.Pattern
@@ -53,17 +52,6 @@ data class ProxyInfo(
         get() {
             return hookMethod.desc
         }
-
-    private val local = object : ThreadLocal<MethodNode>() {
-        @Synchronized
-        override fun initialValue(): MethodNode {
-            return AsmUtil.clone(hookMethod)
-        }
-    }
-
-    fun threadLocalNode(): MethodNode? {
-        return local.get()
-    }
 
 
     override fun toString(): String {

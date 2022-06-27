@@ -61,7 +61,7 @@ TExtension {
             targetClass = "android.content.Context"
             hookMethod = "hookProxySys"
             hookClass = "com.siy.tansaga.test.HookJava"
-        //   filter "com.siy.tansaga.test.*","com.siy.tansaga.MainActivity"
+           filter "com.siy.tansaga.test.*","com.siy.tansaga.MainActivity"
         }
 
     }
@@ -73,7 +73,5 @@ TExtension {
             hookMethod = "hookReplace"
             hookClass = "com.siy.tansaga.test.HookJava"
         }
-
-
     }
 }

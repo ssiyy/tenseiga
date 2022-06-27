@@ -12,7 +12,7 @@ import org.objectweb.asm.tree.MethodNode
  */
 data class ReplaceInfo(
     /**
-     * 被替换的类
+     * 被替换的类,internalName
      */
     val targetClass: String,
 
@@ -22,7 +22,7 @@ data class ReplaceInfo(
     val targetMethod: String,
 
     /**
-     * 替换的类
+     * 替换的类,internalName
      */
     val hookClass: String,
     /**

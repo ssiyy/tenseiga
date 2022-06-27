@@ -32,19 +32,19 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                Log.e("siy", getBaseContext().getString(R.string.app_name));
-                proxySys();
+                proxy();
             }
         });
 
         findViewById(R.id.proxyUser).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2)));
+            proxy();
             }
         });
     }
 
-    private void proxySys(){
-        Log.e("siy", getBaseContext().getString(R.string.app_name));
+    private void proxy(){
+        Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2,"x", findViewById(R.id.proxyUser),this, (byte) 0, (short) 11)));
     }
 }

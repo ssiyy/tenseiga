@@ -1,7 +1,10 @@
 package com.siy.tansaga.test;
 
+import android.content.Context;
 import android.util.Log;
+import android.view.View;
 
+import com.siy.tansaga.App;
 import com.siy.tansaga.R;
 import com.siy.tansaga.base.Invoker;
 import com.siy.tansaga.base.Self;
@@ -28,26 +31,26 @@ public class HookJava {
         originJava.showToast();
 
         //我们可以在这儿修改参数
-        int orgResult = (int) Invoker.invoke();
+        int orgResult = (int) Invoker.invoke(a, b);
         return orgResult - b;
     }
 
     /**
-     * 代理用户方法 {@link OriginJava#proxy(int, int)}
+     * 代理用户方法 {@link OriginJava#proxy(int, Integer, String, View, Context, byte, short)}
      *
      * @param a
      * @param b
      * @return
      */
     @SuppressWarnings("unused")
-    public int hookProxy(int a, int b) {
+    public int hookProxy(int a, Integer b, String str, View view, Context context, byte bbb, short sh) {
         Log.e("siy", "HookJava-hookProxy-");
 
         //获取实例方法所在的对象
         OriginJava originJava = (OriginJava) Self.get();
         originJava.showToast();
 
-        int total = (int) Invoker.invoke();
+        int total = (int) Invoker.invoke(1, 3, "hah", new View(App.INSTANCE), null, 1, 2);
         return total - b;
     }
 
@@ -80,13 +83,7 @@ public class HookJava {
 
         String f = e + d; //nextab
 
-        int g = o+2;
+        int g = o + 2;
         return f;
     }
-
-
-    private void testx(){
-        Object[] aa = {};
-    }
-
 }

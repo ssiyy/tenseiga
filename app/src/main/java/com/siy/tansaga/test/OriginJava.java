@@ -1,6 +1,8 @@
 package com.siy.tansaga.test;
 
+import android.content.Context;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.siy.tansaga.App;
@@ -16,8 +18,8 @@ public class OriginJava {
         return a + b;
     }
 
-    public int proxy(int a, int b) {
-        Log.e("siy", "OriginJava-proxy-");
+    public int proxy(int a, Integer b, String str, View view, Context context, byte bb, short sh) {
+        Log.e("siy", "OriginJava-proxy-" + str + view.toString() + context + "byte:" + bb + "short:" + sh);
         return a + b;
     }
 

@@ -3,10 +3,7 @@ package com.siy.tansaga.transform
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.filter
 import com.siy.tansaga.entity.ProxyInfo
-import com.siy.tansaga.ext.AddLocalVarAdapter
-import com.siy.tansaga.ext.PrimitiveUtil
-import com.siy.tansaga.ext.TypeUtil
-import com.siy.tansaga.ext.createMethod
+import com.siy.tansaga.ext.*
 import com.siy.tansaga.parser.OP_CALL
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
@@ -48,32 +45,41 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
      */
     private var klass: ClassNode? = null
 
+    /**
+     * 当前Transform需要转换的ProxyInfo,一个类可能对应几个ProxyInfo
+     */
+    private lateinit var infos: List<ProxyInfo>
 
     override fun visitorClassNode(context: TransformContext, klass: ClassNode) {
         super.visitorClassNode(context, klass)
 
-        proxyInfos.map {
-            it.filterPattern
-        }.forEach {
-            if (it.isNullOrEmpty()) {
-                this.klass = klass
-                return
-            } else {
-                it.forEach { pattern ->
-                    if (pattern.matcher(klass.name).matches()) {
-                        this.klass = klass
-                        return
-                    }
+        infos = proxyInfos.filter {
+            val filterPattern = it.filterPattern
+            if (filterPattern.isEmpty()){
+                //如果没有过滤patern，就不过滤
+                true
+            }else {
+                val result = it.filterPattern.filter { pattern ->
+                    pattern.matcher(klass.name).matches()
                 }
+                result.isNotEmpty()
             }
         }
+
+        if (infos.isNotEmpty()) {
+            this.klass = klass
+
+            errOut("-----xxxxxxxxxxxx--------------${klass.name}")
+        }
     }
+
+    //private fun
 
 
     override fun visitorInsnMethod(context: TransformContext, insnMethod: MethodInsnNode) {
         super.visitorInsnMethod(context, insnMethod)
         klass?.let { clazz ->
-            for (info in proxyInfos) {
+            for (info in infos) {
                 val sameOwner = (insnMethod.owner == info.targetClass) || (context.klassPool[info.targetClass].isAssignableFrom(insnMethod.owner))
                 val sameName = insnMethod.name == info.targetMethod
                 val sameDesc = insnMethod.desc == info.targetDesc

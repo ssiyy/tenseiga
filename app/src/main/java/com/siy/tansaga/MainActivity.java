@@ -31,8 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-//                Log.e("siy", getBaseContext().getString(R.string.app_name));
-                proxy();
+                Log.e("siy", getBaseContext().getString(R.string.app_name));
+//                proxy();
             }
         });
 

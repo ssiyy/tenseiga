@@ -37,12 +37,11 @@ data class ProxyInfo(
     var filter: List<String> = listOf()
 ) {
 
-    val filterPattern = mutableListOf<Pattern>()
-
-    init {
-        filter.forEach {
-            filterPattern.add(Pattern.compile(it))
-        }
+    /**
+     * 过滤的正则表达式
+     */
+    val filterPattern = filter.map {
+        Pattern.compile(it)
     }
 
     /**

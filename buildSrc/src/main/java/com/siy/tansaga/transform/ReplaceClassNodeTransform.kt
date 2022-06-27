@@ -51,11 +51,19 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
      */
     private var klass: ClassNode? = null
 
+    /**
+     * 当前类所对应的ReplaceInfo，一个类可能对应几个ReplaceInfo
+     */
+    private lateinit var infos: List<ReplaceInfo>
+
     override fun visitorClassNode(context: TransformContext, klass: ClassNode) {
         super.visitorClassNode(context, klass)
-        if (replaceInfos.map {
-                it.targetClass
-            }.contains(klass.name)) {
+
+        infos = replaceInfos.filter {
+            it.targetClass == klass.name
+        }
+
+        if (infos.isNotEmpty()) {
             this.klass = klass
         }
     }
@@ -63,7 +71,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
     override fun visitorMethod(context: TransformContext, method: MethodNode) {
         super.visitorMethod(context, method)
         klass?.let { clazz ->
-            replaceInfos.forEach { info ->
+            infos.forEach { info ->
                 val sameOwner =
                     clazz.name == info.targetClass || (context.klassPool[info.targetClass].isAssignableFrom(clazz.name))
                 val sameName = info.targetMethod == method.name

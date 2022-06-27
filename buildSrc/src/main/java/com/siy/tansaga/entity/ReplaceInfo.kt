@@ -5,7 +5,7 @@ import org.objectweb.asm.tree.MethodNode
 
 /**
  *
- * classJar语法
+ * hook替换需要的信息
  *
  * @author  Siy
  * @since  2022/5/26

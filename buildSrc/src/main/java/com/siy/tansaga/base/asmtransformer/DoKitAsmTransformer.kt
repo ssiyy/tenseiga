@@ -1,7 +1,6 @@
-package com.siy.tansaga.asmtransformer
+package com.siy.tansaga.base.asmtransformer
 
 import com.didiglobal.booster.transform.asm.ClassTransformer
-import com.siy.tansaga.asmtransformer.BaseDoKitAsmTransformer
 
 /**
  * ================================================

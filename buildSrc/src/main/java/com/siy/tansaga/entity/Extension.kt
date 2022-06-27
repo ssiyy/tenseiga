@@ -1,6 +1,6 @@
 package com.siy.tansaga.entity
 
-import com.siy.tansaga.ext.join
+import com.siy.tansaga.base.tools.join
 import org.gradle.api.Action
 import org.gradle.api.NamedDomainObjectContainer
 import org.gradle.api.Project

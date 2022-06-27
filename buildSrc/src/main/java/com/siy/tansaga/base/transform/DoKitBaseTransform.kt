@@ -1,4 +1,4 @@
-package com.siy.tansaga.transform
+package com.siy.tansaga.base.transform
 
 import com.android.build.api.transform.QualifiedContent
 import com.android.build.api.transform.Transform
@@ -8,6 +8,7 @@ import com.android.build.gradle.internal.pipeline.TransformManager
 import com.didiglobal.booster.gradle.*
 import com.didiglobal.booster.transform.AbstractKlassPool
 import com.didiglobal.booster.transform.Transformer
+import com.siy.tansaga.base.BoosterTransformInvocation
 import org.gradle.api.Project
 
 
@@ -16,7 +17,7 @@ import org.gradle.api.Project
  * @author  Siy
  * @since  2022/5/26
  */
-open class TansagaBaseTransform protected constructor(val project: Project) : Transform() {
+open class DoKitBaseTransform protected constructor(val project: Project) : Transform() {
 
     /*transformers
      * Preload transformers as List to fix NoSuchElementException caused by ServiceLoader in parallel mode

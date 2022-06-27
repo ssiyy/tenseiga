@@ -1,8 +1,10 @@
-package com.siy.tansaga
+package com.siy.tansaga.base.tools
 
 import com.android.build.gradle.api.BaseVariant
 import com.android.dex.DexFormat
 import com.android.dx.command.dexer.Main
+import com.android.tools.r8.D8
+import com.didiglobal.booster.gradle.GTE_V7_X
 import com.didiglobal.booster.kotlinx.NCPU
 import com.didiglobal.booster.kotlinx.redirect
 import com.didiglobal.booster.kotlinx.search
@@ -139,6 +141,38 @@ val ClassNode.formatSuperName: String
     get() = superName.replace('/', '.')
 
 internal fun File.dex(output: File, api: Int = DexFormat.API_NO_EXTENDED_OPCODES): Int {
+    return if (GTE_V7_X) {
+        runD8(this, output, api)
+    } else {
+        runDx(this, output, api)
+    }
+}
+
+private fun runD8(input: File, output: File, api: Int): Int {
+    val inputs = when {
+        input.isDirectory -> {
+            output.mkdirs()
+            input.search {
+                it.extension.equals("class", true)
+            }
+        }
+        else -> {
+            output.touch()
+            listOf(input)
+        }
+    }
+
+    val args = inputs.map { it.canonicalPath } + "--min-api" + api.toString()
+    return try {
+        D8.main(args.toTypedArray())
+        0
+    } catch (t: Throwable) {
+        t.printStackTrace()
+        -1
+    }
+}
+
+private fun runDx(input: File, output: File, api: Int): Int {
     val args = Main.Arguments().apply {
         numThreads = NCPU
         debug = true
@@ -148,8 +182,8 @@ internal fun File.dex(output: File, api: Int = DexFormat.API_NO_EXTENDED_OPCODES
         jarOutput = true
         optimize = false
         minSdkVersion = api
-        fileNames = arrayOf(output.canonicalPath)
-        outName = canonicalPath
+        fileNames = arrayOf(input.canonicalPath)
+        outName = output.canonicalPath
     }
     return try {
         Main.run(args)
@@ -158,6 +192,7 @@ internal fun File.dex(output: File, api: Int = DexFormat.API_NO_EXTENDED_OPCODES
         -1
     }
 }
+
 
 /**
  * Transform this file or directory to the output by the specified transformer

@@ -1,6 +1,5 @@
-package com.siy.tansaga.ext
+package com.siy.tansaga.base.tools
 
-import com.didiglobal.booster.kotlinx.get
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 

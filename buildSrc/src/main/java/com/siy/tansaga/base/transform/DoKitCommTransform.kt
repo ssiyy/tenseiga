@@ -1,8 +1,9 @@
-package com.siy.tansaga.transform
+package com.siy.tansaga.base.transform
 
-import com.siy.tansaga.asmtransformer.DoKitAsmTransformer
 import com.didiglobal.booster.transform.Transformer
+import com.siy.tansaga.base.asmtransformer.DoKitAsmTransformer
 import com.siy.tansaga.entity.TExtension
+import com.siy.tansaga.transform.TansagaTransform
 import org.gradle.api.Project
 
 /**
@@ -10,7 +11,7 @@ import org.gradle.api.Project
  * DoKitCommTransform 作用于 CommTransformer、BigImgTransformer、UrlConnectionTransformer、GlobalSlowMethodTransformer、EnterMethodStackTransformer
  * @author johnsonlee
  */
-class DoKitCommTransform(androidProject: Project,t: TExtension) : TansagaBaseTransform(androidProject) {
+class DoKitCommTransform(androidProject: Project,t: TExtension) : DoKitBaseTransform(androidProject) {
 
 
     override val transformers = listOf<Transformer>(

@@ -1,12 +1,13 @@
-package com.siy.tansaga.transform
+package com.siy.tansaga.base.transform
 
 import com.android.build.api.variant.VariantInfo
-import com.siy.tansaga.asmtransformer.DoKitAsmTransformer
 import com.didiglobal.booster.transform.Transformer
+import com.siy.tansaga.base.asmtransformer.DoKitAsmTransformer
 import com.siy.tansaga.entity.TExtension
+import com.siy.tansaga.transform.TansagaTransform
 import org.gradle.api.Project
 
-class DoKitCommTransformV34(project: Project,t: TExtension) : TansagaBaseTransform(project) {
+class DoKitCommTransformV34(project: Project,t: TExtension) : DoKitBaseTransform(project) {
 
 
 

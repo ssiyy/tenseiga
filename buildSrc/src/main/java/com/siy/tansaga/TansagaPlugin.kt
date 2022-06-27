@@ -3,10 +3,10 @@ package com.siy.tansaga
 import com.android.build.gradle.AppExtension
 import com.didiglobal.booster.gradle.GTE_V3_4
 import com.didiglobal.booster.gradle.getAndroid
+import com.siy.tansaga.base.transform.DoKitCommTransform
+import com.siy.tansaga.base.transform.DoKitCommTransformV34
+import com.siy.tansaga.base.transform.DoKitBaseTransform
 import com.siy.tansaga.entity.TExtension
-import com.siy.tansaga.transform.DoKitCommTransform
-import com.siy.tansaga.transform.DoKitCommTransformV34
-import com.siy.tansaga.transform.TansagaBaseTransform
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -25,7 +25,7 @@ class TansagaPlugin : Plugin<Project> {
     }
 
 
-    private fun commNewInstance(project: Project,t: TExtension): TansagaBaseTransform = when {
+    private fun commNewInstance(project: Project,t: TExtension): DoKitBaseTransform = when {
         GTE_V3_4 -> DoKitCommTransformV34(project,t)
         else -> DoKitCommTransform(project,t)
     }

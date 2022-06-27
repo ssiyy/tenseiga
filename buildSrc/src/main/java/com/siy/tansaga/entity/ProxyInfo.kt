@@ -1,7 +1,7 @@
 package com.siy.tansaga.entity
 
 import com.siy.tansaga.ext.AsmUtil
-import com.siy.tansaga.ext.join
+import com.siy.tansaga.base.tools.join
 import org.objectweb.asm.tree.MethodNode
 import java.util.regex.Pattern
 

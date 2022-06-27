@@ -1,4 +1,4 @@
-package com.siy.tansaga.transform
+package com.siy.tansaga.base
 
 
 import com.android.build.api.transform.*
@@ -13,7 +13,8 @@ import com.didiglobal.booster.transform.*
 import com.didiglobal.booster.transform.util.CompositeCollector
 import com.didiglobal.booster.transform.util.collect
 import com.didiglobal.booster.transform.util.transform
-import com.siy.tansaga.ext.dex
+import com.siy.tansaga.base.tools.dex
+import com.siy.tansaga.base.transform.DoKitBaseTransform
 import java.io.File
 import java.net.URI
 import java.util.concurrent.*
@@ -25,7 +26,7 @@ import java.util.concurrent.*
  */
 internal class BoosterTransformInvocation(
     private val delegate: TransformInvocation,
-    internal val transform: TansagaBaseTransform
+    internal val transform: DoKitBaseTransform
 ) : TransformInvocation by delegate, TransformContext, ArtifactManager {
 
     private val project = transform.project

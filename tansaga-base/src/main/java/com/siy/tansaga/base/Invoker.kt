@@ -9,7 +9,7 @@ package com.siy.tansaga.base
 object Invoker {
 
     /**
-     * 类classJar 名字
+     * 类的internalName名字
      */
     val CLASS_NAME = Invoker.javaClass.name.replace('.', '/')
 
@@ -21,14 +21,6 @@ object Invoker {
     @JvmStatic
     fun invoke(vararg params: Any) = Any()
 
-    /**
-     * 不返回值的调用
-     */
-    @JvmStatic
-    fun invokeVoid() = Unit
-
     @JvmStatic
     fun invokeVoid(vararg params: Any) = Unit
-
-  
 }

@@ -15,10 +15,4 @@ object Self {
      */
     @JvmStatic
     fun get() = Any()
-
-    /**
-     * 获取方法的调用的对象
-     */
-    @JvmStatic
-    fun getCaller() = Any()
 }

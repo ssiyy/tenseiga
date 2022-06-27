@@ -5,14 +5,11 @@ import com.didiglobal.booster.kotlinx.asIterable
 import com.didiglobal.booster.kotlinx.touch
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.ClassTransformer
-import com.siy.tansaga.ProxyClassNodeTransform
-import com.siy.tansaga.ReplaceClassNodeTransform
-import com.siy.tansaga.TansagaParser
 import com.siy.tansaga.asmtools.forDebug
 import com.siy.tansaga.entity.TExtension
 import com.siy.tansaga.entity.TransformInfo
 import com.siy.tansaga.ext.TypeUtil
-import com.siy.tansaga.interfaces.ClassNodeTransform
+import com.siy.tansaga.parser.TansagaParser
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodInsnNode
 import java.io.PrintWriter
@@ -20,18 +17,27 @@ import java.io.PrintWriter
 
 /**
  *
+ * 具体的Class转换
+ *
  * @author  Siy
  * @since  2022/5/26
  */
-class TansagaTransform(private val extension: TExtension) : ClassTransformer {
+class TansagaClassTransform(private val extension: TExtension) : ClassTransformer {
 
+    /**
+     *日志输出流
+     */
     private lateinit var logger: PrintWriter
 
+    /**
+     * hook转换的相关信息
+     */
     private var transformInfo: TransformInfo? = null
 
     override fun onPreTransform(context: TransformContext) {
         this.logger = getReport(context, "report.txt").touch().printWriter()
 
+        //获取class输入路径
         (context as? TransformInvocation)?.inputs?.asSequence()?.map {
             it.jarInputs + it.directoryInputs
         }?.flatten()?.map { input ->
@@ -45,13 +51,17 @@ class TansagaTransform(private val extension: TExtension) : ClassTransformer {
         }
     }
 
+    /**
+     * 注册转换相关的类
+     */
     private fun registerTransform(): ClassNodeTransform? {
-        if (transformInfo?.isEmpty() != false) {
+        if (transformInfo?.isEmpty() == true) {
             return null
         }
 
         var classNodeTransform: ClassNodeTransform? = null
 
+        //注册一个ReplaceClassNodeTransform
         if (transformInfo?.replaceInfo?.isNotEmpty() == true) {
             classNodeTransform = ReplaceClassNodeTransform(
                 transformInfo?.replaceInfo ?: listOf(),
@@ -59,8 +69,12 @@ class TansagaTransform(private val extension: TExtension) : ClassTransformer {
             )
         }
 
+        //注册一个ProxyClassNodeTransform
         if (transformInfo?.proxyInfo?.isNotEmpty() == true) {
-            classNodeTransform = ProxyClassNodeTransform(transformInfo?.proxyInfo ?: listOf(), classNodeTransform)
+            classNodeTransform = ProxyClassNodeTransform(
+                transformInfo?.proxyInfo ?: listOf(),
+                classNodeTransform
+            )
         }
 
         return classNodeTransform
@@ -68,6 +82,7 @@ class TansagaTransform(private val extension: TExtension) : ClassTransformer {
 
 
     override fun transform(context: TransformContext, klass: ClassNode): ClassNode {
+        //如果没有注册任何转换器就直接返回
         val classNodeTransform = registerTransform() ?: return klass
 
         klass.let {

@@ -3,7 +3,7 @@ package com.siy.tansaga.base.transform
 import com.didiglobal.booster.transform.Transformer
 import com.siy.tansaga.base.asmtransformer.DoKitAsmTransformer
 import com.siy.tansaga.entity.TExtension
-import com.siy.tansaga.transform.TansagaTransform
+import com.siy.tansaga.transform.TansagaClassTransform
 import org.gradle.api.Project
 
 /**
@@ -17,7 +17,7 @@ class DoKitCommTransform(androidProject: Project,t: TExtension) : DoKitBaseTrans
     override val transformers = listOf<Transformer>(
         DoKitAsmTransformer(
             listOf(
-                TansagaTransform(t)
+                TansagaClassTransform(t)
             )
         )
     )

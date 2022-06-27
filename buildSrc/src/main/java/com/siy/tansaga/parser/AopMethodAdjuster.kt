@@ -1,4 +1,4 @@
-package com.siy.tansaga
+package com.siy.tansaga.parser
 
 import com.siy.tansaga.base.Invoker
 import com.siy.tansaga.base.Self

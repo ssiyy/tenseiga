@@ -1,4 +1,4 @@
-package com.siy.tansaga
+package com.siy.tansaga.parser
 
 import com.siy.tansaga.entity.*
 import com.siy.tansaga.ext.TypeUtil

@@ -1,13 +1,10 @@
-package com.siy.tansaga
+package com.siy.tansaga.transform
 
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.filter
 import com.siy.tansaga.entity.ReplaceInfo
-import com.siy.tansaga.ext.PrimitiveUtil
-import com.siy.tansaga.ext.TypeUtil
-import com.siy.tansaga.ext.createMethod
-import com.siy.tansaga.ext.replaceMethodBody
-import com.siy.tansaga.interfaces.ClassNodeTransform
+import com.siy.tansaga.ext.*
+import com.siy.tansaga.parser.OP_CALL
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
@@ -47,8 +44,7 @@ import org.objectweb.asm.tree.*
  * @author  Siy
  * @since  2022/5/31
  */
-class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt: ClassNodeTransform?) :
-    BaseClassNodeTransform(cnt) {
+class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt: ClassNodeTransform?) : ClassNodeTransform(cnt) {
 
     /**
      * 如果不为空就是需要hook的类

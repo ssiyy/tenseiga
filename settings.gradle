@@ -1,3 +1,4 @@
 rootProject.name = "tansaga"
 include ':app'
 include ':tansaga-base'
+include ':tansaga-plugin'

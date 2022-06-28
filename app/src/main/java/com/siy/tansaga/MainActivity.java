@@ -27,6 +27,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.replaceUserAnno).setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                Log.e("siy", new OriginJava().annoReplace(100, 101));
+            }
+        });
+
         findViewById(R.id.proxySys).setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -39,12 +47,12 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.proxyUser).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            proxy();
+                proxy();
             }
         });
     }
 
-    private void proxy(){
-        Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2,"x", findViewById(R.id.proxyUser),this, (byte) 0, (short) 11)));
+    private void proxy() {
+        Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2, "x", findViewById(R.id.proxyUser), this, (byte) 0, (short) 11)));
     }
 }

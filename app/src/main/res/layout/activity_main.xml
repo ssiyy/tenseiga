@@ -26,6 +26,17 @@
             android:textColor="@color/black"
             android:textSize="20sp" />
 
+        <TextView
+            android:id="@+id/replaceUserAnno"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:padding="20dp"
+            android:text="修改用户方法(注解产生)"
+            android:textColor="@color/black"
+            android:textSize="20sp" />
+
     </LinearLayout>
 
 

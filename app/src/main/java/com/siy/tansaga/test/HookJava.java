@@ -8,6 +8,8 @@ import com.siy.tansaga.App;
 import com.siy.tansaga.R;
 import com.siy.tansaga.base.Invoker;
 import com.siy.tansaga.base.Self;
+import com.siy.tansaga.base.annotations.Replace;
+import com.siy.tansaga.base.annotations.TargetClass;
 
 /**
  * @author Siy
@@ -90,5 +92,10 @@ public class HookJava {
 
     //--------------------------------------------------------------------
 
-
+    @Replace(value = "annoReplace")
+    @TargetClass(value = "com.siy.tansaga.test.OriginJava")
+    public String hookAnnoReplace(int a, Integer b) {
+        Log.e("siy", "OriginJava-hookAnnoReplace-");
+        return a + b + "hook";
+    }
 }

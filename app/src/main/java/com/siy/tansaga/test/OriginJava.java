@@ -35,4 +35,8 @@ public class OriginJava {
     //--------------------------------------------------------------------
 
 
+    public String annoReplace(int a, Integer b) {
+        Log.e("siy", "OriginJava-annoReplace-");
+        return String.valueOf(a + b);
+    }
 }

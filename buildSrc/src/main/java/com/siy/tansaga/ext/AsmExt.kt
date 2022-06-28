@@ -10,7 +10,10 @@ import org.objectweb.asm.tree.AnnotationNode
  */
 
 /**
- * 获取value的map值
+ * 将注解的值转换成Map，
+ *
+ *
+ *
  */
 val AnnotationNode.valueMaps: Map<String, Any>
     get() {

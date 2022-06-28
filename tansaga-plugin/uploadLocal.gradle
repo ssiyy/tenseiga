@@ -1,5 +1,6 @@
 apply plugin: 'maven-publish'
 
+sourceCompatibility = JavaVersion.VERSION_1_8
 publishing {
     publications {
         maven(MavenPublication) {

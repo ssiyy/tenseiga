@@ -66,8 +66,8 @@ public class HookJava {
         Log.e("siy", "HookJava-hookProxySys-");
 
         //获取实例方法所在的对象
-       /* Context context = (Context) Self.get();
-        Log.e("siy", context.getCacheDir().getAbsolutePath());*/
+        Context context = (Context) Self.get();
+        Log.e("siy", context.getCacheDir().getAbsolutePath());
 
         int o = 11111;
 
@@ -86,4 +86,9 @@ public class HookJava {
         int g = o + 2;
         return f;
     }
+
+
+    //--------------------------------------------------------------------
+
+
 }

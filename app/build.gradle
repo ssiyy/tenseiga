@@ -49,19 +49,19 @@ dependencies {
 TExtension {
     proxys {
         //代理用户方法
-      /*  proxy {
+        proxy {
             targetClass = "com.siy.tansaga.test.OriginJava"
             hookMethod = "hookProxy"
             hookClass = "com.siy.tansaga.test.HookJava"
             filter "com.siy.tansaga.*"
-        }*/
+        }
 
         //代理系统方法
         getString {
             targetClass = "android.content.Context"
             hookMethod = "hookProxySys"
             hookClass = "com.siy.tansaga.test.HookJava"
-           filter "com.siy.tansaga.test.*","com.siy.tansaga.MainActivity"
+            filter "com.siy.tansaga.test.*", "com.siy.tansaga.MainActivity"
         }
 
     }

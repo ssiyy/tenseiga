@@ -11,7 +11,7 @@ import java.io.File
  * @author  Siy
  * @since  2022/6/27
  */
-class TansagaParser(private val extension: TExtension) : TransformParser {
+class TansagaParser(extension: TExtension) : TransformParser {
 
     /**
      * 配置解析器
@@ -21,7 +21,7 @@ class TansagaParser(private val extension: TExtension) : TransformParser {
         AnnotationParser()
     )
 
-    override fun parse(dir: Iterator<File>): TransformInfo {
+    override fun parse(dir: Sequence<File>): TransformInfo {
         return parsers.map {
             it.parse(dir)
         }.foldIndexed(TransformInfo()) { index, acc, item ->

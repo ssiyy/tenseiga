@@ -13,7 +13,7 @@ import java.io.File
  */
 interface TransformParser {
     /**
-     * @param dir 传入的类相关文件
+     * @param dir 传入的类相关文件,编译的class的文件根目录
      */
-    fun parse(dir: Iterator<File>): TransformInfo
+    fun parse(dir: Sequence<File>): TransformInfo
 }

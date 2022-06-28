@@ -3,7 +3,10 @@ package com.siy.tansaga.transform
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.filter
 import com.siy.tansaga.entity.ProxyInfo
-import com.siy.tansaga.ext.*
+import com.siy.tansaga.ext.AddLocalVarAdapter
+import com.siy.tansaga.ext.PrimitiveUtil
+import com.siy.tansaga.ext.TypeUtil
+import com.siy.tansaga.ext.createMethod
 import com.siy.tansaga.parser.OP_CALL
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
@@ -68,13 +71,8 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
 
         if (infos.isNotEmpty()) {
             this.klass = klass
-
-            errOut("-----xxxxxxxxxxxx--------------${klass.name}")
         }
     }
-
-    //private fun
-
 
     override fun visitorInsnMethod(context: TransformContext, insnMethod: MethodInsnNode) {
         super.visitorInsnMethod(context, insnMethod)

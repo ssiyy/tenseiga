@@ -1,7 +1,6 @@
 package com.siy.tansaga.parser
 
 import com.siy.tansaga.entity.*
-import com.siy.tansaga.ext.TypeUtil
 import com.siy.tansaga.ext.TypeUtil.isNormalMethod
 import com.siy.tansaga.interfaces.TransformParser
 import org.objectweb.asm.ClassReader
@@ -17,7 +16,7 @@ import java.io.File
  */
 class TExtensionParser(private val extension: TExtension) : TransformParser {
 
-    override fun parse(dir: Iterator<File>): TransformInfo {
+    override fun parse(dir: Sequence<File>): TransformInfo {
         val transformInfo = TransformInfo()
         if (extension.isEmpty()) {
             return transformInfo
@@ -40,7 +39,7 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
                     val cn = ClassNode()
                     ClassReader(fs).accept(cn, 0)
                     cn.methods.filter {
-                        TypeUtil.isNormalMethod(it)
+                        isNormalMethod(it)
                     }.forEach { mn ->
                         if (mn.name == rp.hookMethod) {
                             transformPlaceholder(cn.name, mn)

@@ -45,7 +45,7 @@ class TansagaClassTransform(private val extension: TExtension) : ClassTransforme
         }?.filter {
             it.isDirectory
         }?.let {
-            transformInfo = TansagaParser(extension).parse(it.iterator())
+            transformInfo = TansagaParser(extension).parse(it)
 
             logger.println(transformInfo.toString())
         }

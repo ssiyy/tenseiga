@@ -30,4 +30,9 @@ public class OriginJava {
     public void showToast() {
         Toast.makeText(App.INSTANCE, "OriginJava-showToast", Toast.LENGTH_SHORT).show();
     }
+
+
+    //--------------------------------------------------------------------
+
+
 }

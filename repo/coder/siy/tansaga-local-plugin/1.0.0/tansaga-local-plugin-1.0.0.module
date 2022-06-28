@@ -39,10 +39,10 @@
           "name": "tansaga-local-plugin-1.0.0.jar",
           "url": "tansaga-local-plugin-1.0.0.jar",
           "size": 157431,
-          "sha512": "074c39d3456a372719bbbdfbeb4a53940a7c31e016c2bfbc61a7d15a944b5b1d9d513fdf29143f81e8f07baccb4f5eb91cfe8a3ff720738a6891e816f425a91a",
-          "sha256": "09e3af1500900745a5f63321251d85f61dabec730da9c9a328a0be505f7f7853",
-          "sha1": "a2b9a48c4c9cbc8dc8339cda5045a1e2d61cf8ed",
-          "md5": "b33ec5d1c6a3e7b31c185ca71162e121"
+          "sha512": "985864528e9c4ef17363bc50b5d84ab8cb9ef1686baaaba85da5a79d2fc3b8d05982d308c1c2a8e21cf4a5f48606653e17d61378118f8044ed13005869196b22",
+          "sha256": "2915e99e47f72e4244446739295fe838632acb13a7c1d317ac1f1d655bdee660",
+          "sha1": "e2d2f22146405bdd33e7a73fba48c834ef981810",
+          "md5": "126b07267f0fe5a43d326fffcbd5ad9c"
         }
       ]
     },
@@ -92,10 +92,10 @@
           "name": "tansaga-local-plugin-1.0.0.jar",
           "url": "tansaga-local-plugin-1.0.0.jar",
           "size": 157431,
-          "sha512": "074c39d3456a372719bbbdfbeb4a53940a7c31e016c2bfbc61a7d15a944b5b1d9d513fdf29143f81e8f07baccb4f5eb91cfe8a3ff720738a6891e816f425a91a",
-          "sha256": "09e3af1500900745a5f63321251d85f61dabec730da9c9a328a0be505f7f7853",
-          "sha1": "a2b9a48c4c9cbc8dc8339cda5045a1e2d61cf8ed",
-          "md5": "b33ec5d1c6a3e7b31c185ca71162e121"
+          "sha512": "985864528e9c4ef17363bc50b5d84ab8cb9ef1686baaaba85da5a79d2fc3b8d05982d308c1c2a8e21cf4a5f48606653e17d61378118f8044ed13005869196b22",
+          "sha256": "2915e99e47f72e4244446739295fe838632acb13a7c1d317ac1f1d655bdee660",
+          "sha1": "e2d2f22146405bdd33e7a73fba48c834ef981810",
+          "md5": "126b07267f0fe5a43d326fffcbd5ad9c"
         }
       ]
     }

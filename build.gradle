@@ -9,18 +9,12 @@ buildscript {
         jcenter()
 
         maven { url 'https://jitpack.io' }
-      /*  maven{
-            url uri("repo")
-        }*/
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${rootProject.ext.agp_module_verson}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlin_version}"
 
-      //  classpath 'coder.siy:tansaga-local-plugin:1.0.0'
-
-        classpath "com.github.siywu:tansaga:1b1ce07413"
-
+        classpath "com.github.Syiyue.tansaga:tansaga-plugin:d63d447d03"
 
         /* 👇👇👇👇 引用 Booster Gradle 插件 👇👇👇👇 */
       //  classpath "com.didiglobal.booster:booster-gradle-plugin:${rootProject.ext.booster_version}"

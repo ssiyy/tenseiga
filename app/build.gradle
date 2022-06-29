@@ -43,9 +43,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
 
-
-  //  implementation "com.github.siywu:tansaga:1b1ce07413"
- //   implementation project(':tansaga-base')
+    implementation project(':tansaga-base')
 }
 
 

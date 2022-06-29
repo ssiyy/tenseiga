@@ -1,7 +1,10 @@
 plugins {
     id 'com.android.library'
     id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
 }
+
+
 
 android {
     compileSdkVersion 32
@@ -29,5 +32,21 @@ android {
     }
 }
 
-dependencies {
+afterEvaluate {
+    publishing {
+        publications {
+            maven(MavenPublication) {
+                groupId 'coder.siy'
+                artifactId 'tansaga'
+                version '1.0.0'
+                //若是war包，就写components.web,若是jar包，就写components.java
+                from components.release
+            }
+        }
+        repositories {
+            maven {
+                url = uri("../repo")
+            }
+        }
+    }
 }

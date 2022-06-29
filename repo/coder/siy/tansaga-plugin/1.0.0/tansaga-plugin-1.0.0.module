@@ -1,0 +1,103 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "coder.siy",
+    "module": "tansaga-plugin",
+    "version": "1.0.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "7.3.3"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "tansaga-plugin-1.0.0.jar",
+          "url": "tansaga-plugin-1.0.0.jar",
+          "size": 157624,
+          "sha512": "cd57b662094dcb669f73e40376433516f5b8333137c392296c2320a104e663dc253866f0878fb3355ad241740e4d681d9b2d70392001a4efa7e1d4f66f3c1b5d",
+          "sha256": "9166f597d2b43aa04eba3b9a0c3014e380a5d6464e85deae352fcde65d37e9bd",
+          "sha1": "4535145e784986a59a350375cb4a2868faaac231",
+          "md5": "9006273f45ac91dbfbaf36a486d16ef1"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.environment": "standard-jvm",
+        "org.gradle.jvm.version": 11,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime",
+        "org.jetbrains.kotlin.platform.type": "jvm"
+      },
+      "dependencies": [
+        {
+          "group": "com.android.tools.build",
+          "module": "gradle",
+          "version": {
+            "requires": "4.2.2"
+          }
+        },
+        {
+          "group": "com.didiglobal.booster",
+          "module": "booster-api",
+          "version": {
+            "requires": "4.9.0"
+          }
+        },
+        {
+          "group": "com.didiglobal.booster",
+          "module": "booster-transform-asm",
+          "version": {
+            "requires": "4.9.0"
+          }
+        },
+        {
+          "group": "org.jetbrains.kotlin",
+          "module": "kotlin-stdlib-jdk8",
+          "version": {
+            "requires": "1.6.10"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "tansaga-plugin-1.0.0.jar",
+          "url": "tansaga-plugin-1.0.0.jar",
+          "size": 157624,
+          "sha512": "cd57b662094dcb669f73e40376433516f5b8333137c392296c2320a104e663dc253866f0878fb3355ad241740e4d681d9b2d70392001a4efa7e1d4f66f3c1b5d",
+          "sha256": "9166f597d2b43aa04eba3b9a0c3014e380a5d6464e85deae352fcde65d37e9bd",
+          "sha1": "4535145e784986a59a350375cb4a2868faaac231",
+          "md5": "9006273f45ac91dbfbaf36a486d16ef1"
+        }
+      ]
+    }
+  ]
+}

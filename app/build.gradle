@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-//apply plugin: 'com.didiglobal.booster'
 apply plugin: "com.siy.tenseiga.local"
 //apply plugin: "com.siy.tenseiga"
 
@@ -44,6 +43,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
 
     implementation project(':tenseiga-base')
+//    implementation "com.github.ssiyy.tenseiga:tenseiga:v1.0.0"
 }
 
 

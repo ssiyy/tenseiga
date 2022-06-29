@@ -4,6 +4,44 @@
 # Tenseiga(天生牙)
 一个用来支持Android AOP开发的工具
 
+Tenseiga采用ASM 7.0开发，具体ASM和java版本支持如下
+| ASM Release | Release Date | Java Support |
+|:--:|:--:|:--:|
+|2.0	|2005-05-17	|Java 5 language support|
+|3.2	|2009-06-11	|support for the new invokedynamic code.|
+|4.0	|2011-10-29	|Java 7 language support|
+|5.0	|2014-03-16	|Java 8 language support|
+|6.0	|2017-09-23	|Java 9 language support|
+|6.1	|2018-03-11	|Java 10 language support|
+|7.0	|2018-10-27	|Java 11 language support|
+|7.1	|2019-03-03	|Java 13 language support|
+|8.0	|2020-03-28	|Java 14 language support|
+|9.0	|2020-09-22	|Java 16 language support|
+|9.1	|2021-02-06	|JDK 17 support|
+|9.2	|2021-06-26	|JDK 18 support|
+
+- JDK (`1.8` is recommended)
+- Gradle version `4.1+`
+- Android Gradle Plugin version `3.0+`
+
+| Android Gradle Plugin |  Gradle  |
+|:---------------------:|:--------:|
+| 3.0.0+                | 4.1+     |
+| 3.1.0+                | 4.4+     |
+| 3.2.0 - 3.2.1         | 4.6+     |
+| 3.3.0 - 3.3.3         | 4.10.1+  |
+| 3.4.0 - 3.4.3         | 5.1.1+   |
+| 3.5.0 - 3.5.4         | 5.4.1+   |
+| 3.6.0 - 3.6.4         | 5.6.4+   |
+| 4.0.0+                | 6.1.1+   |
+| 4.1.0+                | 6.5+     |
+| 4.2.0+                | 6.7.1+   |
+| 7.0                   | 7.0+     |
+| 7.1                   | 7.1+     |
+| 7.2                   | 7.3.3+   |
+
+是的，支持最新的AGP 7.0+
+
 ## 导入方式
 ### 将JitPack存储库添加到您的构建文件中(项目根目录下build.gradle文件)
 ```
@@ -143,6 +181,8 @@ Invoker.invoke(...)   用来调用待用返回值的原方法
 Invoker.invokeVoid(...) 用来调用不带返回值的原方法
 
 Self.get()  获取hook的实例方法所在对象，注意hook的静态方法获取不到对象
+
+###### 如果对上述解释有疑问，各位同学可以下载代码进一步了解
 
 ## 鸣谢
 - [lancet](https://github.com/eleme/lancet) 

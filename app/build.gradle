@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 //apply plugin: 'com.didiglobal.booster'
 //apply plugin: "com.siy.tansaga.local"
-apply plugin: "com.siy.tansaga"
+//apply plugin: "com.siy.tansaga"
 
 android {
     compileSdk 32
@@ -49,6 +49,7 @@ dependencies {
 }
 
 
+/*
 TExtension {
     proxys {
         //代理用户方法
@@ -77,4 +78,4 @@ TExtension {
             hookClass = "com.siy.tansaga.test.HookJava"
         }
     }
-}
+}*/

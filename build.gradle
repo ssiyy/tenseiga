@@ -7,15 +7,15 @@ buildscript {
         mavenCentral()
         google()
         jcenter()
-        maven{
+      /*  maven{
             url uri("repo")
-        }
+        }*/
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${rootProject.ext.agp_module_verson}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlin_version}"
 
-        classpath 'coder.siy:tansaga-local-plugin:1.0.0'
+      //  classpath 'coder.siy:tansaga-local-plugin:1.0.0'
 
 
         /* 👇👇👇👇 引用 Booster Gradle 插件 👇👇👇👇 */

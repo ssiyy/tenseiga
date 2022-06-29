@@ -1,18 +1,11 @@
 apply plugin: 'maven-publish'
 
-group = 'coder.siy'
-
-version = '1.0.0'
-
-description = '这是一个独立插件'
-
-sourceCompatibility = JavaVersion.VERSION_1_8
 publishing {
     publications {
         maven(MavenPublication) {
-//            groupId 'coder.siy'
+            groupId 'coder.siy'
             artifactId 'tansaga-local-plugin'
-//            version '1.0.0'
+            version '1.0.0'
             //若是war包，就写components.web,若是jar包，就写components.java
             from components.java
         }

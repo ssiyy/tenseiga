@@ -20,7 +20,7 @@
         "org.gradle.category": "library",
         "org.gradle.dependency.bundling": "external",
         "org.gradle.jvm.environment": "standard-jvm",
-        "org.gradle.jvm.version": 8,
+        "org.gradle.jvm.version": 11,
         "org.gradle.libraryelements": "jar",
         "org.gradle.usage": "java-api",
         "org.jetbrains.kotlin.platform.type": "jvm"
@@ -38,11 +38,11 @@
         {
           "name": "tansaga-local-plugin-1.0.0.jar",
           "url": "tansaga-local-plugin-1.0.0.jar",
-          "size": 157431,
-          "sha512": "985864528e9c4ef17363bc50b5d84ab8cb9ef1686baaaba85da5a79d2fc3b8d05982d308c1c2a8e21cf4a5f48606653e17d61378118f8044ed13005869196b22",
-          "sha256": "2915e99e47f72e4244446739295fe838632acb13a7c1d317ac1f1d655bdee660",
-          "sha1": "e2d2f22146405bdd33e7a73fba48c834ef981810",
-          "md5": "126b07267f0fe5a43d326fffcbd5ad9c"
+          "size": 157624,
+          "sha512": "f1af913700414497f1399e0175d907cbc772bca296a036273048b752d0c2ec5cec4f5877e34487e122c05cea6427ba4aea5695fddc39a11210158df4f9fc1293",
+          "sha256": "2bf64122a63885bb3b75784cf4e234dc6f5321b73cb364e3120ad58640e255db",
+          "sha1": "ff6236da2e658199a4081caf24ef41244a19a83d",
+          "md5": "58db3d0cad4c60906002c6e2bc2424aa"
         }
       ]
     },
@@ -52,7 +52,7 @@
         "org.gradle.category": "library",
         "org.gradle.dependency.bundling": "external",
         "org.gradle.jvm.environment": "standard-jvm",
-        "org.gradle.jvm.version": 8,
+        "org.gradle.jvm.version": 11,
         "org.gradle.libraryelements": "jar",
         "org.gradle.usage": "java-runtime",
         "org.jetbrains.kotlin.platform.type": "jvm"
@@ -91,11 +91,11 @@
         {
           "name": "tansaga-local-plugin-1.0.0.jar",
           "url": "tansaga-local-plugin-1.0.0.jar",
-          "size": 157431,
-          "sha512": "985864528e9c4ef17363bc50b5d84ab8cb9ef1686baaaba85da5a79d2fc3b8d05982d308c1c2a8e21cf4a5f48606653e17d61378118f8044ed13005869196b22",
-          "sha256": "2915e99e47f72e4244446739295fe838632acb13a7c1d317ac1f1d655bdee660",
-          "sha1": "e2d2f22146405bdd33e7a73fba48c834ef981810",
-          "md5": "126b07267f0fe5a43d326fffcbd5ad9c"
+          "size": 157624,
+          "sha512": "f1af913700414497f1399e0175d907cbc772bca296a036273048b752d0c2ec5cec4f5877e34487e122c05cea6427ba4aea5695fddc39a11210158df4f9fc1293",
+          "sha256": "2bf64122a63885bb3b75784cf4e234dc6f5321b73cb364e3120ad58640e255db",
+          "sha1": "ff6236da2e658199a4081caf24ef41244a19a83d",
+          "md5": "58db3d0cad4c60906002c6e2bc2424aa"
         }
       ]
     }

@@ -14,8 +14,6 @@ buildscript {
         classpath "com.android.tools.build:gradle:${rootProject.ext.agp_module_verson}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlin_version}"
 
-        classpath "com.github.Syiyue.tansaga:tansaga-plugin:d63d447d03"
-
         /* 👇👇👇👇 引用 Booster Gradle 插件 👇👇👇👇 */
       //  classpath "com.didiglobal.booster:booster-gradle-plugin:${rootProject.ext.booster_version}"
     }
@@ -26,6 +24,9 @@ allprojects {
         mavenCentral()
         google()
         jcenter()
+
+        maven { url "https://jitpack.io" }
+
     }
 }
 

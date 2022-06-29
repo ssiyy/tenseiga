@@ -1,8 +1,8 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 //apply plugin: 'com.didiglobal.booster'
-//apply plugin: "com.siy.tansaga.local"
-apply plugin: "com.siy.tansaga"
+apply plugin: "com.siy.tansaga.local"
+//apply plugin: "com.siy.tansaga"
 
 android {
     compileSdkVersion 32

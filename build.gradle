@@ -7,7 +7,9 @@ buildscript {
         mavenCentral()
         google()
         jcenter()
-        maven{ url "repo"}
+        maven{
+            url uri("repo")
+        }
     }
     dependencies {
         classpath "com.android.tools.build:gradle:${rootProject.ext.agp_module_verson}"

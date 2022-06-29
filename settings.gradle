@@ -1,4 +1,4 @@
-rootProject.name = "tansaga"
+rootProject.name = "tenseiga"
 include ':app'
-include ':tansaga-base'
-include ':tansaga-plugin'
+include ':tenseiga-base'
+include ':tenseiga-plugin'

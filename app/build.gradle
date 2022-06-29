@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 //apply plugin: 'com.didiglobal.booster'
-apply plugin: "com.siy.tansaga.local"
-//apply plugin: "com.siy.tansaga"
+apply plugin: "com.siy.tenseiga.local"
+//apply plugin: "com.siy.tenseiga"
 
 android {
     compileSdkVersion 32
 
     defaultConfig {
-        applicationId "com.siy.tansaga"
+        applicationId "com.siy.tenseiga"
         minSdkVersion 21
         targetSdkVersion 32
         versionCode 1
@@ -43,7 +43,7 @@ dependencies {
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.5'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.5'
 
-    implementation project(':tansaga-base')
+    implementation project(':tenseiga-base')
 }
 
 
@@ -51,18 +51,18 @@ TExtension {
     proxys {
         //代理用户方法
         proxy {
-            targetClass = "com.siy.tansaga.test.OriginJava"
+            targetClass = "com.siy.tenseiga.test.OriginJava"
             hookMethod = "hookProxy"
-            hookClass = "com.siy.tansaga.test.HookJava"
-            filter "com.siy.tansaga.*"
+            hookClass = "com.siy.tenseiga.test.HookJava"
+            filter "com.siy.tenseiga.*"
         }
 
         //代理系统方法
         getString {
             targetClass = "android.content.Context"
             hookMethod = "hookProxySys"
-            hookClass = "com.siy.tansaga.test.HookJava"
-            filter "com.siy.tansaga.test.*", "com.siy.tansaga.MainActivity"
+            hookClass = "com.siy.tenseiga.test.HookJava"
+            filter "com.siy.tenseiga.test.*", "com.siy.tenseiga.MainActivity"
         }
 
     }
@@ -70,9 +70,9 @@ TExtension {
     //修改用户方法
     replaces {
         replace {
-            targetClass = "com.siy.tansaga.test.OriginJava"
+            targetClass = "com.siy.tenseiga.test.OriginJava"
             hookMethod = "hookReplace"
-            hookClass = "com.siy.tansaga.test.HookJava"
+            hookClass = "com.siy.tenseiga.test.HookJava"
         }
     }
 }

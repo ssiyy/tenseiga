@@ -1,74 +1,23 @@
 package com.siy.tenseiga.adjuster
 
-import com.siy.tenseiga.base.Invoker
-import com.siy.tenseiga.base.Self
-import com.siy.tenseiga.ext.PrimitiveUtil
-import com.siy.tenseiga.ext.TypeUtil
-import com.siy.tenseiga.interfaces.NodeReplacer
+import com.siy.tenseiga.ext.*
+import com.siy.tenseiga.interfaces.NodeAdjuster
+import org.codehaus.groovy.ast.tools.GenericsUtils.JAVA_LANG_OBJECT
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Type
-import org.objectweb.asm.tree.*
+import org.objectweb.asm.tree.AbstractInsnNode
+import org.objectweb.asm.tree.MethodInsnNode
+import org.objectweb.asm.tree.MethodNode
+import org.objectweb.asm.tree.TypeInsnNode
 
 
-const val OP_CALL = Int.MAX_VALUE - 5555
-
-const val JAVA_LANG_OBJECT = "java/lang/Object"
-
-private const val VOID = 1
-
-private const val REFERENCE = 2
-
-private const val PRIMITIVE = 3
+/**
+ *
+ * @author  Siy
+ * @since  2022/7/12
+ */
 
 
-class AopMethodAdjuster constructor(private val methodNode: MethodNode) {
-
-    private val CALL_REPLACER = InvokerReplacer(methodNode)
-
-    private val THIS_REPLACER = SelfReplacer(methodNode)
-
-    init {
-        val desc = methodNode.desc
-        var size = Type.getArgumentsAndReturnSizes(desc)
-        if (TypeUtil.isStatic(methodNode.access)) {
-            size -= 4
-        }
-        size = (size and 3).coerceAtLeast(size shr 2)
-        methodNode.maxStack = size.coerceAtLeast(methodNode.maxStack)
-    }
-
-    fun adjust() {
-        var insn = methodNode.instructions.first
-        while (insn != null) {
-            if (insn is MethodInsnNode) {
-                insn = transform(insn)
-            }
-            insn = insn.next
-        }
-    }
-
-    private fun transform(node: MethodInsnNode): AbstractInsnNode {
-        val owner = node.owner
-        val name = node.name
-
-        var replacer: NodeReplacer = object : NodeReplacer {
-            override fun replace(node: MethodInsnNode) = node
-        }
-
-        if (owner == Invoker.CLASS_NAME) {
-            if (name.startsWith(Invoker.FUN_PREFIX)) {
-                replacer = CALL_REPLACER
-            }
-        } else if (owner == Self.CLASS_NAME) {
-            replacer = THIS_REPLACER
-        }
-        return replacer.replace(node)
-    }
-
-}
-
-
-private class InvokerReplacer constructor(private val methodNode: MethodNode) : NodeReplacer {
+ class InvokerAdjuster constructor(private val methodNode: MethodNode) : NodeAdjuster {
 
     private var retType: Int = 0
 
@@ -148,26 +97,3 @@ private class InvokerReplacer constructor(private val methodNode: MethodNode) : 
     }
 
 }
-
-private class SelfReplacer(private val methodNode: MethodNode) : NodeReplacer {
-
-    override fun replace(node: MethodInsnNode): AbstractInsnNode {
-        when (node.name) {
-            "get" -> {
-                if (TypeUtil.isStatic(methodNode.access)) {
-                    illegalState("static method shouldn't call This's function")
-                }
-                val varInsnNode = VarInsnNode(Opcodes.ALOAD, 0)
-                methodNode.instructions.set(node, varInsnNode)
-                return varInsnNode
-            }
-        }
-        return node
-    }
-
-}
-
-private fun illegalState(msg: String) {
-    throw IllegalStateException(msg)
-}
-

@@ -8,7 +8,8 @@ import com.didiglobal.booster.transform.asm.ClassTransformer
 import com.siy.tenseiga.asmtools.forDebug
 import com.siy.tenseiga.entity.TExtension
 import com.siy.tenseiga.entity.TransformInfo
-import com.siy.tenseiga.ext.TypeUtil
+import com.siy.tenseiga.ext.isCInitMethod
+import com.siy.tenseiga.ext.isInitMethod
 import com.siy.tenseiga.parser.TenseigaParser
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodInsnNode
@@ -89,7 +90,7 @@ class TenseigaClassTransform(private val extension: TExtension) : ClassTransform
             classNodeTransform.visitorClassNode(context, it)
             it
         }.methods?.filter {
-            TypeUtil.isNormalMethod(it)
+            !(isInitMethod(it) || isCInitMethod(it))
         }?.flatMap {
             classNodeTransform.visitorMethod(context, it)
             it?.instructions?.iterator()?.asIterable()?.filterIsInstance(MethodInsnNode::class.java)

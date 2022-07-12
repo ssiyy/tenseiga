@@ -14,6 +14,38 @@ import org.objectweb.asm.tree.VarInsnNode
  * @since  2022/5/31
  */
 
+/**
+ * 是否是构造方法
+ */
+fun isInitMethod(methodNode: MethodNode) = "<init>" == methodNode.name
+
+/**
+ * 是否是静态初始化块
+ */
+fun isCInitMethod(methodNode: MethodNode) = "<clinit>" == methodNode.name
+
+/**
+ * 是否是抽象方法
+ */
+fun isAbstractMethod(access: Int) = access and Opcodes.ACC_ABSTRACT != 0
+
+/**
+ * 是否是本地方法
+ */
+fun isNativeMethod(access: Int) = access and Opcodes.ACC_NATIVE != 0
+
+/**
+ * 静态方法
+ *
+ * access & Opcodes.ACC_STATIC != 0
+ *
+ */
+fun isStaticMethod(access: Int) = access and Opcodes.ACC_STATIC != 0
+
+/**
+ * 静态方法调用
+ */
+fun isStaticMethodInsn(opcode: Int) = opcode == Opcodes.INVOKESTATIC
 
 /**
  * 创建一个方法

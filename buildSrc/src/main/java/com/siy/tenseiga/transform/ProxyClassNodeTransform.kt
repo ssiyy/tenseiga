@@ -3,10 +3,7 @@ package com.siy.tenseiga.transform
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.filter
 import com.siy.tenseiga.entity.ProxyInfo
-import com.siy.tenseiga.ext.AddLocalVarAdapter
-import com.siy.tenseiga.ext.PrimitiveUtil
-import com.siy.tenseiga.ext.TypeUtil
-import com.siy.tenseiga.ext.createMethod
+import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.parser.OP_CALL
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
@@ -58,10 +55,10 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
 
         infos = proxyInfos.filter {
             val filterPattern = it.filterPattern
-            if (filterPattern.isEmpty()){
-                //如果没有过滤patern，就不过滤
+            if (filterPattern.isEmpty()) {
+                //如果没有过滤pattern，就不过滤
                 true
-            }else {
+            } else {
                 val result = it.filterPattern.filter { pattern ->
                     pattern.matcher(klass.name).matches()
                 }
@@ -70,26 +67,32 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
         }
 
         if (infos.isNotEmpty()) {
+            //如果有proxyInfo就把当前klass记录下来
             this.klass = klass
         }
+    }
+
+    /**
+     * 判断当前方法调用的指令是否是调用的需要代理的方法
+     */
+    private fun checkMethodInsnIsHook(context: TransformContext, insnMethod: MethodInsnNode, info: ProxyInfo): Boolean {
+        //方法所在的类一样  或者是其子类
+        val sameOwner = (insnMethod.owner == info.targetClass) || (context.klassPool[info.targetClass].isAssignableFrom(insnMethod.owner))
+        //方法名一样
+        val sameName = insnMethod.name == info.targetMethod
+        //方法的描述一样
+        val sameDesc = insnMethod.desc == info.targetDesc
+        return sameOwner && sameName && sameDesc
     }
 
     override fun visitorInsnMethod(context: TransformContext, insnMethod: MethodInsnNode) {
         super.visitorInsnMethod(context, insnMethod)
         klass?.let { clazz ->
             for (info in infos) {
-                val sameOwner = (insnMethod.owner == info.targetClass) || (context.klassPool[info.targetClass].isAssignableFrom(insnMethod.owner))
-                val sameName = insnMethod.name == info.targetMethod
-                val sameDesc = insnMethod.desc == info.targetDesc
-
-                if (sameOwner && sameName && sameDesc) {
-
+                if (checkMethodInsnIsHook(context, insnMethod, info)) {
                     //判断一下hook方法和真实方法是不是都是静态的
-                    if (TypeUtil.isStatic(info.hookMethod.access) != (insnMethod.opcode == Opcodes.INVOKESTATIC)) {
-                        throw IllegalStateException(
-                            info.hookClass + "." + info.hookMethod.name + " should have the same static flag with "
-                                    + clazz.name + "." + insnMethod.name
-                        )
+                    if (isStaticMethod(info.hookMethod.access) != isStaticMethodInsn(insnMethod.opcode)) {
+                        throw IllegalStateException(info.hookClass + "." + info.hookMethod.name + " 应该有相同的静态标志 " + clazz.name + "." + insnMethod.name)
                     }
 
                     val hookMethod = copyHookMethodAndReplacePlaceholder(info, insnMethod)

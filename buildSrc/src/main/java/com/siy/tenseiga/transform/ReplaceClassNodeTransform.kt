@@ -64,25 +64,32 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
         }
 
         if (infos.isNotEmpty()) {
+            //如果有ReplaceInfo就把当前的klass记录下来
             this.klass = klass
         }
+    }
+
+    /**
+     * 判断当前方法是否是需要替换的方法
+     */
+    private fun checkMethodIsHook(context: TransformContext, clazz: ClassNode, method: MethodNode, info: ReplaceInfo): Boolean {
+        //方法所在的类一样  或者是其子类
+        val sameOwner = clazz.name == info.targetClass || (context.klassPool[info.targetClass].isAssignableFrom(clazz.name))
+        //方法名一样
+        val sameName = info.targetMethod == method.name
+        //方法的描述一样
+        val sameDesc = info.targetDesc == method.desc
+        return sameOwner && sameName && sameDesc
     }
 
     override fun visitorMethod(context: TransformContext, method: MethodNode) {
         super.visitorMethod(context, method)
         klass?.let { clazz ->
             infos.forEach { info ->
-                val sameOwner =
-                    clazz.name == info.targetClass || (context.klassPool[info.targetClass].isAssignableFrom(clazz.name))
-                val sameName = info.targetMethod == method.name
-                val sameDesc = info.targetDesc == method.desc
-                if (sameOwner && sameName && sameDesc) {
+                if (checkMethodIsHook(context, clazz, method, info)) {
                     //判断一下hook方法和真实方法是不是都是静态的
-                    if (((info.hookMethod.access xor method.access) and Opcodes.ACC_STATIC) != 0) {
-                        throw IllegalStateException(
-                            info.hookClass + "." + info.hookMethod.name + " should have the same static flag with "
-                                    + clazz.name + "." + method.name
-                        )
+                    if (isStaticMethod(info.hookMethod.access) != isStaticMethod(method.access)) {
+                        throw IllegalStateException(info.hookClass + "." + info.hookMethod.name + " 应该有相同的静态标志 " + clazz.name + "." + method.name)
                     }
 
                     val backupTargetMethod = createBackupForTargetMethod(method)

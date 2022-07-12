@@ -17,7 +17,9 @@ class TenseigaParser(extension: TExtension) : TransformParser {
      * 配置解析器
      */
     private val parsers = listOf(
+        //gradle配置解析器
         TExtensionParser(extension),
+        //注解解析器
         AnnotationParser()
     )
 

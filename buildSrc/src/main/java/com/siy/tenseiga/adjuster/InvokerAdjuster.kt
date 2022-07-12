@@ -2,8 +2,8 @@ package com.siy.tenseiga.adjuster
 
 import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.interfaces.NodeAdjuster
-import org.codehaus.groovy.ast.tools.GenericsUtils.JAVA_LANG_OBJECT
 import org.objectweb.asm.Opcodes
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
@@ -19,14 +19,21 @@ import org.objectweb.asm.tree.TypeInsnNode
 
  class InvokerAdjuster constructor(private val methodNode: MethodNode) : NodeAdjuster {
 
-    private var retType: Int = 0
+//    private var retType: Int = 0
 
-    private var returnDesc: String? = null
+//    private var returnDesc: String? = null
+
+    private val returnType = Type.getReturnType(methodNode.desc)
 
     init {
         val desc = methodNode.desc
         //返回类型的描述
-        var retDesc = desc.substring(desc.lastIndexOf(")") + 1)
+//        var retDesc = desc.substring(desc.lastIndexOf(")") + 1)
+
+//val returnType = Type.getReturnType(methodNode.desc)
+
+
+
         if (retDesc == "V") {//void
             retType = VOID
         } else if (retDesc.endsWith(";") || retDesc[0] == '[') {//object or array
@@ -44,9 +51,11 @@ import org.objectweb.asm.tree.TypeInsnNode
 
 
     override fun replace(node: MethodInsnNode): AbstractInsnNode {
+        //检查一下返回值类型
         checkReturnType(node)
+        //替换成自己的opcode
         node.opcode = OP_CALL
-        if (retType != VOID && returnDesc != JAVA_LANG_OBJECT) {
+        if (returnType != Type.VOID_TYPE && returnType != OBJECT_TYPE) {
             checkCast(node.next)
 //            INVOKESTATIC me/ele/lancet/base/Origin.call ()Ljava/lang/Object;
 //            CHECKCAST com/sample/playground/Cup   把这个指令移除了
@@ -62,10 +71,12 @@ import org.objectweb.asm.tree.TypeInsnNode
     }
 
     private fun checkReturnType(node: MethodInsnNode) {
-        val hasRet = !node.name.startsWith("callVoid")//占位符号有返回值类型
-        val hasRetType = retType != VOID //替换的方法没有返回值类型
+        //占位符号的方法名显示有返回值类型
+        val hasRet = !node.name.startsWith("invokeVoid")
+        //替换的方法没有返回值类型
+        val hasRetType = returnType != Type.VOID_TYPE
         if (hasRet != hasRetType) {
-            illegalState("Called function " + node.owner + "." + node.name + "is illegal.")
+            illegalState("错误的方式调用 " + node.owner + "." + node.name + "方法.")
         }
     }
 

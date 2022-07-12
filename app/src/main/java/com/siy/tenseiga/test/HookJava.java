@@ -96,6 +96,8 @@ public class HookJava {
     @TargetClass(value = "com.siy.tenseiga.test.OriginJava")
     public String hookAnnoReplace(int a, Integer b) {
         Log.e("siy", "OriginJava-hookAnnoReplace-");
+        OriginJava originJava = (OriginJava) Self.get();
+        originJava.showToast();
         return a + b + "hook";
     }
 }

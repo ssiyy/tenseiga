@@ -1,4 +1,4 @@
-package com.siy.tenseiga.parser
+package com.siy.tenseiga.adjuster
 
 import com.siy.tenseiga.base.Invoker
 import com.siy.tenseiga.base.Self
@@ -21,10 +21,7 @@ private const val REFERENCE = 2
 private const val PRIMITIVE = 3
 
 
-class AopMethodAdjuster constructor(
-    private val sourcesClass: String,
-    private val methodNode: MethodNode
-) {
+class AopMethodAdjuster constructor(private val methodNode: MethodNode) {
 
     private val CALL_REPLACER = InvokerReplacer(methodNode)
 

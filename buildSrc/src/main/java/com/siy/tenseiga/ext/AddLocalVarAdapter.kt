@@ -27,7 +27,7 @@ class AddLocalVarAdapter(
     override fun onMethodEnter() {
         mSlotIndex = newLocal(Type.getType(Array<Any>::class.java))
         mv.visitInsn(ICONST_0)
-        mv.visitTypeInsn(ANEWARRAY, "java/lang/Object")
+        mv.visitTypeInsn(ANEWARRAY, OBJECT_TYPE.internalName)
         mv.visitVarInsn(ASTORE, mSlotIndex)
     }
 }

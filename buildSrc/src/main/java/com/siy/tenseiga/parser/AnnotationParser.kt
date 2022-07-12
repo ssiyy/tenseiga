@@ -1,28 +1,14 @@
 package com.siy.tenseiga.parser
 
-import com.siy.tenseiga.base.annotations.Filter
-import com.siy.tenseiga.base.annotations.Proxy
-import com.siy.tenseiga.base.annotations.Replace
-import com.siy.tenseiga.base.annotations.TargetClass
 import com.siy.tenseiga.entity.ProxyInfo
 import com.siy.tenseiga.entity.ReplaceInfo
 import com.siy.tenseiga.entity.TransformInfo
-import com.siy.tenseiga.ext.TypeUtil
-import com.siy.tenseiga.ext.value
+import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.interfaces.TransformParser
 import org.objectweb.asm.ClassReader
-import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodNode
 import java.io.File
-
-val ReplaceType = Type.getType(Replace::class.java)
-
-val ProxyType = Type.getType(Proxy::class.java)
-
-val TargetClassType = Type.getType(TargetClass::class.java)
-
-val FilterType = Type.getType(Filter::class.java)
 
 /**
  * 用来解析注解配置的类
@@ -42,13 +28,12 @@ class AnnotationParser : TransformParser {
             file.inputStream().use { fs ->
                 val cn = ClassNode()
                 ClassReader(fs).accept(cn, 0)
-
                 cn.methods.filter {
-                    TypeUtil.isNormalMethod(it)
+                    //过滤掉 静态代码块 构造方法 抽象方法 本地方法
+                    !(isCInitMethod(it) || isInitMethod(it) || isAbstractMethod(it.access) || isNativeMethod(it.access))
                 }.forEach {
                     infoParse(cn, it, transformInfo)
                 }
-
             }
         }
         return transformInfo
@@ -62,19 +47,19 @@ class AnnotationParser : TransformParser {
             it.desc
         }
 
-        val isReplace = annotationDescs?.contains(ReplaceType.descriptor) == true
+        val isReplace = annotationDescs?.contains(REPLACE_TYPE.descriptor) == true
 
-        val isProxy = annotationDescs?.contains(ProxyType.descriptor) == true
+        val isProxy = annotationDescs?.contains(PROXY_TYPE.descriptor) == true
 
         if (isReplace) {
             var targetMethod: String? = null
             var targetClass: String? = null
             annotations.forEach {
                 when (it.desc) {
-                    ReplaceType.descriptor -> {
+                    REPLACE_TYPE.descriptor -> {
                         targetMethod = it.value as? String
                     }
-                    TargetClassType.descriptor -> {
+                    TARGETCLASS_TYPE.descriptor -> {
                         targetClass = (it.value as? String)?.replace(".", "/")
                     }
                 }
@@ -95,13 +80,13 @@ class AnnotationParser : TransformParser {
             var filters = listOf<String>()
             annotations.forEach {
                 when (it.desc) {
-                    ProxyType.descriptor -> {
+                    PROXY_TYPE.descriptor -> {
                         targetMethod = it.value as? String
                     }
-                    TargetClassType.descriptor -> {
+                    TARGETCLASS_TYPE.descriptor -> {
                         targetClass = (it.value as? String)?.replace(".", "/")
                     }
-                    FilterType.descriptor -> {
+                    FILTER_TYPE.descriptor -> {
                         filters = (it.value as? Array<String>)?.let { arr ->
                             listOf(*arr)
                         } ?: listOf()

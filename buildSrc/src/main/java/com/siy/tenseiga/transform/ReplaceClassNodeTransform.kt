@@ -4,7 +4,7 @@ import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.filter
 import com.siy.tenseiga.entity.ReplaceInfo
 import com.siy.tenseiga.ext.*
-import com.siy.tenseiga.parser.OP_CALL
+import com.siy.tenseiga.adjuster.OP_CALL
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
@@ -84,6 +84,10 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
 
     override fun visitorMethod(context: TransformContext, method: MethodNode) {
         super.visitorMethod(context, method)
+        if (isNativeMethod(method.access) || isAbstractMethod(method.access) || isInitMethod(method) || isCInitMethod(method)) {
+            return
+        }
+
         klass?.let { clazz ->
             infos.forEach { info ->
                 if (checkMethodIsHook(context, clazz, method, info)) {

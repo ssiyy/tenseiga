@@ -1,11 +1,13 @@
 package com.siy.tenseiga.parser
 
 import com.siy.tenseiga.entity.*
-import com.siy.tenseiga.ext.TypeUtil.isNormalMethod
+import com.siy.tenseiga.ext.isAbstractMethod
+import com.siy.tenseiga.ext.isCInitMethod
+import com.siy.tenseiga.ext.isInitMethod
+import com.siy.tenseiga.ext.isNativeMethod
 import com.siy.tenseiga.interfaces.TransformParser
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.tree.ClassNode
-import org.objectweb.asm.tree.MethodNode
 import java.io.File
 
 
@@ -39,10 +41,10 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
                     val cn = ClassNode()
                     ClassReader(fs).accept(cn, 0)
                     cn.methods.filter {
-                        isNormalMethod(it)
+                        //过滤掉 静态代码块 构造方法 抽象方法 本地方法
+                        !(isCInitMethod(it) || isInitMethod(it) || isAbstractMethod(it.access) || isNativeMethod(it.access))
                     }.forEach { mn ->
                         if (mn.name == rp.hookMethod) {
-                            transformPlaceholder(cn.name, mn)
                             infos.replaceInfo.add(
                                 ReplaceInfo(
                                     rp.targetClass!!.replace(".", "/"),
@@ -69,10 +71,10 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
                     val cn = ClassNode()
                     ClassReader(fs).accept(cn, 0)
                     cn.methods.filter {
-                        isNormalMethod(it)
+                        //过滤掉 静态代码块 构造方法 抽象方法 本地方法
+                        !(isCInitMethod(it) || isInitMethod(it) || isAbstractMethod(it.access) || isNativeMethod(it.access))
                     }.forEach { mn ->
                         if (mn.name == pp.hookMethod) {
-                            transformPlaceholder(cn.name, mn)
                             infos.proxyInfo.add(
                                 ProxyInfo(
                                     pp.targetClass!!.replace(".", "/"),
@@ -87,13 +89,5 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
                 }
             }
         }
-    }
-
-
-    /**
-     * 转换一下占位符
-     */
-    private fun transformPlaceholder(sourceClass: String, methodNode: MethodNode) {
-        AopMethodAdjuster(sourceClass, methodNode).adjust()
     }
 }

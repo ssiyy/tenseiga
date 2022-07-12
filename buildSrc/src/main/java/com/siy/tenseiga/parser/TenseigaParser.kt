@@ -1,5 +1,6 @@
 package com.siy.tenseiga.parser
 
+import com.siy.tenseiga.adjuster.AopMethodAdjuster
 import com.siy.tenseiga.entity.TExtension
 import com.siy.tenseiga.entity.TransformInfo
 import com.siy.tenseiga.interfaces.TransformParser
@@ -33,6 +34,14 @@ class TenseigaParser(extension: TExtension) : TransformParser {
                 (acc.proxyInfo).addAll(item.proxyInfo)
                 (acc.replaceInfo).addAll(item.replaceInfo)
                 acc
+            }
+        }.apply {
+            proxyInfo.forEach {
+                AopMethodAdjuster(it.hookMethod).adjust()
+            }
+
+            replaceInfo.forEach {
+                AopMethodAdjuster(it.hookMethod).adjust()
             }
         }
     }

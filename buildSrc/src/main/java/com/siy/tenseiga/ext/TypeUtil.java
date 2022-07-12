@@ -1,6 +1,6 @@
 package com.siy.tenseiga.ext;
+
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.tree.MethodNode;
 
 /**
  * Created by gengwanpeng on 17/3/31.
@@ -67,18 +67,6 @@ public class TypeUtil {
 
     public static boolean isCInitMethod(String methodName){
         return "<clinit>".equals(methodName);
-    }
-
-    /**
-     * 是否是正常的方法
-     */
-    public static boolean isNormalMethod(MethodNode method) {
-        boolean isAbstract = TypeUtil.isAbstract(method.access);
-        boolean isNative = TypeUtil.isNative(method.access);
-        boolean isInitMethod = TypeUtil.isInitMethod(method.name);
-        boolean isclinitMethod = TypeUtil.isCInitMethod(method.name);
-
-        return !(isAbstract || isNative || isInitMethod || isclinitMethod);
     }
 
     public static int getOpcodeByAccess(int access){

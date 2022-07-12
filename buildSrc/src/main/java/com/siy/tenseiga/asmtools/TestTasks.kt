@@ -34,6 +34,8 @@ fun forDebug(context: TransformContext, transformInfo: TransformInfo?, logger: P
     }?.filter {
         it?.isDirectory == true
     }?.forEach { file ->
+        //tenseiga转换之后的输出目录
+
         /*  transformInfo?.replaceInfo?.let {
               forReplaceDebug(file, it, logger)
           }*/

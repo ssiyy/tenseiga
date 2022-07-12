@@ -93,8 +93,7 @@ class TenseigaClassTransform(private val extension: TExtension) : ClassTransform
             !(isInitMethod(it) || isCInitMethod(it))
         }?.flatMap {
             classNodeTransform.visitorMethod(context, it)
-            it?.instructions?.iterator()?.asIterable()?.filterIsInstance(MethodInsnNode::class.java)
-                ?: arrayListOf()
+            it?.instructions?.iterator()?.asIterable()?.filterIsInstance(MethodInsnNode::class.java) ?: arrayListOf()
         }?.forEach {
             classNodeTransform.visitorInsnMethod(context, it)
         }

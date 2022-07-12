@@ -4,7 +4,6 @@ import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.filter
 import com.siy.tenseiga.entity.ReplaceInfo
 import com.siy.tenseiga.ext.*
-import com.siy.tenseiga.adjuster.OP_CALL
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*

@@ -1,6 +1,9 @@
 package com.siy.tenseiga.adjuster
 
-import com.siy.tenseiga.ext.*
+import com.siy.tenseiga.ext.OBJECT_TYPE
+import com.siy.tenseiga.ext.OP_CALL
+import com.siy.tenseiga.ext.PrimitiveUtil
+import com.siy.tenseiga.ext.isPrimitive
 import com.siy.tenseiga.interfaces.NodeAdjuster
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
@@ -34,7 +37,7 @@ import org.objectweb.asm.tree.TypeInsnNode
 
 
 
-        if (retDesc == "V") {//void
+        /*if (retDesc == "V") {//void
             retType = VOID
         } else if (retDesc.endsWith(";") || retDesc[0] == '[') {//object or array
             retType = REFERENCE
@@ -46,7 +49,7 @@ import org.objectweb.asm.tree.TypeInsnNode
         } else {//primitive
             retType = PRIMITIVE
             returnDesc = PrimitiveUtil.box(retDesc)
-        }
+        }*/
     }
 
 
@@ -63,11 +66,31 @@ import org.objectweb.asm.tree.TypeInsnNode
             methodNode.instructions.remove(node.next)
         }
 
-        if (retType == PRIMITIVE) {
+        if (returnType.isPrimitive) {
+//            INVOKESTATIC com/siy/tenseiga/base/Invoker.invoke ([Ljava/lang/Object;)Ljava/lang/Object;
+//            CHECKCAST java/lang/Integer  //把这个指令移除了
+//            INVOKEVIRTUAL java/lang/Integer.intValue ()I
             checkUnbox(node.next)
             methodNode.instructions.remove(node.next)
         }
         return node
+    }
+
+    /**
+     * 如果是基本数据类型,就检查一下拆箱
+     */
+    private fun checkUnbox(insnNode: AbstractInsnNode) {
+        if (insnNode !is MethodInsnNode) {
+            //如果不是方法调用
+            illegalState("请不要自行拆箱.")
+        }
+        val methodInsnNode = insnNode as MethodInsnNode
+         if (methodInsnNode.owner != returnDesc) {
+             illegalState("Please don't unbox by your self.")
+         }
+         if (methodInsnNode.name != PrimitiveUtil.unboxMethod(returnDesc)) {
+             illegalState("Please don't unbox by your self.")
+         }
     }
 
     private fun checkReturnType(node: MethodInsnNode) {
@@ -80,6 +103,7 @@ import org.objectweb.asm.tree.TypeInsnNode
         }
     }
 
+
     private fun checkCast(insnNode: AbstractInsnNode) {
         if (insnNode !is TypeInsnNode) {
             illegalState("Returned Object type should be cast to origin type immediately.")
@@ -89,22 +113,11 @@ import org.objectweb.asm.tree.TypeInsnNode
         if (typeInsnNode.opcode != Opcodes.CHECKCAST) {
             illegalState("Returned Object type should be cast to origin type immediately.")
         }
-        if (typeInsnNode.desc != returnDesc) {
+        /*if (typeInsnNode.desc != returnDesc) {
             illegalState("Casted type is expected to be " + returnDesc + " , but is " + typeInsnNode.desc)
-        }
+        }*/
     }
 
-    private fun checkUnbox(insnNode: AbstractInsnNode) {
-        if (insnNode !is MethodInsnNode) {
-            illegalState("Please don't unbox by your self.")
-        }
-        val methodInsnNode = insnNode as MethodInsnNode
-        if (methodInsnNode.owner != returnDesc) {
-            illegalState("Please don't unbox by your self.")
-        }
-        if (methodInsnNode.name != PrimitiveUtil.unboxMethod(returnDesc)) {
-            illegalState("Please don't unbox by your self.")
-        }
-    }
+
 
 }

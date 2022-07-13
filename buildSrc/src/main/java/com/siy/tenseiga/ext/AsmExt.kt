@@ -1,5 +1,6 @@
 package com.siy.tenseiga.ext
 
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.AnnotationNode
 
 
@@ -32,4 +33,15 @@ val AnnotationNode.valueMaps: Map<String, Any>
 val AnnotationNode.value: Any?
     get() {
         return valueMaps["value"]
+    }
+
+/**
+ * 是否是基本数据类型
+ */
+val Type.isPrimitive: Boolean
+    get() {
+        return when (sort) {
+            Type.BYTE, Type.SHORT, Type.INT, Type.LONG, Type.FLOAT, Type.DOUBLE, Type.CHAR, Type.BOOLEAN -> true
+            else -> false
+        }
     }

@@ -8,11 +8,17 @@ package com.siy.tenseiga.base
  */
 object Self {
 
-    val CLASS_NAME  = Self.javaClass.name.replace('.', '/')
+    val CLASS_NAME = Self.javaClass.name.replace('.', '/')
 
     /**
      * 获取实例方法的对象
      */
     @JvmStatic
     fun get() = Any()
+
+    @JvmStatic
+    fun getField(fieldName: String) = Any()
+
+    @JvmStatic
+    fun putField(fieldValue: Any, fieldName: String) = Unit
 }

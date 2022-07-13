@@ -33,7 +33,7 @@ val BOOLEAN_TYPE = Type.getType(Boolean::class.javaObjectType)!!
 val NUMBER_TYPE = Type.getType(Number::class.javaObjectType)!!
 
 
-val OBJECT_TYPE = Type.getType(Object::class.java)!!
+val OBJECT_TYPE = Type.getType(Any::class.javaObjectType)!!
 
 val REPLACE_TYPE = Type.getType(Replace::class.java)!!
 

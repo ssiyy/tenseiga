@@ -193,13 +193,13 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             insns.add(InsnNode(Opcodes.AALOAD))
             if (type.isPrimitive) {
                 //如果是基本类型，就要拆箱成基本变量
-                val owner = type.boxedType.internalName
-                insns.add(TypeInsnNode(Opcodes.CHECKCAST, PrimitiveUtil.virtualType(owner)))
+                val numberType = PrimitiveBox.typeToNumberType(type)
+                insns.add(TypeInsnNode(Opcodes.CHECKCAST, numberType.internalName))
                 insns.add(
                     MethodInsnNode(
                         Opcodes.INVOKEVIRTUAL,
-                        PrimitiveUtil.virtualType(owner),
-                        PrimitiveBox.unboxMethod[type.boxedType] ,
+                        numberType.internalName,
+                        PrimitiveBox.unboxMethod[type.boxedType],
                         "()${type.descriptor}",
                         false
                     )

@@ -14,10 +14,6 @@ import org.objectweb.asm.Type
  */
 
 
-val CHARACTER_TYPE = Type.getType(Char::class.javaObjectType)!!
-
-val BOOLEAN_TYPE = Type.getType(Boolean::class.javaObjectType)!!
-
 val BYTE_TYPE = Type.getType(Byte::class.javaObjectType)!!
 
 val SHORT_TYPE = Type.getType(Short::class.javaObjectType)!!
@@ -30,6 +26,11 @@ val LONG_TYPE = Type.getType(Long::class.javaObjectType)!!
 
 val DOUBLE_TYPE = Type.getType(Double::class.javaObjectType)!!
 
+val CHARACTER_TYPE = Type.getType(Char::class.javaObjectType)!!
+
+val BOOLEAN_TYPE = Type.getType(Boolean::class.javaObjectType)!!
+
+val NUMBER_TYPE = Type.getType(Number::class.javaObjectType)!!
 
 
 val OBJECT_TYPE = Type.getType(Object::class.java)!!

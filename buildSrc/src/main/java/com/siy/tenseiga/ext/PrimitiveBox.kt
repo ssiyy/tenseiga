@@ -1,5 +1,7 @@
 package com.siy.tenseiga.ext
 
+import org.objectweb.asm.Type
+
 
 /**
  *
@@ -11,8 +13,9 @@ object PrimitiveBox {
      * 拆箱的方法
      */
     val unboxMethod = mapOf(
-        BOOLEAN_TYPE to "booleanValue",
         CHARACTER_TYPE to "charValue",
+        BOOLEAN_TYPE to "booleanValue",
+
         BYTE_TYPE to "byteValue",
         SHORT_TYPE to "shortValue",
         INTEGER_TYPE to "intValue",
@@ -20,4 +23,29 @@ object PrimitiveBox {
         LONG_TYPE to "longValue",
         DOUBLE_TYPE to "doubleValue"
     )
+
+    /**
+     * 其它类型type转换成NumberType
+     *
+     * 为什么要这么做？主要是为了应付byte ,short  ,Float 等跨类型转换
+     *
+     * @param type
+     */
+    fun typeToNumberType(type: Type): Type {
+        return when (type) {
+            BYTE_TYPE,
+            SHORT_TYPE,
+            INTEGER_TYPE,
+            FLOAT_TYPE,
+            LONG_TYPE,
+            DOUBLE_TYPE,
+            Type.BYTE_TYPE,
+            Type.SHORT_TYPE,
+            Type.INT_TYPE,
+            Type.FLOAT_TYPE,
+            Type.LONG_TYPE,
+            Type.DOUBLE_TYPE -> NUMBER_TYPE
+            else -> type
+        }
+    }
 }

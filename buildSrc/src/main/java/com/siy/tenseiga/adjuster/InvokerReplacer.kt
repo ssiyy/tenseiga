@@ -41,7 +41,7 @@ class PlaceHolderNodeJuster constructor(private val methodNode: MethodNode) : No
 
         if (owner == Invoker.CLASS_NAME) {
             //如果是Invoker
-            if (name.startsWith(Invoker.FUN_PREFIX)) {
+            if (name.startsWith(Invoker.METHOD_PREFIX)) {
                 replacer = invokerAdjuster
             }
         } else if (owner == Self.CLASS_NAME) {

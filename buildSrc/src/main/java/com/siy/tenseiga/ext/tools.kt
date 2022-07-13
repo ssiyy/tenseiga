@@ -15,6 +15,32 @@ import org.objectweb.asm.tree.VarInsnNode
  */
 
 /**
+ * @param access 访问权
+ * @param desc 方法描述
+ * @param className 类
+ */
+fun descToStaticMethod(access: Int, desc: String, className: String): String {
+    return if (isStaticMethod(access)) {
+        desc
+    } else {
+        "(L" + className.replace('.', '/') + ";" + desc.substring(1)
+    }
+}
+
+/**
+ *
+ * 根据[access]获取opcodes
+ * @param access
+ */
+fun getOpcodesByAccess(access: Int): Int {
+    return if (isStaticMethod(access)) {
+        Opcodes.INVOKESTATIC
+    } else {
+        Opcodes.INVOKEVIRTUAL
+    }
+}
+
+/**
  * 是否是构造方法
  */
 fun isInitMethod(methodNode: MethodNode) = "<init>" == methodNode.name
@@ -35,7 +61,7 @@ fun isAbstractMethod(access: Int) = access and Opcodes.ACC_ABSTRACT != 0
 fun isNativeMethod(access: Int) = access and Opcodes.ACC_NATIVE != 0
 
 /**
- * 静态方法
+ * 是否是静态方法
  *
  * access & Opcodes.ACC_STATIC != 0
  *
@@ -43,11 +69,22 @@ fun isNativeMethod(access: Int) = access and Opcodes.ACC_NATIVE != 0
 fun isStaticMethod(access: Int) = access and Opcodes.ACC_STATIC != 0
 
 /**
- * 静态方法调用
+ * 是否是静态方法调用
  */
 fun isStaticMethodInsn(opcode: Int) = opcode == Opcodes.INVOKESTATIC
 
 /**
+ * @param access 方法的访问权限
+ *
+ * @param name 方法的名字
+ *
+ * @param desc 方法的描述符
+ *
+ * @param exceptions 方法抛出的异常
+ *
+ * @param action 方法体
+ *
+ *
  * 创建一个方法
  */
 fun createMethod(
@@ -63,7 +100,7 @@ fun createMethod(
     //加载参数
     val params = Type.getArgumentTypes(desc)
     var index = 0;
-    if (!TypeUtil.isStatic(access)) {
+    if (!isStaticMethod(access)) {
         index++
         insnList.add(VarInsnNode(Opcodes.ALOAD, 0))
     }
@@ -85,10 +122,10 @@ fun createMethod(
 }
 
 /**
- * 替换方法体
+ * 替换[method]的方法体
  * @param method 需要替换的方法
  *
- * @param action 新的方法提
+ * @param action 新的方法体
  */
 fun replaceMethodBody(method: MethodNode, action: ((InsnList) -> Unit)) {
     method.instructions.clear()
@@ -96,7 +133,7 @@ fun replaceMethodBody(method: MethodNode, action: ((InsnList) -> Unit)) {
     //加载参数
     val params = Type.getArgumentTypes(method.desc)
     var index = 0;
-    if (!TypeUtil.isStatic(method.access)) {
+    if (!isStaticMethod(method.access)) {
         index++
         insnList.add(VarInsnNode(Opcodes.ALOAD, 0))
     }

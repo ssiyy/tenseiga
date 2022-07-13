@@ -54,40 +54,6 @@ public class PrimitiveUtil {
         numberTypes.add("java/lang/Double");
     }
 
-
-    public static String box(String primitive) {
-        String clazz = boxMap.get(primitive);
-        if (clazz == null) {
-            throw new IllegalArgumentException("The primitive type '" + primitive + "' is illegal.");
-        }
-        return clazz;
-    }
-
-    public static String unbox(String type) {
-        String ret = unboxMap.get(type);
-        if (ret == null) {
-            throw new IllegalArgumentException("The unbox type '" + type + "' is illegal.");
-        }
-        return ret;
-    }
-
-    public static String unboxMethod(String clazz) {
-        String method = methodMap.get(clazz);
-        if (method == null) {
-            throw new IllegalArgumentException("Box class " + clazz + " is illegal.");
-        }
-        return method;
-    }
-
-    public static boolean isPrimitive(String s) {
-        return boxMap.containsKey(s);
-    }
-
-
-    public static Set<String> boxedTypes() {
-        return methodMap.keySet();
-    }
-
     public static String virtualType(String owner) {
         if (numberTypes.contains(owner)) {
             return "java/lang/Number";
@@ -95,9 +61,7 @@ public class PrimitiveUtil {
         return owner;
     }
 
-    public static Set<String> boxedNumberTypes() {
-        return numberTypes;
-    }
+
 
 
 }

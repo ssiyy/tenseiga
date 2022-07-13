@@ -1,5 +1,6 @@
 package com.siy.tenseiga.adjuster
 
+import com.siy.tenseiga.base.Invoker
 import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.interfaces.NodeAdjuster
 import org.objectweb.asm.Opcodes
@@ -37,7 +38,7 @@ class InvokerAdjuster constructor(private val methodNode: MethodNode) : NodeAdju
         //检查一下返回值类型
         checkReturnType(insnNode)
         //替换成自己的opcode
-        insnNode.opcode = OP_CALL
+        insnNode.opcode = OPCODES_INVOKER
         if (boxHookMethodReturnType != Type.VOID_TYPE && boxHookMethodReturnType != OBJECT_TYPE) {
             checkCast(insnNode.next)
 //            methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Invoker", "invoke", "([Ljava/lang/Object;)Ljava/lang/Object;", false);
@@ -82,7 +83,7 @@ class InvokerAdjuster constructor(private val methodNode: MethodNode) : NodeAdju
      */
     private fun checkReturnType(insnNode: MethodInsnNode) {
         //占位符号的方法名显示有返回值类型
-        val hasRet = !insnNode.name.startsWith("invokeVoid")
+        val hasRet = !insnNode.name.startsWith(Invoker.METHOD_RETURN_VOID)
         //替换的方法没有返回值类型
         val hasRetType = boxHookMethodReturnType != Type.VOID_TYPE
         if (hasRet != hasRetType) {

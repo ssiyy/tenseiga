@@ -101,7 +101,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
                     replaceMethodBody(method) {
                         it.add(
                             MethodInsnNode(
-                                TypeUtil.getOpcodeByAccess(hookMethod.access),
+                                getOpcodesByAccess(hookMethod.access),
                                 klass?.name,
                                 hookMethod.name,
                                 hookMethod.desc
@@ -131,10 +131,10 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
     }
 
     /**
+     * 把hook方法的方法体拷贝一份并且替换里面的placeholder
      *
-     *
-     * @param info 替换相关信息的数据体
-     * @param methodNode 替换Origin方法调用的方法
+     * @param info 替换相关信息的数据体，里面有要拷贝的方法
+     * @param methodNode 被hook的方法，需要读取它的参数信息
      *
      * @return 返回新生成的方法
      */
@@ -143,7 +143,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
         return createMethod(
             Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC,
             info.hookClass.replace('/', '_').plus("_${info.hookMethod.name}"),
-            TypeUtil.descToStatic(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
+            descToStaticMethod(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
             info.hookMethod.exceptions
         ) {
             var hookMethod = info.hookMethod
@@ -156,7 +156,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
             val insns = hookMethod.instructions
 
             val callInsns = insns.filter { insn ->
-                insn.opcode == OP_CALL
+                insn.opcode == OPCODES_INVOKER
             }
 
             callInsns.forEach { opcall ->
@@ -185,7 +185,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
 
         insns.add(VarInsnNode(Opcodes.ASTORE, slotIndex))
 
-        if (!TypeUtil.isStatic(methodNode.access)) {
+        if (!isStaticMethod(methodNode.access)) {
             insns.add(VarInsnNode(Opcodes.ALOAD, 0))
         }
 
@@ -204,15 +204,15 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
                 in 128..255 -> insns.add(IntInsnNode(Opcodes.SIPUSH, index))
             }
             insns.add(InsnNode(Opcodes.AALOAD))
-            if (PrimitiveUtil.isPrimitive(type.descriptor)) {
+            if (type.isPrimitive) {
                 //如果是基本类型，就要拆箱成基本变量
-                val owner = PrimitiveUtil.box(type.descriptor)
+                val owner = type.boxedType.internalName
                 insns.add(TypeInsnNode(Opcodes.CHECKCAST, PrimitiveUtil.virtualType(owner)))
                 insns.add(
                     MethodInsnNode(
                         Opcodes.INVOKEVIRTUAL,
                         PrimitiveUtil.virtualType(owner),
-                        PrimitiveUtil.unboxMethod(owner),
+                        PrimitiveBox.unboxMethod[type.boxedType],
                         "()${type.descriptor}",
                         false
                     )
@@ -223,8 +223,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
             }
         }
 
-
-        insns.add(MethodInsnNode(TypeUtil.getOpcodeByAccess(methodNode.access), klass?.name, methodNode.name, methodNode.desc))
+        insns.add(MethodInsnNode(getOpcodesByAccess(methodNode.access), klass?.name, methodNode.name, methodNode.desc))
         return insns
     }
 }

@@ -42,10 +42,6 @@ val TARGETCLASS_TYPE = Type.getType(TargetClass::class.java)!!
 
 val FILTER_TYPE = Type.getType(Filter::class.java)!!
 
-const val OP_CALL = Int.MAX_VALUE - 5555
+const val OPCODES_INVOKER = Int.MAX_VALUE - 5555
 
-const val VOID = 1
 
-const val REFERENCE = 2
-
-const val PRIMITIVE = 3

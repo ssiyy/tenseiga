@@ -124,7 +124,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
         return createMethod(
             Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC,
             info.hookClass.replace('/', '_').plus("_${info.hookMethod.name}"),
-            TypeUtil.descToStatic(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
+            descToStaticMethod(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
             info.hookMethod.exceptions
         ) {
 
@@ -137,7 +137,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             val insns = hookMethod.instructions
 
             val callInsns = insns.filter { insn ->
-                insn.opcode == OP_CALL
+                insn.opcode == OPCODES_INVOKER
             }
 
             callInsns.forEach { opcall ->
@@ -191,15 +191,15 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
                 in 128..255 -> insns.add(IntInsnNode(Opcodes.SIPUSH, index))
             }
             insns.add(InsnNode(Opcodes.AALOAD))
-            if (PrimitiveUtil.isPrimitive(type.descriptor)) {
+            if (type.isPrimitive) {
                 //如果是基本类型，就要拆箱成基本变量
-                val owner = PrimitiveUtil.box(type.descriptor)
+                val owner = type.boxedType.internalName
                 insns.add(TypeInsnNode(Opcodes.CHECKCAST, PrimitiveUtil.virtualType(owner)))
                 insns.add(
                     MethodInsnNode(
                         Opcodes.INVOKEVIRTUAL,
                         PrimitiveUtil.virtualType(owner),
-                        PrimitiveUtil.unboxMethod(owner),
+                        PrimitiveBox.unboxMethod[type.boxedType] ,
                         "()${type.descriptor}",
                         false
                     )

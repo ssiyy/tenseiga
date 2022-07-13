@@ -4,11 +4,19 @@ import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
 
 
+/**
+ * 用来处理定义的Placeholder
+ */
 interface NodeAdjuster {
-
-    fun replace(node: MethodInsnNode): AbstractInsnNode
+    /**
+     * placeholder指令替换
+     */
+    fun replace(insnNode: MethodInsnNode): AbstractInsnNode
 }
 
+/**
+ * 指令原样返回
+ */
 val NONE = object : NodeAdjuster {
-    override fun replace(node: MethodInsnNode) = node
+    override fun replace(insnNode: MethodInsnNode) = insnNode
 }

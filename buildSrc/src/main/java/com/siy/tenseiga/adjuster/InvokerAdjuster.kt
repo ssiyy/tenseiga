@@ -1,9 +1,6 @@
 package com.siy.tenseiga.adjuster
 
-import com.siy.tenseiga.ext.OBJECT_TYPE
-import com.siy.tenseiga.ext.OP_CALL
-import com.siy.tenseiga.ext.PrimitiveUtil
-import com.siy.tenseiga.ext.isPrimitive
+import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.interfaces.NodeAdjuster
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
@@ -18,106 +15,99 @@ import org.objectweb.asm.tree.TypeInsnNode
  * @author  Siy
  * @since  2022/7/12
  */
+class InvokerAdjuster constructor(private val methodNode: MethodNode) : NodeAdjuster {
+
+    private val methodType = Type.getMethodType(methodNode.desc)
+
+    /**
+     * hook方法的返回值类型
+     */
+    private val hookMethodReturnType = methodType.returnType
 
 
- class InvokerAdjuster constructor(private val methodNode: MethodNode) : NodeAdjuster {
+    /**
+     * hook方法的返回值类型如果是基本数据类型就将其转换成对应的包装类型
+     */
+    private val boxHookMethodReturnType = hookMethodReturnType.boxedType
 
-//    private var retType: Int = 0
-
-//    private var returnDesc: String? = null
-
-    private val returnType = Type.getReturnType(methodNode.desc)
-
-    init {
-        val desc = methodNode.desc
-        //返回类型的描述
-//        var retDesc = desc.substring(desc.lastIndexOf(")") + 1)
-
-//val returnType = Type.getReturnType(methodNode.desc)
-
-
-
-        /*if (retDesc == "V") {//void
-            retType = VOID
-        } else if (retDesc.endsWith(";") || retDesc[0] == '[') {//object or array
-            retType = REFERENCE
-
-            if (retDesc[0] != '[' && retDesc.endsWith(";")) {//convert to internal
-                retDesc = retDesc.substring(1, retDesc.length - 1)
-            }
-            returnDesc = retDesc
-        } else {//primitive
-            retType = PRIMITIVE
-            returnDesc = PrimitiveUtil.box(retDesc)
-        }*/
-    }
-
-
-    override fun replace(node: MethodInsnNode): AbstractInsnNode {
+    /**
+     * @param  insnNode 占位符所在的方法指令 ，如 Invoker.invoke(args)
+     */
+    override fun replace(insnNode: MethodInsnNode): AbstractInsnNode {
         //检查一下返回值类型
-        checkReturnType(node)
+        checkReturnType(insnNode)
         //替换成自己的opcode
-        node.opcode = OP_CALL
-        if (returnType != Type.VOID_TYPE && returnType != OBJECT_TYPE) {
-            checkCast(node.next)
-//            INVOKESTATIC me/ele/lancet/base/Origin.call ()Ljava/lang/Object;
-//            CHECKCAST com/sample/playground/Cup   把这个指令移除了
-//            ARETURN
-            methodNode.instructions.remove(node.next)
+        insnNode.opcode = OP_CALL
+        if (boxHookMethodReturnType != Type.VOID_TYPE && boxHookMethodReturnType != OBJECT_TYPE) {
+            checkCast(insnNode.next)
+//            methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Invoker", "invoke", "([Ljava/lang/Object;)Ljava/lang/Object;", false);
+//            methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Integer");    //把这个指令移除了
+//            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
+            methodNode.instructions.remove(insnNode.next)
         }
 
-        if (returnType.isPrimitive) {
-//            INVOKESTATIC com/siy/tenseiga/base/Invoker.invoke ([Ljava/lang/Object;)Ljava/lang/Object;
-//            CHECKCAST java/lang/Integer  //把这个指令移除了
-//            INVOKEVIRTUAL java/lang/Integer.intValue ()I
-            checkUnbox(node.next)
-            methodNode.instructions.remove(node.next)
+        if (hookMethodReturnType.isPrimitive) {
+//            methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Invoker", "invoke", "([Ljava/lang/Object;)Ljava/lang/Object;", false);
+//            methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Integer");        //把这个指令移除了
+//            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);   //把这个指令移除了
+            checkUnbox(insnNode.next)
+            methodNode.instructions.remove(insnNode.next)
         }
-        return node
+        return insnNode
     }
 
     /**
      * 如果是基本数据类型,就检查一下拆箱
+     *
+     * @param insnNode 占位符所在的方法指令 ，如 Invoker.invoke(args)
      */
     private fun checkUnbox(insnNode: AbstractInsnNode) {
         if (insnNode !is MethodInsnNode) {
             //如果不是方法调用
-            illegalState("请不要自行拆箱.")
+            illegalState("请不要自行拆箱1.")
         }
         val methodInsnNode = insnNode as MethodInsnNode
-         if (methodInsnNode.owner != returnDesc) {
-             illegalState("Please don't unbox by your self.")
-         }
-         if (methodInsnNode.name != PrimitiveUtil.unboxMethod(returnDesc)) {
-             illegalState("Please don't unbox by your self.")
-         }
-    }
-
-    private fun checkReturnType(node: MethodInsnNode) {
-        //占位符号的方法名显示有返回值类型
-        val hasRet = !node.name.startsWith("invokeVoid")
-        //替换的方法没有返回值类型
-        val hasRetType = returnType != Type.VOID_TYPE
-        if (hasRet != hasRetType) {
-            illegalState("错误的方式调用 " + node.owner + "." + node.name + "方法.")
+        if (methodInsnNode.owner != boxHookMethodReturnType.internalName) {
+            illegalState("请不要自行拆箱2.")
+        }
+        if (methodInsnNode.name != PrimitiveBox.unboxMethod[boxHookMethodReturnType]) {
+            illegalState("请不要自行拆箱3.")
         }
     }
 
+    /**
+     * 检查一下hook方法的返回值类型和 占位符 Invoker.invoke(R.string.next) 返回值类型是否兼容
+     *
+     * @param insnNode 占位符所在的方法指令 ，如 Invoker.invoke(args)
+     */
+    private fun checkReturnType(insnNode: MethodInsnNode) {
+        //占位符号的方法名显示有返回值类型
+        val hasRet = !insnNode.name.startsWith("invokeVoid")
+        //替换的方法没有返回值类型
+        val hasRetType = boxHookMethodReturnType != Type.VOID_TYPE
+        if (hasRet != hasRetType) {
+            illegalState("错误的方式调用 " + insnNode.owner + "." + insnNode.name + "方法.")
+        }
+    }
 
+    /**
+     * 检查一下Invoker.invoke(args)强转的类型是否和hook方法返回值类型是否一样
+     *
+     *
+     * @param insnNode 占位符所在的方法指令 ，如 Invoker.invoke(args)
+     */
     private fun checkCast(insnNode: AbstractInsnNode) {
         if (insnNode !is TypeInsnNode) {
-            illegalState("Returned Object type should be cast to origin type immediately.")
+            illegalState("返回的对象类型应立即转换为Hook方法的类型。")
         }
 
         val typeInsnNode = insnNode as TypeInsnNode
         if (typeInsnNode.opcode != Opcodes.CHECKCAST) {
-            illegalState("Returned Object type should be cast to origin type immediately.")
+            illegalState("返回的对象类型应立即转换为Hook方法的类型。")
         }
-        /*if (typeInsnNode.desc != returnDesc) {
-            illegalState("Casted type is expected to be " + returnDesc + " , but is " + typeInsnNode.desc)
-        }*/
+
+        if (typeInsnNode.desc != boxHookMethodReturnType.internalName) {
+            illegalState("Hook方法需要的返回值类型： " + boxHookMethodReturnType.internalName + " , 但是转换的是 " + typeInsnNode.desc)
+        }
     }
-
-
-
 }

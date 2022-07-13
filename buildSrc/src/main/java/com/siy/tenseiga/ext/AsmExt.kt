@@ -45,3 +45,21 @@ val Type.isPrimitive: Boolean
             else -> false
         }
     }
+
+/**
+ * 如果是基本数据类型就装箱
+ */
+val Type.boxedType: Type
+    get() {
+        return when (sort) {
+            Type.BYTE -> BYTE_TYPE
+            Type.SHORT -> SHORT_TYPE
+            Type.INT -> INTEGER_TYPE
+            Type.LONG -> LONG_TYPE
+            Type.FLOAT -> FLOAT_TYPE
+            Type.DOUBLE -> DOUBLE_TYPE
+            Type.CHAR -> CHARACTER_TYPE
+            Type.BOOLEAN -> BOOLEAN_TYPE
+            else -> this
+        }
+    }

@@ -3,49 +3,58 @@ package com.siy.tenseiga.adjuster
 import com.siy.tenseiga.base.Invoker
 import com.siy.tenseiga.base.Self
 import com.siy.tenseiga.interfaces.NONE
+import com.siy.tenseiga.interfaces.NodeAdjuster
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
 
+/**
+ * 用来处理PlaceHolder
+ */
+class PlaceHolderNodeJuster constructor(private val methodNode: MethodNode) : NodeAdjuster {
 
-class AopMethodAdjuster constructor(private val methodNode: MethodNode) {
+    /**
+     * 处理[Invoker]
+     */
+    private val invokerAdjuster = InvokerAdjuster(methodNode)
 
-    private val CALL_REPLACER = InvokerAdjuster(methodNode)
-
-    private val THIS_REPLACER = SelfAdjuster(methodNode)
+    /**
+     * 处理[Self]
+     */
+    private val selfAdjuster = SelfAdjuster(methodNode)
 
     fun adjust() {
         var insn = methodNode.instructions.first
         while (insn != null) {
             if (insn is MethodInsnNode) {
-                insn = transform(insn)
+                insn = replace(insn)
             }
             insn = insn.next
         }
     }
 
-    private fun transform(node: MethodInsnNode): AbstractInsnNode {
-        val owner = node.owner
-        val name = node.name
+    override fun replace(insnNode: MethodInsnNode): AbstractInsnNode {
+        val owner = insnNode.owner
+        val name = insnNode.name
 
         var replacer = NONE
 
         if (owner == Invoker.CLASS_NAME) {
             //如果是Invoker
             if (name.startsWith(Invoker.FUN_PREFIX)) {
-                replacer = CALL_REPLACER
+                replacer = invokerAdjuster
             }
         } else if (owner == Self.CLASS_NAME) {
-            //Self
-            replacer = THIS_REPLACER
+            //如果是Self
+            replacer = selfAdjuster
         }
-        return replacer.replace(node)
+        return replacer.replace(insnNode)
     }
 
 }
 
 
- fun illegalState(msg: String) {
+fun illegalState(msg: String) {
     throw IllegalStateException(msg)
 }
 

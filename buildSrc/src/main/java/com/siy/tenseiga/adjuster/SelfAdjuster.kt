@@ -1,6 +1,6 @@
 package com.siy.tenseiga.adjuster
 
-import com.siy.tenseiga.ext.TypeUtil
+import com.siy.tenseiga.ext.isStaticMethod
 import com.siy.tenseiga.interfaces.NodeAdjuster
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.AbstractInsnNode
@@ -16,18 +16,19 @@ import org.objectweb.asm.tree.VarInsnNode
  */
  class SelfAdjuster(private val methodNode: MethodNode) : NodeAdjuster {
 
-    override fun replace(node: MethodInsnNode): AbstractInsnNode {
-        when (node.name) {
+    override fun replace(insnNode:  MethodInsnNode): AbstractInsnNode {
+        when (insnNode.name) {
             "get" -> {
-                if (TypeUtil.isStatic(methodNode.access)) {
-                    illegalState("static method shouldn't call This's function")
+                if(isStaticMethod(methodNode.access)){
+                    illegalState("静态方法不应该调用这个函数")
                 }
                 val varInsnNode = VarInsnNode(Opcodes.ALOAD, 0)
-                methodNode.instructions.set(node, varInsnNode)
+                //就把那个指令替换成变量
+                methodNode.instructions.set(insnNode, varInsnNode)
                 return varInsnNode
             }
         }
-        return node
+        return insnNode
     }
 
 }

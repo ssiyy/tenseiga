@@ -96,27 +96,8 @@ fun createMethod(
 ): MethodNode {
     val methodNode = MethodNode(access, name, desc, null, exceptions?.toTypedArray())
     val insnList = InsnList()
-
-    //加载参数
-    val params = Type.getArgumentTypes(desc)
-    var index = 0;
-    if (!isStaticMethod(access)) {
-        index++
-        insnList.add(VarInsnNode(Opcodes.ALOAD, 0))
-    }
-
-    for (t in params) {
-        insnList.add(VarInsnNode(t.getOpcode(Opcodes.ILOAD), index))
-        index += t.size
-    }
-
     //操作
     action(insnList)
-
-    //返回值
-    val ret = Type.getReturnType(desc)
-    insnList.add(InsnNode(ret.getOpcode(Opcodes.IRETURN)))
-
     methodNode.instructions.add(insnList)
     return methodNode
 }

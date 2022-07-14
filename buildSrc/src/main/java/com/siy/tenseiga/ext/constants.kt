@@ -17,7 +17,7 @@ val SHORT_TYPE = Type.getType(Short::class.javaObjectType)!!
 
 val INTEGER_TYPE = Type.getType(Integer::class.javaObjectType)!!
 
-val FLOAT_TYPE =  Type.getType(Float::class.javaObjectType)!!
+val FLOAT_TYPE = Type.getType(Float::class.javaObjectType)!!
 
 val LONG_TYPE = Type.getType(Long::class.javaObjectType)!!
 

@@ -42,15 +42,18 @@ class InvokerAdjuster constructor(private val methodNode: MethodNode) : NodeAdju
         if (boxHookMethodReturnType != Type.VOID_TYPE && boxHookMethodReturnType != OBJECT_TYPE) {
             checkCast(insnNode.next)
 //            methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Invoker", "invoke", "([Ljava/lang/Object;)Ljava/lang/Object;", false);
-//            methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Integer");    //把这个指令移除了
+//            methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Integer");    //把这个指令移除了   这里不需要强转，因为这里会替换成原来的调用，返回的本来就是原本的数据类型
 //            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);
+//            methodVisitor.visitVarInsn(ISTORE, 9);
+
             methodNode.instructions.remove(insnNode.next)
         }
 
         if (hookMethodReturnType.isPrimitive) {
 //            methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Invoker", "invoke", "([Ljava/lang/Object;)Ljava/lang/Object;", false);
-//            methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Integer");        //把这个指令移除了
+//            methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Integer");    //把这个指令移除了   这里不需要强转，因为这里会替换成原来的调用，返回的本来就是原本的数据类型
 //            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Integer", "intValue", "()I", false);   //把这个指令移除了
+//            methodVisitor.visitVarInsn(ISTORE, 9);
             checkUnbox(insnNode.next)
             methodNode.instructions.remove(insnNode.next)
         }
@@ -99,16 +102,16 @@ class InvokerAdjuster constructor(private val methodNode: MethodNode) : NodeAdju
      */
     private fun checkCast(insnNode: AbstractInsnNode) {
         if (insnNode !is TypeInsnNode) {
-            illegalState("返回的对象类型应立即转换为Hook方法的类型。")
+            illegalState("Invoker返回的对象类型应立即转换为Hook方法的类型。")
         }
 
         val typeInsnNode = insnNode as TypeInsnNode
         if (typeInsnNode.opcode != Opcodes.CHECKCAST) {
-            illegalState("返回的对象类型应立即转换为Hook方法的类型。")
+            illegalState("Invoker返回的对象类型应立即转换为Hook方法的类型。")
         }
 
         if (typeInsnNode.desc != boxHookMethodReturnType.internalName) {
-            illegalState("Hook方法需要的返回值类型： " + boxHookMethodReturnType.internalName + " , 但是转换的是 " + typeInsnNode.desc)
+            illegalState("Invoker方法需要的返回值类型： " + boxHookMethodReturnType.internalName + " , 但是转换的是 " + typeInsnNode.desc)
         }
     }
 }

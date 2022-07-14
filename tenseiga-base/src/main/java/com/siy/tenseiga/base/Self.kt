@@ -20,5 +20,5 @@ object Self {
     fun getField(fieldName: String) = Any()
 
     @JvmStatic
-    fun putField(fieldValue: Any, fieldName: String) = Unit
+    fun putField(fieldName: String, fieldValue: Any) = Unit
 }

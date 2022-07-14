@@ -4,6 +4,7 @@ import com.siy.tenseiga.base.Invoker
 import com.siy.tenseiga.base.Self
 import com.siy.tenseiga.interfaces.NONE
 import com.siy.tenseiga.interfaces.NodeAdjuster
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
@@ -11,7 +12,10 @@ import org.objectweb.asm.tree.MethodNode
 /**
  * 用来处理PlaceHolder
  */
-class PlaceHolderNodeJuster constructor(private val methodNode: MethodNode) : NodeAdjuster {
+class PlaceHolderNodeJuster constructor(
+    private val methodNode: MethodNode,
+    private val transformType: Type
+    ) : NodeAdjuster {
 
     /**
      * 处理[Invoker]
@@ -21,7 +25,7 @@ class PlaceHolderNodeJuster constructor(private val methodNode: MethodNode) : No
     /**
      * 处理[Self]
      */
-    private val selfAdjuster = SelfAdjuster(methodNode)
+    private val selfAdjuster = SelfAdjuster(methodNode,transformType)
 
     fun adjust() {
         var insn = methodNode.instructions.first

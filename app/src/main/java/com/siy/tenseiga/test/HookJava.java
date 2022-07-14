@@ -52,8 +52,6 @@ public class HookJava {
         OriginJava originJava = (OriginJava) Self.get();
         originJava.showToast();
 
-        Self.putField("putField", 1);
-
 //       这里就会需要先转成Number再转换成byte ,short
         int total = (int) Invoker.invoke(1, 3, "hah", new View(App.INSTANCE), null, 1, 2);
         return total - b;
@@ -102,6 +100,9 @@ public class HookJava {
         Log.e("siy", "OriginJava-hookAnnoReplace-");
         OriginJava originJava = (OriginJava) Self.get();
         originJava.showToast();
+
+     //   Self.putField("putField", 1);
+
         return a + b + "hook";
     }
 }

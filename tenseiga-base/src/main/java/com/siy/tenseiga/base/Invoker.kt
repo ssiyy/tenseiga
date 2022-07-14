@@ -2,11 +2,10 @@ package com.siy.tenseiga.base
 
 
 /**
- *
+ * 用来表示调用被hook方法原逻辑的占位符
  * @author  Siy
  * @since  2022/5/26
  */
-
 object Invoker {
 
     /**
@@ -25,6 +24,9 @@ object Invoker {
      */
     const val METHOD_RETURN_VOID = "invokeVoid"
 
+    /**
+     * @param params 如果原来方法有参数，params就是传入的参数
+     */
     @JvmStatic
     fun invoke(vararg params: Any) = Any()
 

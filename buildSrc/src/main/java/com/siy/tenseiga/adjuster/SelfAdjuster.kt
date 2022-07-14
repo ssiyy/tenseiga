@@ -1,8 +1,11 @@
 package com.siy.tenseiga.adjuster
 
+import com.siy.tenseiga.ext.OPCODES_PUTFIELD
+import com.siy.tenseiga.ext.REPLACE_TYPE
 import com.siy.tenseiga.ext.isStaticMethod
 import com.siy.tenseiga.interfaces.NodeAdjuster
 import org.objectweb.asm.Opcodes
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.*
 
 
@@ -11,7 +14,7 @@ import org.objectweb.asm.tree.*
  * @author  Siy
  * @since  2022/7/12
  */
-class SelfAdjuster(private val methodNode: MethodNode) : NodeAdjuster {
+class SelfAdjuster(private val methodNode: MethodNode, private val transformType: Type) : NodeAdjuster {
 
     override fun replace(insnNode: MethodInsnNode): AbstractInsnNode {
         if (isStaticMethod(methodNode.access)) {
@@ -32,16 +35,20 @@ class SelfAdjuster(private val methodNode: MethodNode) : NodeAdjuster {
             }
 
             "putField" -> {
-
+                checkPlaceHolderAllow(insnNode.name)
+                insnNode.opcode = OPCODES_PUTFIELD
             }
 
             "getField" -> {
-
+                checkPlaceHolderAllow(insnNode.name)
             }
         }
         return insnNode
     }
 
+    /**
+     * Self.get() 必须要强转到需要的类型
+     */
     private fun checkGetCast(insnNode: AbstractInsnNode) {
         if (insnNode !is TypeInsnNode) {
             illegalState("Get返回的对象类型应立即转换为Hook对象的类型。")
@@ -52,5 +59,15 @@ class SelfAdjuster(private val methodNode: MethodNode) : NodeAdjuster {
             illegalState("Get返回的对象类型应立即转换为Hook对象的类型。")
         }
     }
+
+    /**
+     * 检查当前placeHolder是否可用
+     */
+    private fun checkPlaceHolderAllow(placeHolder: String) {
+        if (transformType != REPLACE_TYPE) {
+            illegalState("Self.$placeHolder 只允许再${REPLACE_TYPE.internalName}中使用")
+        }
+    }
+
 
 }

@@ -3,6 +3,8 @@ package com.siy.tenseiga.parser
 import com.siy.tenseiga.adjuster.PlaceHolderNodeJuster
 import com.siy.tenseiga.entity.TExtension
 import com.siy.tenseiga.entity.TransformInfo
+import com.siy.tenseiga.ext.PROXY_TYPE
+import com.siy.tenseiga.ext.REPLACE_TYPE
 import com.siy.tenseiga.interfaces.TransformParser
 import java.io.File
 
@@ -37,11 +39,11 @@ class TenseigaParser(extension: TExtension) : TransformParser {
             }
         }.apply {
             proxyInfo.forEach {
-                PlaceHolderNodeJuster(it.hookMethod).adjust()
+                PlaceHolderNodeJuster(it.hookMethod, PROXY_TYPE).adjust()
             }
 
             replaceInfo.forEach {
-                PlaceHolderNodeJuster(it.hookMethod).adjust()
+                PlaceHolderNodeJuster(it.hookMethod, REPLACE_TYPE).adjust()
             }
         }
     }

@@ -1,12 +1,13 @@
 package com.siy.tenseiga.transform
 
 import com.didiglobal.booster.transform.TransformContext
-import com.didiglobal.booster.transform.asm.filter
 import com.siy.tenseiga.entity.ReplaceInfo
 import com.siy.tenseiga.ext.*
+import com.siy.tenseiga.transform.inflater.InvoderInflater
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.Type
-import org.objectweb.asm.tree.*
+import org.objectweb.asm.tree.ClassNode
+import org.objectweb.asm.tree.MethodInsnNode
+import org.objectweb.asm.tree.MethodNode
 
 
 /**
@@ -114,7 +115,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
     }
 
     /**
-     * 给被hook的方法创建一个拷贝
+     * 给被hook的方法创建一个拷贝(主要是为了Invoker.invoke(...)调用原来逻辑)
      *
      * @param targetMethod 需要创建拷贝的方法
      *
@@ -139,91 +140,17 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
      * @return 返回新生成的方法
      */
     private fun copyHookMethodAndReplacePlaceholder(info: ReplaceInfo, methodNode: MethodNode): MethodNode {
-        //新生成一个方法，把hook方法拷贝过来，方法变成静态方法，替换里面Origin,This占位符
+        //新生成一个方法，把hook方法拷贝过来，方法变成静态方法，替换里面Invoker,Self占位符
         return createMethod(
             Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC,
             info.hookClass.replace('/', '_').plus("_${info.hookMethod.name}"),
             descToStaticMethod(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
             info.hookMethod.exceptions
         ) {
-            var hookMethod = info.hookMethod
-            val newMethodNode = MethodNode(Opcodes.ASM7, hookMethod.access, hookMethod.name, hookMethod.desc, hookMethod.signature, hookMethod.exceptions.toTypedArray())
-            val mv = AddLocalVarAdapter(Opcodes.ASM7, newMethodNode, hookMethod.access, hookMethod.name, hookMethod.desc)
-            hookMethod.accept(mv)
-            hookMethod = newMethodNode
-
-
-            val insns = hookMethod.instructions
-
-            val callInsns = insns.filter { insn ->
-                insn.opcode == OPCODES_INVOKER
-            }
-
-            callInsns.forEach { opcall ->
-                val ns = loadArgsAndInvoke(methodNode, mv.slotIndex)
-                insns.insertBefore(opcall, ns)
-                insns.remove(opcall)
-            }
-
-            it.add(insns)
+            val invokeInsn = MethodInsnNode(getOpcodesByAccess(methodNode.access), klass?.name, methodNode.name, methodNode.desc)
+            it.add(InvoderInflater(invokeInsn).inflate(info.hookMethod))
         }.also {
             klass?.methods?.add(it)
         }
-    }
-
-    /**
-     * 加载方法参数并且调用方法
-     *
-     * @param methodNode 需要调用的方法
-     *
-     * @param slotIndex
-     *
-     * @return 返回加载参数和方法调用的指令集
-     */
-    private fun loadArgsAndInvoke(methodNode: MethodNode, slotIndex: Int): InsnList {
-        val insns = InsnList()
-
-        insns.add(VarInsnNode(Opcodes.ASTORE, slotIndex))
-
-        if (!isStaticMethod(methodNode.access)) {
-            insns.add(VarInsnNode(Opcodes.ALOAD, 0))
-        }
-
-        //加载方法传入参数
-        val params = Type.getArgumentTypes(methodNode.desc)
-        params.forEachIndexed { index, type ->
-            insns.add(VarInsnNode(Opcodes.ALOAD, slotIndex))
-            when (index) {
-                0 -> insns.add(InsnNode(Opcodes.ICONST_0))
-                1 -> insns.add(InsnNode(Opcodes.ICONST_1))
-                2 -> insns.add(InsnNode(Opcodes.ICONST_2))
-                3 -> insns.add(InsnNode(Opcodes.ICONST_3))
-                4 -> insns.add(InsnNode(Opcodes.ICONST_4))
-                5 -> insns.add(InsnNode(Opcodes.ICONST_5))
-                in 6..127 -> insns.add(IntInsnNode(Opcodes.BIPUSH, index))
-                in 128..255 -> insns.add(IntInsnNode(Opcodes.SIPUSH, index))
-            }
-            insns.add(InsnNode(Opcodes.AALOAD))
-            if (type.isPrimitive) {
-                //如果是基本类型，就要拆箱成基本变量
-                val numberType = PrimitiveBox.typeToNumberType(type)
-                insns.add(TypeInsnNode(Opcodes.CHECKCAST, numberType.internalName))
-                insns.add(
-                    MethodInsnNode(
-                        Opcodes.INVOKEVIRTUAL,
-                        numberType.internalName,
-                        PrimitiveBox.unboxMethod[type.boxedType],
-                        "()${type.descriptor}",
-                        false
-                    )
-                )
-            } else {
-                //如果不是基本数据类型，是引用类型
-                insns.add(TypeInsnNode(Opcodes.CHECKCAST, type.internalName))
-            }
-        }
-
-        insns.add(MethodInsnNode(getOpcodesByAccess(methodNode.access), klass?.name, methodNode.name, methodNode.desc))
-        return insns
     }
 }

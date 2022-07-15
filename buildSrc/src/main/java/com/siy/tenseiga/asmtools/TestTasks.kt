@@ -30,19 +30,11 @@ fun forDebug(context: TransformContext, transformInfo: TransformInfo?, logger: P
         it.jarInputs + it.directoryInputs
     }?.flatten()?.map { input ->
         val format = if (input is DirectoryInput) Format.DIRECTORY else Format.JAR
-        provider?.getContentLocation(input.name,input.contentTypes,input.scopes,format)
+        provider?.getContentLocation(input.name, input.contentTypes, input.scopes, format)
     }?.filter {
         it?.isDirectory == true
     }?.forEach { file ->
-        //tenseiga转换之后的输出目录
-
-        /*  transformInfo?.replaceInfo?.let {
-              forReplaceDebug(file, it, logger)
-          }*/
-
-        transformInfo?.proxyInfo?.let {
-            forProxyDebug(file!!, it, logger)
-        }
+        printClassAsmCode(file, "com.siy.tenseiga.test.OriginJava",logger)
     }
 }
 
@@ -65,6 +57,24 @@ private fun forReplaceDebug(file: File, replaceInfos: List<ReplaceInfo>, logger:
 
 private fun forProxyDebug(file: File, proxyInfo: List<ProxyInfo>, logger: PrintWriter) {
     val targetFile = File(file, "com.siy.tenseiga.MainActivity".replace(".", "\\").plus(".class"))
+
+    if (targetFile.exists()) {
+        targetFile.inputStream().use { fs ->
+            val parsingOptions = ClassReader.SKIP_FRAMES or ClassReader.SKIP_DEBUG
+            val asmCode = true
+
+            val printer = if (asmCode) ASMifier() else Textifier()
+            val traceClassVisitor = TraceClassVisitor(null, printer, logger)
+            ClassReader(fs).accept(traceClassVisitor, parsingOptions)
+        }
+    }
+}
+
+/**
+ *@param className 类的全类名 com.siy.tenseiga.MainActivity
+ */
+private fun printClassAsmCode(file: File?, className: String, logger: PrintWriter) {
+    val targetFile = File(file, className.replace(".", "\\").plus(".class"))
 
     if (targetFile.exists()) {
         targetFile.inputStream().use { fs ->

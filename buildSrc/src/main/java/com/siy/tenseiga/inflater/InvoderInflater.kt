@@ -1,4 +1,4 @@
-package com.siy.tenseiga.transform.inflater
+package com.siy.tenseiga.inflater
 
 import com.didiglobal.booster.transform.asm.filter
 import com.siy.tenseiga.ext.*
@@ -18,9 +18,9 @@ import org.objectweb.asm.tree.*
  * @author  Siy
  * @since  2022/7/14
  */
-class InvoderInflater(private val invokeInsn: MethodInsnNode) : Inflater {
+object InvoderInflater : Inflater {
 
-    override fun inflate(methodNode: MethodNode): InsnList {
+    override fun inflate(methodNode: MethodNode, inflaterNode: AbstractInsnNode, replaceInsn: AbstractInsnNode?): InsnList {
         if (!havaInvoker(methodNode)) {
             //判断下是否有invoker,没有就直接返回
             return methodNode.instructions
@@ -38,8 +38,10 @@ class InvoderInflater(private val invokeInsn: MethodInsnNode) : Inflater {
         }
 
         invokerInsns.forEach {
-            val ns = loadArgsAndInvoke(addLocalVarAdapter.slotIndex)
-            insn.insertBefore(it, ns)
+            val ns = loadArgsAndInvoke(replaceInsn, addLocalVarAdapter.slotIndex)
+            ns?.let { newInsn ->
+                insn.insertBefore(it, newInsn)
+            }
             insn.remove(it)
         }
 
@@ -49,13 +51,19 @@ class InvoderInflater(private val invokeInsn: MethodInsnNode) : Inflater {
     /**
      * 加载方法参数并且调用方法
      *
-     * @param methodNode 需要调用的方法
+     * @param invokeInsn 需要调用的方法
      *
      * @param slotIndex
      *
      * @return 返回加载参数和方法调用的指令集
      */
-    private fun loadArgsAndInvoke(slotIndex: Int): InsnList {
+    private fun loadArgsAndInvoke(invokeInsn: AbstractInsnNode?, slotIndex: Int): InsnList? {
+        if (invokeInsn !is MethodInsnNode) {
+            errOut("11111111111111111111111111111111111111111111111111111111111111111111111111111111111")
+            return null
+        }
+        errOut("2222222")
+
         val insns = InsnList()
 
         //把Invoker.invoke(...)传入的参数存储起来

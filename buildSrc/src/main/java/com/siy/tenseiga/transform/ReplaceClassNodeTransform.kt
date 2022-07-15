@@ -3,7 +3,7 @@ package com.siy.tenseiga.transform
 import com.didiglobal.booster.transform.TransformContext
 import com.siy.tenseiga.entity.ReplaceInfo
 import com.siy.tenseiga.ext.*
-import com.siy.tenseiga.transform.inflater.InvoderInflater
+import com.siy.tenseiga.inflater.TenseigaInflater
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodInsnNode
@@ -46,10 +46,20 @@ import org.objectweb.asm.tree.MethodNode
  */
 class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt: ClassNodeTransform?) : ClassNodeTransform(cnt) {
 
+
+    private var tenseigaInflater: TenseigaInflater? = null
+
+
     /**
      * 如果不为空就是需要hook的类
      */
     private var klass: ClassNode? = null
+        set(value) {
+            value?.let {
+                tenseigaInflater = TenseigaInflater(it)
+            }
+            field = value
+        }
 
     /**
      * 当前类所对应的ReplaceInfo，一个类可能对应几个ReplaceInfo
@@ -70,7 +80,15 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
     }
 
     /**
+     * 需要把 hookMethod过滤掉，不能套娃
+     *
      * 判断当前方法是否是需要替换的方法
+     *
+     * @param context
+     * @param clazz 当前所在类
+     * @param method 当前所在方法
+     * @param info 替换信息
+     *
      */
     private fun checkMethodIsHook(context: TransformContext, clazz: ClassNode, method: MethodNode, info: ReplaceInfo): Boolean {
         //方法所在的类一样  或者是其子类
@@ -79,7 +97,12 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
         val sameName = info.targetMethod == method.name
         //方法的描述一样
         val sameDesc = info.targetDesc == method.desc
-        return sameOwner && sameName && sameDesc
+
+        //当前找到的方法是不是hookMethod,不能套娃
+        val isOrgHook = clazz.name == info.hookClass
+        val isOrgMethod = (method.name == info.hookMethod.name) && (method.desc == info.hookMethod.desc)
+
+        return (sameOwner && sameName && sameDesc) && !(isOrgHook && isOrgMethod)
     }
 
     override fun visitorMethod(context: TransformContext, method: MethodNode) {
@@ -147,8 +170,11 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
             descToStaticMethod(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
             info.hookMethod.exceptions
         ) {
-            val invokeInsn = MethodInsnNode(getOpcodesByAccess(methodNode.access), klass?.name, methodNode.name, methodNode.desc)
-            it.add(InvoderInflater(invokeInsn).inflate(info.hookMethod))
+            errOut("tenseigaInflater:$tenseigaInflater")
+            tenseigaInflater?.let { inflater ->
+                val invokeInsn = MethodInsnNode(getOpcodesByAccess(methodNode.access), klass?.name, methodNode.name, methodNode.desc)
+                it.add(inflater.inflate(info.hookMethod, invokeInsn))
+            }
         }.also {
             klass?.methods?.add(it)
         }

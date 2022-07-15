@@ -6,7 +6,7 @@ import com.siy.tenseiga.ext.createMethod
 import com.siy.tenseiga.ext.descToStaticMethod
 import com.siy.tenseiga.ext.isStaticMethod
 import com.siy.tenseiga.ext.isStaticMethodInsn
-import com.siy.tenseiga.transform.inflater.InvoderInflater
+import com.siy.tenseiga.inflater.TenseigaInflater
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodInsnNode
@@ -18,7 +18,7 @@ import org.objectweb.asm.tree.MethodNode
  * 代理的基本逻辑就是下面啦
  *
  * private void proxyHook(){
- *       plussss(1);
+ *       plus(1);
  *  }
  *
  *          |
@@ -43,10 +43,19 @@ import org.objectweb.asm.tree.MethodNode
  */
 class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: ClassNodeTransform?) : ClassNodeTransform(cnt) {
 
+
+    private var tenseigaInflater: TenseigaInflater? = null
+
     /**
      * 如果不为空就是需要hook的类
      */
     private var klass: ClassNode? = null
+        set(value) {
+            value?.let {
+                tenseigaInflater = TenseigaInflater(it)
+            }
+            field = value
+        }
 
     /**
      * 当前Transform需要转换的ProxyInfo,一个类可能对应几个ProxyInfo
@@ -75,8 +84,19 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
         }
     }
 
+    private var mMethodNode: MethodNode? = null
+
+    override fun visitorMethod(context: TransformContext, method: MethodNode) {
+        super.visitorMethod(context, method)
+        this.mMethodNode = method
+    }
+
     /**
      * 判断当前方法调用的指令是否是调用的需要代理的方法
+     *
+     * @param context
+     * @param insnMethod 被hook方法调用的那个指令
+     * @param info
      */
     private fun checkMethodInsnIsHook(context: TransformContext, insnMethod: MethodInsnNode, info: ProxyInfo): Boolean {
         //方法所在的类一样  或者是其子类
@@ -85,7 +105,12 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
         val sameName = insnMethod.name == info.targetMethod
         //方法的描述一样
         val sameDesc = insnMethod.desc == info.targetDesc
-        return sameOwner && sameName && sameDesc
+
+        //当前找到的方法是不是hookMethod,不能套娃
+        val isOrgHook = klass?.name == info.hookClass
+        val isOrgMethod = (mMethodNode?.name == info.hookMethod.name) && (mMethodNode?.desc == info.hookMethod.desc)
+
+        return sameOwner && sameName && sameDesc && !(isOrgHook && isOrgMethod)
     }
 
     override fun visitorInsnMethod(context: TransformContext, insnMethod: MethodInsnNode) {
@@ -116,7 +141,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
      *
      *
      * @param info 替换相关信息的数据体
-     * @param methodInsnNode 替换Origin方法调用的方法
+     * @param methodInsnNode 被hook方法调用的那个指令
      *
      * @return 返回新生成的方法
      */
@@ -131,8 +156,10 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             descToStaticMethod(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
             info.hookMethod.exceptions
         ) {
-            val invokeInsn = MethodInsnNode(methodInsnNode.opcode, methodInsnNode.owner, methodInsnNode.name, methodInsnNode.desc)
-            it.add(InvoderInflater(invokeInsn).inflate(info.hookMethod))
+            tenseigaInflater?.let { inflater ->
+                val invokeInsn = MethodInsnNode(methodInsnNode.opcode, methodInsnNode.owner, methodInsnNode.name, methodInsnNode.desc)
+                it.add(inflater.inflate(info.hookMethod, invokeInsn))
+            }
         }.also {
             klass?.methods?.add(it)
         }

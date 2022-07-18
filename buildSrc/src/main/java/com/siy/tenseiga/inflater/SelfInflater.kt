@@ -25,11 +25,8 @@ class SelfInflater(private val classNode: ClassNode) : Inflater {
 
 
         inflaterNodes.forEach {
-
             methodNodeInsn.remove(it)
         }
-
-
     }
 
 }

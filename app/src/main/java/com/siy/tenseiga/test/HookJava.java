@@ -100,8 +100,7 @@ public class HookJava {
         Log.e("siy", "OriginJava-hookAnnoReplace-");
         OriginJava originJava = (OriginJava) Self.get();
         originJava.showToast();
-
-        //   Self.putField("putField", 1);
+        Self.putField(7, "newField");
 
         return a + b + "hook";
     }

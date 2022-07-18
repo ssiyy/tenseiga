@@ -36,7 +36,13 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
 
             "putField" -> {
                 checkPlaceHolderAllow(insnNode.name)
+//                methodVisitor.visitIntInsn(BIPUSH, 7);
+//                methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+//                methodVisitor.visitLdcInsn("newField");       //把这个指令移除了
+//                methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Self", "putField", "(Ljava/lang/Object;Ljava/lang/String;)V", false);     //把newField名字给它
                 insnNode.opcode = OPCODES_PUTFIELD
+                insnNode.name = getFieldName(insnNode.previous)
+                methodNode.instructions.remove(insnNode.previous)
             }
 
             "getField" -> {
@@ -67,6 +73,24 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
         if (transformType != REPLACE_TYPE) {
             illegalState("Self.$placeHolder 只允许再${REPLACE_TYPE.internalName}中使用")
         }
+    }
+
+    /**
+     * 获取字段名
+     *
+     * @param node
+     */
+    private fun getFieldName(node: AbstractInsnNode): String {
+        if (node !is LdcInsnNode) {
+            illegalState("只接受常量字符串作为字段名")
+        }
+
+        val ldc = node as LdcInsnNode
+        if (ldc.cst is String) {
+            illegalState("只接受常量字符串作为字段名")
+        }
+
+        return ldc.cst as String
     }
 
 

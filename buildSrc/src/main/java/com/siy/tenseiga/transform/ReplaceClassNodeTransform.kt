@@ -170,10 +170,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
             descToStaticMethod(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
             info.hookMethod.exceptions
         ) {
-            errOut("tenseigaInflater:$tenseigaInflater")
-            tenseigaInflater?.let { inflater ->
-                it.instructions.add(inflater.inflate(info.hookMethod, methodNode,null, REPLACE_TYPE))
-            }
+            it.instructions.add(tenseigaInflater?.inflate(info.hookMethod, methodNode, null, REPLACE_TYPE))
         }.also {
             klass?.methods?.add(it)
         }

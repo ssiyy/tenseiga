@@ -104,10 +104,13 @@ public class HookJava {
         Self.putField(7, "newField");
 
         Object fieldValue = Tools.loadField(OriginJava.class, originJava, "newField");
-        Log.e("siy", "putField的值：" + String.valueOf(fieldValue));
+        Log.e("siy", "putField的值()：" + String.valueOf(fieldValue));
+
+        Object newField = Self.getField("newField");
 
         return a + b + "hook";
     }
+
 
 
 }

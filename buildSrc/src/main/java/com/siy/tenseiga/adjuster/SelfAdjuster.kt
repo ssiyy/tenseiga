@@ -47,6 +47,9 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
 
             "getField" -> {
                 checkPlaceHolderAllow(insnNode.name)
+//                methodVisitor.visitLdcInsn("newField");    //把这个指令移除了
+//                methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Self", "getField", "(Ljava/lang/String;)Ljava/lang/Object;", false);
+//                methodVisitor.visitVarInsn(ASTORE, 5);
             }
         }
         return insnNode

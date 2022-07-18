@@ -44,6 +44,8 @@ val FILTER_TYPE = Type.getType(Filter::class.java)!!
 
 const val OPCODES_INVOKER = Int.MAX_VALUE - 5555
 
-const val OPCODES_PUTFIELD = 5555
+const val OPCODES_PUTFIELD = OPCODES_INVOKER - 5555
+
+const val OPCODES_GETFIELD = OPCODES_PUTFIELD - 5555
 
 

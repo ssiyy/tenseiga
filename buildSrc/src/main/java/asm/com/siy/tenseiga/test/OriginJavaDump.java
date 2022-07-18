@@ -18,6 +18,10 @@ public class OriginJavaDump implements Opcodes {
         classWriter.visit(V1_8, ACC_PUBLIC | ACC_SUPER, "com/siy/tenseiga/test/OriginJava", null, "java/lang/Object", null);
 
         {
+            fieldVisitor = classWriter.visitField(ACC_PRIVATE, "newField", "Ljava/lang/Object;", null, null);
+            fieldVisitor.visitEnd();
+        }
+        {
             methodVisitor = classWriter.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
             methodVisitor.visitCode();
             methodVisitor.visitVarInsn(ALOAD, 0);
@@ -31,15 +35,12 @@ public class OriginJavaDump implements Opcodes {
             methodVisitor.visitParameter("a", 0);
             methodVisitor.visitParameter("b", 0);
             methodVisitor.visitCode();
-            methodVisitor.visitLdcInsn("siy");
-            methodVisitor.visitLdcInsn("OriginJava-replace-");
-            methodVisitor.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
-            methodVisitor.visitInsn(POP);
+            methodVisitor.visitVarInsn(ALOAD, 0);
             methodVisitor.visitVarInsn(ILOAD, 1);
             methodVisitor.visitVarInsn(ILOAD, 2);
-            methodVisitor.visitInsn(IADD);
+            methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/test/OriginJava", "com_siy_tenseiga_test_HookJava_hookReplace", "(Lcom/siy/tenseiga/test/OriginJava;II)I", false);
             methodVisitor.visitInsn(IRETURN);
-            methodVisitor.visitMaxs(2, 3);
+            methodVisitor.visitMaxs(3, 3);
             methodVisitor.visitEnd();
         }
         {
@@ -110,6 +111,64 @@ public class OriginJavaDump implements Opcodes {
             methodVisitor.visitEnd();
         }
         {
+            methodVisitor = classWriter.visitMethod(ACC_PRIVATE, "replace$___backup___", "(II)I", null, null);
+            methodVisitor.visitCode();
+            methodVisitor.visitLdcInsn("siy");
+            methodVisitor.visitLdcInsn("OriginJava-replace-");
+            methodVisitor.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
+            methodVisitor.visitInsn(POP);
+            methodVisitor.visitVarInsn(ILOAD, 1);
+            methodVisitor.visitVarInsn(ILOAD, 2);
+            methodVisitor.visitInsn(IADD);
+            methodVisitor.visitInsn(IRETURN);
+            methodVisitor.visitMaxs(2, 3);
+            methodVisitor.visitEnd();
+        }
+        {
+            methodVisitor = classWriter.visitMethod(ACC_PRIVATE | ACC_STATIC, "com_siy_tenseiga_test_HookJava_hookReplace", "(Lcom/siy/tenseiga/test/OriginJava;II)I", null, null);
+            methodVisitor.visitCode();
+            methodVisitor.visitLdcInsn("siy");
+            methodVisitor.visitLdcInsn("HookJava-hookReplace-");
+            methodVisitor.visitMethodInsn(INVOKESTATIC, "android/util/Log", "e", "(Ljava/lang/String;Ljava/lang/String;)I", false);
+            methodVisitor.visitInsn(POP);
+            methodVisitor.visitVarInsn(ALOAD, 0);
+            methodVisitor.visitVarInsn(ASTORE, 3);
+            methodVisitor.visitVarInsn(ALOAD, 3);
+            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "com/siy/tenseiga/test/OriginJava", "showToast", "()V", false);
+            methodVisitor.visitInsn(ICONST_2);
+            methodVisitor.visitTypeInsn(ANEWARRAY, "java/lang/Object");
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitInsn(ICONST_0);
+            methodVisitor.visitVarInsn(ILOAD, 1);
+            methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+            methodVisitor.visitInsn(AASTORE);
+            methodVisitor.visitInsn(DUP);
+            methodVisitor.visitInsn(ICONST_1);
+            methodVisitor.visitVarInsn(ILOAD, 2);
+            methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
+            methodVisitor.visitInsn(AASTORE);
+            methodVisitor.visitVarInsn(ASTORE, 3);
+            methodVisitor.visitVarInsn(ALOAD, 0);
+            methodVisitor.visitVarInsn(ALOAD, 3);
+            methodVisitor.visitInsn(ICONST_0);
+            methodVisitor.visitInsn(AALOAD);
+            methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Number");
+            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Number", "intValue", "()I", false);
+            methodVisitor.visitVarInsn(ALOAD, 3);
+            methodVisitor.visitInsn(ICONST_1);
+            methodVisitor.visitInsn(AALOAD);
+            methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Number");
+            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Number", "intValue", "()I", false);
+            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "com/siy/tenseiga/test/OriginJava", "replace$___backup___", "(II)I", false);
+            methodVisitor.visitVarInsn(ISTORE, 4);
+            methodVisitor.visitVarInsn(ILOAD, 4);
+            methodVisitor.visitVarInsn(ILOAD, 2);
+            methodVisitor.visitInsn(ISUB);
+            methodVisitor.visitInsn(IRETURN);
+            methodVisitor.visitMaxs(4, 5);
+            methodVisitor.visitEnd();
+        }
+        {
             methodVisitor = classWriter.visitMethod(ACC_PRIVATE, "annoReplace$___backup___", "(ILjava/lang/Integer;)Ljava/lang/String;", null, null);
             methodVisitor.visitCode();
             methodVisitor.visitLdcInsn("siy");
@@ -136,21 +195,11 @@ public class OriginJavaDump implements Opcodes {
             methodVisitor.visitVarInsn(ASTORE, 3);
             methodVisitor.visitVarInsn(ALOAD, 3);
             methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "com/siy/tenseiga/test/OriginJava", "showToast", "()V", false);
-            methodVisitor.visitInsn(ICONST_2);
-            methodVisitor.visitTypeInsn(ANEWARRAY, "java/lang/Object");
-            methodVisitor.visitInsn(DUP);
-            methodVisitor.visitInsn(ICONST_0);
-            methodVisitor.visitVarInsn(ILOAD, 1);
+            methodVisitor.visitIntInsn(BIPUSH, 7);
             methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
-            methodVisitor.visitInsn(AASTORE);
-            methodVisitor.visitInsn(DUP);
-            methodVisitor.visitInsn(ICONST_1);
-            methodVisitor.visitVarInsn(ALOAD, 2);
-            methodVisitor.visitInsn(AASTORE);
-            methodVisitor.visitVarInsn(ASTORE, 1);
-            methodVisitor.visitInsn(NOP);
-            methodVisitor.visitInsn(LNEG);
-            methodVisitor.visitVarInsn(ASTORE, 4);
+            methodVisitor.visitVarInsn(ALOAD, 0);
+            methodVisitor.visitInsn(SWAP);
+            methodVisitor.visitFieldInsn(PUTFIELD, "com/siy/tenseiga/test/OriginJava", "newField", "Ljava/lang/Object;");
             methodVisitor.visitTypeInsn(NEW, "java/lang/StringBuilder");
             methodVisitor.visitInsn(DUP);
             methodVisitor.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false);
@@ -161,11 +210,9 @@ public class OriginJavaDump implements Opcodes {
             methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(I)Ljava/lang/StringBuilder;", false);
             methodVisitor.visitLdcInsn("hook");
             methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
-            methodVisitor.visitVarInsn(ALOAD, 4);
-            methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false);
             methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false);
             methodVisitor.visitInsn(ARETURN);
-            methodVisitor.visitMaxs(4, 5);
+            methodVisitor.visitMaxs(3, 4);
             methodVisitor.visitEnd();
         }
         classWriter.visitEnd();

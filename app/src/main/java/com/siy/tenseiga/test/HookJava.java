@@ -6,6 +6,7 @@ import android.view.View;
 
 import com.siy.tenseiga.App;
 import com.siy.tenseiga.R;
+import com.siy.tenseiga.Tools;
 import com.siy.tenseiga.base.Invoker;
 import com.siy.tenseiga.base.Self;
 import com.siy.tenseiga.base.annotations.Replace;
@@ -102,6 +103,11 @@ public class HookJava {
         originJava.showToast();
         Self.putField(7, "newField");
 
+        Object fieldValue = Tools.loadField(OriginJava.class, originJava, "newField");
+        Log.e("siy", "putField的值：" + String.valueOf(fieldValue));
+
         return a + b + "hook";
     }
+
+
 }

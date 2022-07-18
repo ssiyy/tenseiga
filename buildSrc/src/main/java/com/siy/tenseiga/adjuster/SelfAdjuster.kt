@@ -86,7 +86,7 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
         }
 
         val ldc = node as LdcInsnNode
-        if (ldc.cst is String) {
+        if (ldc.cst !is String) {
             illegalState("只接受常量字符串作为字段名")
         }
 

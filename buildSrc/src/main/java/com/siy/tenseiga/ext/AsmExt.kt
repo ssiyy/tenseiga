@@ -1,7 +1,10 @@
 package com.siy.tenseiga.ext
 
+import com.didiglobal.booster.transform.asm.asIterable
 import org.objectweb.asm.Type
+import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.AnnotationNode
+import org.objectweb.asm.tree.InsnList
 
 
 /**
@@ -63,3 +66,7 @@ val Type.boxedType: Type
             else -> this
         }
     }
+
+fun <K> InsnList.groupBy(keySelector: (AbstractInsnNode) -> K): Map<K, List<AbstractInsnNode>> {
+    return this.asIterable().groupBy(keySelector)
+}

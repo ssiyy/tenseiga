@@ -92,13 +92,11 @@ fun createMethod(
     name: String,
     desc: String,
     exceptions: List<String>?,
-    action: ((InsnList) -> Unit)
+    action: ((MethodNode) -> Unit)
 ): MethodNode {
     val methodNode = MethodNode(access, name, desc, null, exceptions?.toTypedArray())
-    val insnList = InsnList()
     //操作
-    action(insnList)
-    methodNode.instructions.add(insnList)
+    action(methodNode)
     return methodNode
 }
 

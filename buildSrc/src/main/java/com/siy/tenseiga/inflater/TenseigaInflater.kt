@@ -1,12 +1,10 @@
 package com.siy.tenseiga.inflater
 
-import com.didiglobal.booster.transform.asm.asIterable
-import com.siy.tenseiga.ext.OPCODES_INVOKER
-import com.siy.tenseiga.ext.OPCODES_PUTFIELD
-import com.siy.tenseiga.ext.errOut
-import org.objectweb.asm.tree.AbstractInsnNode
+import com.siy.tenseiga.ext.*
+import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.InsnList
+import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
 
 
@@ -15,24 +13,42 @@ import org.objectweb.asm.tree.MethodNode
  * @author  Siy
  * @since  2022/7/15
  */
-class TenseigaInflater(classNode: ClassNode) {
-
-    private val inflaterMap = mapOf(
-        OPCODES_INVOKER to InvoderInflater,
-        OPCODES_PUTFIELD to SelfInflater(classNode)
-    )
+class TenseigaInflater(private val klass: ClassNode) {
 
 
     /**
+     * @param hookMethodNode
+     *
      * @param methodNode
      *
-     * @param abstractInsnNode
+     * @param replaceInsn
+     *
+     * @param type
      */
-    fun inflate(methodNode: MethodNode, abstractInsnNode: AbstractInsnNode?): InsnList {
-        val insn = methodNode.instructions
-        insn.asIterable().forEach {
-           errOut("ffffffffffff:${inflaterMap[it.opcode]}")
-            inflaterMap[it.opcode]?.inflate(methodNode, it, abstractInsnNode)
+    fun inflate(hookMethodNode: MethodNode, methodNode: MethodNode?, replaceInsn: MethodInsnNode?, type: Type): InsnList {
+        val insn = hookMethodNode.instructions
+
+        val groupInsn = insn.groupBy {
+            it.opcode
+        }
+
+        val invokers = groupInsn[OPCODES_INVOKER] ?: listOf()
+        val putFields = groupInsn[OPCODES_PUTFIELD] ?: listOf()
+
+        when (type) {
+            REPLACE_TYPE -> {
+                val invokeInsn = MethodInsnNode(getOpcodesByAccess(methodNode!!.access), klass.name, methodNode.name, methodNode.desc)
+                InvoderInflater.inflate(hookMethodNode, invokers, invokeInsn)
+
+                SelfInflater(klass).inflate(hookMethodNode, putFields, null)
+            }
+
+            PROXY_TYPE -> {
+                val invokeInsn = MethodInsnNode(replaceInsn!!.opcode, replaceInsn.owner, replaceInsn.name, replaceInsn.desc)
+                InvoderInflater.inflate(hookMethodNode, invokers, invokeInsn)
+
+                SelfInflater(klass).inflate(hookMethodNode, putFields, null)
+            }
         }
 
         return insn

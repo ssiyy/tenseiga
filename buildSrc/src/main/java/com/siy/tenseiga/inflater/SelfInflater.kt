@@ -1,11 +1,9 @@
 package com.siy.tenseiga.inflater
 
-import com.didiglobal.booster.transform.asm.filter
-import com.siy.tenseiga.ext.OPCODES_PUTFIELD
 import com.siy.tenseiga.parser.Inflater
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.ClassNode
-import org.objectweb.asm.tree.InsnList
+import org.objectweb.asm.tree.MethodInsnNode
 import org.objectweb.asm.tree.MethodNode
 
 
@@ -17,29 +15,21 @@ import org.objectweb.asm.tree.MethodNode
 class SelfInflater(private val classNode: ClassNode) : Inflater {
 
 
-    override fun inflate(methodNode: MethodNode, inflaterNode: AbstractInsnNode, replaceInsn: AbstractInsnNode?): InsnList {
-        if (!haveSelfPutField(methodNode)) {
-            return methodNode.instructions
+    override fun inflate(methodNode: MethodNode, inflaterNodes: List<AbstractInsnNode>, replaceInsn: MethodInsnNode?) {
+        if (inflaterNodes.isEmpty()) {
+            return
         }
 
-        val insn = methodNode.instructions
+        val methodNodeInsn = methodNode.instructions
 
-        val selfPutFields = insn.filter {
-            it.opcode == OPCODES_PUTFIELD
+
+
+        inflaterNodes.forEach {
+
+            methodNodeInsn.remove(it)
         }
 
-        selfPutFields.forEach {
 
-            insn.remove(it)
-        }
-
-        return insn
-    }
-
-    private fun haveSelfPutField(methodNode: MethodNode): Boolean {
-        return methodNode.instructions.filter {
-            it.opcode == OPCODES_PUTFIELD
-        }.isNotEmpty()
     }
 
 }

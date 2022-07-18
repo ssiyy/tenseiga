@@ -2,10 +2,7 @@ package com.siy.tenseiga.transform
 
 import com.didiglobal.booster.transform.TransformContext
 import com.siy.tenseiga.entity.ProxyInfo
-import com.siy.tenseiga.ext.createMethod
-import com.siy.tenseiga.ext.descToStaticMethod
-import com.siy.tenseiga.ext.isStaticMethod
-import com.siy.tenseiga.ext.isStaticMethodInsn
+import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.inflater.TenseigaInflater
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
@@ -156,10 +153,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             descToStaticMethod(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
             info.hookMethod.exceptions
         ) {
-            tenseigaInflater?.let { inflater ->
-                val invokeInsn = MethodInsnNode(methodInsnNode.opcode, methodInsnNode.owner, methodInsnNode.name, methodInsnNode.desc)
-                it.add(inflater.inflate(info.hookMethod, invokeInsn))
-            }
+            it.instructions.add(tenseigaInflater?.inflate(info.hookMethod, null, methodInsnNode, PROXY_TYPE))
         }.also {
             klass?.methods?.add(it)
         }

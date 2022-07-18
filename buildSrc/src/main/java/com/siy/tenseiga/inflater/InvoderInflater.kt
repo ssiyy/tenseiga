@@ -1,6 +1,5 @@
 package com.siy.tenseiga.inflater
 
-import com.didiglobal.booster.transform.asm.filter
 import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.parser.Inflater
 import org.objectweb.asm.MethodVisitor
@@ -13,17 +12,16 @@ import org.objectweb.asm.tree.*
 /**
  *用来处理Invoker
  *
- * @param invokeInsn 需要代替Invoker.invoke的指令
  *
  * @author  Siy
  * @since  2022/7/14
  */
 object InvoderInflater : Inflater {
 
-    override fun inflate(methodNode: MethodNode, inflaterNode: AbstractInsnNode, replaceInsn: AbstractInsnNode?): InsnList {
-        if (!havaInvoker(methodNode)) {
+    override fun inflate(methodNode: MethodNode, inflaterNodes: List<AbstractInsnNode>, replaceInsn: MethodInsnNode?) {
+        if (inflaterNodes.isEmpty()) {
             //判断下是否有invoker,没有就直接返回
-            return methodNode.instructions
+            return
         }
 
         //判断下方法方法有没有参数，如果有就插入一个局部变量存放Invoker.invoke(...)传入的参数
@@ -31,51 +29,38 @@ object InvoderInflater : Inflater {
         val addLocalVarAdapter = AddLocalVar(Opcodes.ASM7, newMethodNode, methodNode.access, methodNode.name, methodNode.desc, OBJECT_TYPE)
         methodNode.accept(addLocalVarAdapter)
 
-        val insn = newMethodNode.instructions
+        val methodNodeInsn = methodNode.instructions
 
-        val invokerInsns = insn.filter {
-            it.opcode == OPCODES_INVOKER
+        inflaterNodes.forEach {
+            val ns = loadArgsAndInvoke(replaceInsn!!, addLocalVarAdapter.slotIndex)
+            methodNodeInsn.insertBefore(it, ns)
+            methodNodeInsn.remove(it)
         }
 
-        invokerInsns.forEach {
-            val ns = loadArgsAndInvoke(replaceInsn, addLocalVarAdapter.slotIndex)
-            ns?.let { newInsn ->
-                insn.insertBefore(it, newInsn)
-            }
-            insn.remove(it)
-        }
-
-        return insn
     }
 
     /**
      * 加载方法参数并且调用方法
      *
-     * @param invokeInsn 需要调用的方法
+     * @param replaceInsn 需要调用的方法
      *
      * @param slotIndex
      *
      * @return 返回加载参数和方法调用的指令集
      */
-    private fun loadArgsAndInvoke(invokeInsn: AbstractInsnNode?, slotIndex: Int): InsnList? {
-        if (invokeInsn !is MethodInsnNode) {
-            errOut("11111111111111111111111111111111111111111111111111111111111111111111111111111111111")
-            return null
-        }
-        errOut("2222222")
-
+    private fun loadArgsAndInvoke(replaceInsn: MethodInsnNode, slotIndex: Int): InsnList {
         val insns = InsnList()
 
         //把Invoker.invoke(...)传入的参数存储起来
         insns.add(VarInsnNode(Opcodes.ASTORE, slotIndex))
 
-        if (invokeInsn.opcode != Opcodes.INVOKESTATIC) {
+        if (replaceInsn.opcode != Opcodes.INVOKESTATIC) {
             //看看调用的方法是不是静态方法，如果不是就要加载一下0index变量
             insns.add(VarInsnNode(Opcodes.ALOAD, 0))
         }
 
         //加载方法传入参数
-        val params = Type.getArgumentTypes(invokeInsn.desc)
+        val params = Type.getArgumentTypes(replaceInsn.desc)
         params.forEachIndexed { index, type ->
             insns.add(VarInsnNode(Opcodes.ALOAD, slotIndex))
             when (index) {
@@ -108,14 +93,8 @@ object InvoderInflater : Inflater {
             }
         }
 
-        insns.add(invokeInsn)
+        insns.add(replaceInsn)
         return insns
-    }
-
-    private fun havaInvoker(methodNode: MethodNode): Boolean {
-        return methodNode.instructions.filter { insn ->
-            insn.opcode == OPCODES_INVOKER
-        }.isNotEmpty()
     }
 }
 

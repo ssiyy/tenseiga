@@ -148,7 +148,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
         val newAccess: Int = targetMethod.access and (Opcodes.ACC_PROTECTED or Opcodes.ACC_PUBLIC).inv() or Opcodes.ACC_PRIVATE
         val newName = targetMethod.name + "${'$'}___backup___"
         return createMethod(newAccess, newName, targetMethod.desc, targetMethod.exceptions) {
-            it.add(targetMethod.instructions)
+            it.instructions.add(targetMethod.instructions)
         }.also {
             klass?.methods?.add(it)
         }
@@ -172,8 +172,7 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
         ) {
             errOut("tenseigaInflater:$tenseigaInflater")
             tenseigaInflater?.let { inflater ->
-                val invokeInsn = MethodInsnNode(getOpcodesByAccess(methodNode.access), klass?.name, methodNode.name, methodNode.desc)
-                it.add(inflater.inflate(info.hookMethod, invokeInsn))
+                it.instructions.add(inflater.inflate(info.hookMethod, methodNode,null, REPLACE_TYPE))
             }
         }.also {
             klass?.methods?.add(it)

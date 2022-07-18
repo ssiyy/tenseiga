@@ -47,7 +47,7 @@ dependencies {
 }
 
 
-/*TExtension {
+TExtension {
     proxys {
         //代理用户方法
         proxy {
@@ -75,4 +75,4 @@ dependencies {
             hookClass = "com.siy.tenseiga.test.HookJava"
         }
     }
-}*/
+}

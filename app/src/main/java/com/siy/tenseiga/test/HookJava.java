@@ -103,12 +103,11 @@ public class HookJava {
         originJava.showToast();
         Self.putField(7.1, "newField");
 
-        float fieldValue = (float)Tools.loadField(OriginJava.class, originJava, "newField");
-//        Log.e("siy", "putField的值反射方式获取：" + fieldValue + "-类型：" + fieldValue.getClass().getName());
+        double fieldValue = (double) Tools.loadField(OriginJava.class, originJava, "newField");
         Log.e("siy", "putField的值反射方式获取：" + fieldValue);
 
-        float newField =  (float)Self.getField("newField");
-//        Log.e("siy", "putField的值getField方式获取：" + newField + "-类型：" + newField.getClass().getName());
+        //这里为什么可以？因为里面我做了处理
+        Float newField = (Float) Self.getField("newField");
         Log.e("siy", "putField的值getField方式获取：" + newField);
 
 

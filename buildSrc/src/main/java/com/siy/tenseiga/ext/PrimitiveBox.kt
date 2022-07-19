@@ -25,14 +25,11 @@ object PrimitiveBox {
     )
 
     /**
-     * 其它类型type转换成NumberType
+     * 是不是Number类型
      *
-     * 为什么要这么做？主要是为了应付byte ,short  ,Float 等跨类型转换。
-     * 因为基本数据类型之间可以强制转换，包装类型之间不可以
-     *
-     * @param type
+     * @return true 是  false 不是
      */
-    fun typeToNumberType(type: Type): Type {
+    fun isNumberType(type: Type): Boolean {
         return when (type) {
             BYTE_TYPE,
             SHORT_TYPE,
@@ -45,8 +42,24 @@ object PrimitiveBox {
             Type.INT_TYPE,
             Type.FLOAT_TYPE,
             Type.LONG_TYPE,
-            Type.DOUBLE_TYPE -> NUMBER_TYPE
-            else -> type
+            Type.DOUBLE_TYPE -> true
+            else -> false
+        }
+    }
+
+    /**
+     * 其它类型type转换成NumberType
+     *
+     * 为什么要这么做？主要是为了应付byte ,short  ,Float 等跨类型转换。
+     * 因为基本数据类型之间可以强制转换，包装类型之间不可以
+     *
+     * @param type
+     */
+    fun typeToNumberType(type: Type): Type {
+        return if (isNumberType(type)) {
+            NUMBER_TYPE
+        } else {
+            type
         }
     }
 }

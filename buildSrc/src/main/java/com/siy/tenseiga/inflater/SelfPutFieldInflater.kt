@@ -37,7 +37,8 @@ class SelfPutFieldInflater(private val classNode: ClassNode) : Inflater {
         }
 
         //创建字段
-        classNode.fields.add(FieldNode(Opcodes.ACC_PRIVATE, insn.name, OBJECT_TYPE.descriptor, null, null))
+        val fieldNode = FieldNode(Opcodes.ACC_PRIVATE, insn.name, OBJECT_TYPE.descriptor, null, null)
+        classNode.fields.add(fieldNode)
 
         val newInsn = InsnList()
 

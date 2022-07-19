@@ -67,6 +67,24 @@ val Type.boxedType: Type
         }
     }
 
+/**
+ * 如果是基本数据类型就拆箱
+ */
+val Type.unBoxedType: Type
+    get() {
+        return when (this) {
+            BYTE_TYPE -> Type.BYTE_TYPE
+            SHORT_TYPE -> Type.SHORT_TYPE
+            INTEGER_TYPE -> Type.INT_TYPE
+            LONG_TYPE -> Type.LONG_TYPE
+            FLOAT_TYPE -> Type.FLOAT_TYPE
+            DOUBLE_TYPE -> Type.DOUBLE_TYPE
+            CHARACTER_TYPE -> Type.CHAR_TYPE
+            BOOLEAN_TYPE -> Type.BOOLEAN_TYPE
+            else -> this
+        }
+    }
+
 fun <K> InsnList.groupBy(keySelector: (AbstractInsnNode) -> K): Map<K, List<AbstractInsnNode>> {
     return this.asIterable().groupBy(keySelector)
 }

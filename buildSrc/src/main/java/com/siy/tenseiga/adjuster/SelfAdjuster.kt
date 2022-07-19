@@ -1,9 +1,6 @@
 package com.siy.tenseiga.adjuster
 
-import com.siy.tenseiga.ext.OPCODES_GETFIELD
-import com.siy.tenseiga.ext.OPCODES_PUTFIELD
-import com.siy.tenseiga.ext.REPLACE_TYPE
-import com.siy.tenseiga.ext.isStaticMethod
+import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.interfaces.NodeAdjuster
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
@@ -47,13 +44,22 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
             }
 
             "getField" -> {
-//                methodVisitor.visitLdcInsn("newField");    //把这个指令移除了
+//                methodVisitor.visitLdcInsn("newField");      //把这个指令移除了
 //                methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Self", "getField", "(Ljava/lang/String;)Ljava/lang/Object;", false);
-//                methodVisitor.visitVarInsn(ASTORE, 5);
+
+                //如果是强转成基本数据类型就加3条指令
+//                methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Number");
+//                methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Number", "floatValue", "()F", false);
+//                methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;", false);
+
+//                methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Float");
+//                methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F", false);
+//                methodVisitor.visitVarInsn(FSTORE, 5);
                 checkPlaceHolderAllow(insnNode.name)
                 insnNode.opcode = OPCODES_GETFIELD
                 insnNode.name = getFieldName(insnNode.previous)
                 methodNode.instructions.remove(insnNode.previous)
+                checkCastType(insnNode)
             }
         }
         return insnNode
@@ -98,6 +104,43 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
         }
 
         return ldc.cst as String
+    }
+
+    /**
+     * 检查强转类型
+     */
+    private fun checkCastType(getFieldNode: AbstractInsnNode) {
+        val nextNode = getFieldNode.next
+        if (nextNode is TypeInsnNode && nextNode.opcode == Opcodes.CHECKCAST) {
+            val type = Type.getObjectType(nextNode.desc)
+            if (PrimitiveBox.isNumberType(type)) {
+                //如果是基础数据类型的包装类型
+                val insn = InsnList()
+                val numberType = PrimitiveBox.typeToNumberType(type)
+                insn.add(TypeInsnNode(Opcodes.CHECKCAST, numberType.internalName))
+                insn.add(
+                    MethodInsnNode(
+                        Opcodes.INVOKEVIRTUAL,
+                        numberType.internalName,
+                        PrimitiveBox.unboxMethod[type.boxedType],
+                        "()${type.unBoxedType.descriptor}",
+                        false
+                    )
+                )
+
+                insn.add(
+                    MethodInsnNode(
+                        Opcodes.INVOKESTATIC,
+                        type.boxedType.internalName,
+                        "valueOf",
+                        "(${type.unBoxedType.descriptor})${type.boxedType.descriptor}",
+                        false
+                    )
+                )
+
+                methodNode.instructions.insert(getFieldNode, insn)
+            }
+        }
     }
 
 

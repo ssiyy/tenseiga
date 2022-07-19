@@ -107,9 +107,8 @@ public class HookJava {
         Log.e("siy", "putField的值反射方式获取：" + fieldValue);
 
         //这里为什么可以？因为里面我做了处理
-        Float newField = (Float) Self.getField("newField");
+        float newField = (float) Self.getField("newField");
         Log.e("siy", "putField的值getField方式获取：" + newField);
-
 
         return a + b + "hook";
     }

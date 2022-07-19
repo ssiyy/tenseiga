@@ -182,6 +182,10 @@ Invoker.invokeVoid(...) 用来调用不带返回值的原方法
 
 Self.get()  获取hook的实例方法所在对象，注意hook的静态方法获取不到对象
 
+Self.getField(fieldName) 获取hook的实例对象中的字段
+
+Self.putField(fieldValue,fieldName) 向hook的实例对象添加新的字段
+
 ###### 如果对上述解释有疑问，各位同学可以下载代码进一步了解
 
 ## 鸣谢

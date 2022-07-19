@@ -39,6 +39,19 @@ class AnnotationParser : TransformParser {
         return transformInfo
     }
 
+    /**
+     * 检查注解是否规范
+     *
+     */
+    private fun checkAnnoParse(annos:List<String>?){
+        val haveRepalce = annos?.contains(REPLACE_TYPE.descriptor) == true
+        val haveProxy = annos?.contains(PROXY_TYPE.descriptor) == true
+
+      if (haveRepalce && haveProxy){
+          illegalState("$REPLACE_TYPE 和 $PROXY_TYPE 不能用在同一个方法上")
+      }
+    }
+
 
     private fun infoParse(classNode: ClassNode, methodNode: MethodNode, transformInfo: TransformInfo) {
         val annotations = methodNode.visibleAnnotations
@@ -50,6 +63,8 @@ class AnnotationParser : TransformParser {
         val isReplace = annotationDescs?.contains(REPLACE_TYPE.descriptor) == true
 
         val isProxy = annotationDescs?.contains(PROXY_TYPE.descriptor) == true
+
+        checkAnnoParse(annotationDescs)
 
         if (isReplace) {
             var targetMethod: String? = null

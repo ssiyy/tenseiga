@@ -57,8 +57,3 @@ class PlaceHolderNodeJuster constructor(
 
 }
 
-
-fun illegalState(msg: String) {
-    throw IllegalStateException(msg)
-}
-

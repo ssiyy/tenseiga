@@ -130,3 +130,7 @@ fun replaceMethodBody(method: MethodNode, action: ((InsnList) -> Unit)) {
     insnList.add(InsnNode(ret.getOpcode(Opcodes.IRETURN)))
     method.instructions.add(insnList)
 }
+
+fun illegalState(msg: String) {
+    throw IllegalStateException(msg)
+}

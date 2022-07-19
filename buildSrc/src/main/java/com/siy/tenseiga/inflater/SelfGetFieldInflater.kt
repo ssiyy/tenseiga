@@ -1,7 +1,7 @@
 package com.siy.tenseiga.inflater
 
-import com.siy.tenseiga.adjuster.illegalState
 import com.siy.tenseiga.ext.OBJECT_TYPE
+import com.siy.tenseiga.ext.illegalState
 import com.siy.tenseiga.parser.Inflater
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.*

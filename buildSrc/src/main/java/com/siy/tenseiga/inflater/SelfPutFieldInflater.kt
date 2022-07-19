@@ -12,8 +12,7 @@ import org.objectweb.asm.tree.*
  * @author  Siy
  * @since  2022/7/15
  */
-class SelfInflater(private val classNode: ClassNode) : Inflater {
-
+class SelfPutFieldInflater(private val classNode: ClassNode) : Inflater {
 
     override fun inflate(methodNode: MethodNode, inflaterNodes: List<AbstractInsnNode>, replaceInsn: MethodInsnNode?) {
         if (inflaterNodes.isEmpty()) {

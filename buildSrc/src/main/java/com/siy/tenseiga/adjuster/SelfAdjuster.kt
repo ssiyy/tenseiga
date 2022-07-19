@@ -1,5 +1,6 @@
 package com.siy.tenseiga.adjuster
 
+import com.siy.tenseiga.ext.OPCODES_GETFIELD
 import com.siy.tenseiga.ext.OPCODES_PUTFIELD
 import com.siy.tenseiga.ext.REPLACE_TYPE
 import com.siy.tenseiga.ext.isStaticMethod
@@ -22,10 +23,10 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
         }
         when (insnNode.name) {
             "get" -> {
-                checkGetCast(insnNode.next)
 //                methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Self", "get", "()Ljava/lang/Object;", false);
 //                methodVisitor.visitTypeInsn(CHECKCAST, "com/siy/tenseiga/test/OriginJava");   //把这个指令移除了
 //                methodVisitor.visitVarInsn(ASTORE, 8);
+                checkGetCast(insnNode.next)
                 methodNode.instructions.remove(insnNode.next)
 
                 //把Self.get()指令替换成变量
@@ -35,21 +36,24 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
             }
 
             "putField" -> {
-                checkPlaceHolderAllow(insnNode.name)
 //                methodVisitor.visitIntInsn(BIPUSH, 7);
 //                methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
 //                methodVisitor.visitLdcInsn("newField");       //把这个指令移除了
 //                methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Self", "putField", "(Ljava/lang/Object;Ljava/lang/String;)V", false);     //把newField名字给它
+                checkPlaceHolderAllow(insnNode.name)
                 insnNode.opcode = OPCODES_PUTFIELD
                 insnNode.name = getFieldName(insnNode.previous)
                 methodNode.instructions.remove(insnNode.previous)
             }
 
             "getField" -> {
-                checkPlaceHolderAllow(insnNode.name)
 //                methodVisitor.visitLdcInsn("newField");    //把这个指令移除了
 //                methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Self", "getField", "(Ljava/lang/String;)Ljava/lang/Object;", false);
 //                methodVisitor.visitVarInsn(ASTORE, 5);
+                checkPlaceHolderAllow(insnNode.name)
+                insnNode.opcode = OPCODES_GETFIELD
+                insnNode.name = getFieldName(insnNode.previous)
+                methodNode.instructions.remove(insnNode.previous)
             }
         }
         return insnNode

@@ -33,24 +33,21 @@ class TenseigaInflater(private val klass: ClassNode) {
         }
 
         val invokers = groupInsn[OPCODES_INVOKER] ?: listOf()
-        val putFields = groupInsn[OPCODES_PUTFIELD] ?: listOf()
 
         when (type) {
             REPLACE_TYPE -> {
                 val invokeInsn = MethodInsnNode(getOpcodesByAccess(methodNode!!.access), klass.name, methodNode.name, methodNode.desc)
                 InvoderInflater.inflate(hookMethodNode, invokers, invokeInsn)
-
-                SelfInflater(klass).inflate(hookMethodNode, putFields, null)
             }
 
             PROXY_TYPE -> {
                 val invokeInsn = MethodInsnNode(replaceInsn!!.opcode, replaceInsn.owner, replaceInsn.name, replaceInsn.desc)
                 InvoderInflater.inflate(hookMethodNode, invokers, invokeInsn)
-
-                SelfInflater(klass).inflate(hookMethodNode, putFields, null)
             }
         }
 
+        SelfPutFieldInflater(klass).inflate(hookMethodNode, groupInsn[OPCODES_PUTFIELD] ?: listOf(), null)
+        SelfGetFieldInflater(klass).inflate(hookMethodNode, groupInsn[OPCODES_GETFIELD] ?: listOf(), null)
         return insn
     }
 

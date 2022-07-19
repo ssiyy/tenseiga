@@ -101,16 +101,19 @@ public class HookJava {
         Log.e("siy", "OriginJava-hookAnnoReplace-");
         OriginJava originJava = (OriginJava) Self.get();
         originJava.showToast();
-        Self.putField(7, "newField");
+        Self.putField(7.1, "newField");
 
-        Object fieldValue = Tools.loadField(OriginJava.class, originJava, "newField");
-        Log.e("siy", "putField的值()：" + String.valueOf(fieldValue));
+        float fieldValue = (float)Tools.loadField(OriginJava.class, originJava, "newField");
+//        Log.e("siy", "putField的值反射方式获取：" + fieldValue + "-类型：" + fieldValue.getClass().getName());
+        Log.e("siy", "putField的值反射方式获取：" + fieldValue);
 
-        Object newField = Self.getField("newField");
+        float newField =  (float)Self.getField("newField");
+//        Log.e("siy", "putField的值getField方式获取：" + newField + "-类型：" + newField.getClass().getName());
+        Log.e("siy", "putField的值getField方式获取：" + newField);
+
 
         return a + b + "hook";
     }
-
 
 
 }

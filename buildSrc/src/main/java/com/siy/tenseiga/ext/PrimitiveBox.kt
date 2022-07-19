@@ -27,7 +27,8 @@ object PrimitiveBox {
     /**
      * 其它类型type转换成NumberType
      *
-     * 为什么要这么做？主要是为了应付byte ,short  ,Float 等跨类型转换
+     * 为什么要这么做？主要是为了应付byte ,short  ,Float 等跨类型转换。
+     * 因为基本数据类型之间可以强制转换，包装类型之间不可以
      *
      * @param type
      */

@@ -40,7 +40,7 @@ class TenseigaParser(extension: TExtension) : TransformParser {
             }
         }.apply {
             proxyInfo.forEach {
-                PlaceHolderNodeJuster(it.hookMethod, PROXY_TYPE).adjust()
+                PlaceHolderNodeJuster(it.hookMethodNode, PROXY_TYPE).adjust()
             }
 
             replaceInfo.forEach {

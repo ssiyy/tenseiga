@@ -35,6 +35,7 @@ fun forDebug(context: TransformContext, transformInfo: TransformInfo?, logger: P
         it?.isDirectory == true
     }?.forEach { file ->
         printClassAsmCode(file, "com.siy.tenseiga.test.OriginJava",logger)
+        printClassAsmCode(file, "com.siy.tenseiga.MainActivity",logger)
     }
 }
 

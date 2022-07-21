@@ -105,7 +105,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
 
         //当前找到的方法是不是hookMethod,不能套娃
         val isOrgHook = klass?.name == info.hookClass
-        val isOrgMethod = (mMethodNode?.name == info.hookMethod.name) && (mMethodNode?.desc == info.hookMethod.desc)
+        val isOrgMethod = (mMethodNode?.name == info.hookMethodNode.name) && (mMethodNode?.desc == info.hookMethodNode.desc)
 
         return sameOwner && sameName && sameDesc && !(isOrgHook && isOrgMethod)
     }
@@ -116,8 +116,8 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             for (info in infos) {
                 if (checkMethodInsnIsHook(context, insnMethod, info)) {
                     //判断一下hook方法和真实方法是不是都是静态的
-                    if (isStaticMethod(info.hookMethod.access) != isStaticMethodInsn(insnMethod.opcode)) {
-                        throw IllegalStateException(info.hookClass + "." + info.hookMethod.name + " 应该有相同的静态标志 " + clazz.name + "." + insnMethod.name)
+                    if (isStaticMethod(info.hookMethodNode.access) != isStaticMethodInsn(insnMethod.opcode)) {
+                        throw IllegalStateException(info.hookClass + "." + info.hookMethodNode.name + " 应该有相同的静态标志 " + clazz.name + "." + insnMethod.name)
                     }
 
                     val hookMethod = copyHookMethodAndReplacePlaceholder(info, insnMethod)
@@ -149,11 +149,11 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
         //新生成一个方法，把hook方法拷贝过来，方法变成静态方法，替换里面Invoker,Self占位符
         return createMethod(
             Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC,
-            info.hookClass.replace('/', '_').plus("_${info.hookMethod.name}"),
-            descToStaticMethod(info.hookMethod.access, info.hookMethod.desc, info.targetClass),
-            info.hookMethod.exceptions
+            info.hookClass.replace('/', '_').plus("_${info.hookMethodNode.name}"),
+            descToStaticMethod(info.hookMethodNode.access, info.hookMethodNode.desc, info.targetClass),
+            info.hookMethodNode.exceptions
         ) {
-            it.instructions.add(tenseigaInflater?.inflate(info.hookMethod, null, methodInsnNode, PROXY_TYPE))
+            it.instructions.add(tenseigaInflater?.inflate(info.hookMethodNode, null, methodInsnNode, PROXY_TYPE))
         }.also {
             klass?.methods?.add(it)
         }

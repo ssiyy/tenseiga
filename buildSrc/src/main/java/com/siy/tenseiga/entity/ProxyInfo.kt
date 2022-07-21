@@ -12,30 +12,35 @@ import java.util.regex.Pattern
  * @author  Siy
  * @since  2022/5/26
  */
-data class ProxyInfo(
+class ProxyInfo(
     /**
      * 被替换的类,internalName
      */
-    val targetClass: String,
+    targetClass: String,
 
     /**
      * 被替换的方法名
      */
-    val targetMethod: String,
+    targetMethod: String,
 
     /**
      * 替换的类,internalName
      */
-    val hookClass: String,
+    hookClass: String,
     /**
      * 替换的方法
      */
-    val hookMethod: MethodNode,
+    val hookMethodNode: MethodNode,
     /**
      * 需要替换哪些用了targetClass 的 replace的包
      */
     var filter: List<String> = listOf()
-) {
+) : ProxyParam(targetMethod) {
+
+    init {
+        this.targetClass = targetClass
+        this.hookClass = hookClass
+    }
 
     /**
      * 是否包含内部类
@@ -67,7 +72,7 @@ data class ProxyInfo(
      */
     val targetDesc: String
         get() {
-            return hookMethod.desc
+            return hookMethodNode.desc
         }
 
 
@@ -75,7 +80,7 @@ data class ProxyInfo(
         return "ProxyInfo{ targetClass=$targetClass, " +
                 "targetMethod=$targetMethod, " +
                 "hookClass=$hookClass, " +
-                "hookMethod=${hookMethod.name}, " +
+                "hookMethod=${hookMethodNode.name}, " +
                 "targetDesc=$targetDesc, " +
                 "filter=${filter.join(",")}}"
     }

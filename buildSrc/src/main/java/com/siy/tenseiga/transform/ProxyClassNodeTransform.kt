@@ -146,11 +146,16 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
         info: ProxyInfo,
         methodInsnNode: MethodInsnNode
     ): MethodNode {
+        val newMethodDesc = descToStaticMethod(info.hookMethodNode.access, info.hookMethodNode.desc, info.targetClass)
+        val newMethodName = info.hookClass.replace('/', '_').plus("_${info.hookMethodNode.name}")
+        return klass?.methods?.find {
+            it.desc == newMethodDesc && it.name == newMethodName
+        } ?:
         //新生成一个方法，把hook方法拷贝过来，方法变成静态方法，替换里面Invoker,Self占位符
-        return createMethod(
+        createMethod(
             Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC,
-            info.hookClass.replace('/', '_').plus("_${info.hookMethodNode.name}"),
-            descToStaticMethod(info.hookMethodNode.access, info.hookMethodNode.desc, info.targetClass),
+            newMethodName,
+            newMethodDesc,
             info.hookMethodNode.exceptions
         ) {
             it.instructions.add(tenseigaInflater?.inflate(info.hookMethodNode, null, methodInsnNode, PROXY_TYPE))

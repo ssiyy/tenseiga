@@ -13,11 +13,20 @@ import org.gradle.api.Project
  */
 
 
-open class ProxyParam
-/**
- *被替换的方法名字
- */
-    (val name: String) {
+open class ProxyParam constructor(
+    /**
+     * 不用管它给gradle TExtionsin用的
+     *
+     *   必须定义一个 name 属性，并且这个属性值初始化以后不要修改
+     */
+    private val   name: String
+) {
+
+    /**
+     * 被替换的方法名
+     */
+    var targetMethod: String = name
+
     /**
      * 被替换方法所在的类,ClassFile类表示法
      */
@@ -32,7 +41,9 @@ open class ProxyParam
      * hook所在的类
      */
     var hookClass: String? = null
-    internal var filters: List<String> = listOf()
+
+
+    var filters: List<String> = listOf()
 
     /**
      * 过滤的包名
@@ -44,7 +55,7 @@ open class ProxyParam
 
     override fun toString(): String {
         return "ProxyParam{ targetClass=$targetClass, " +
-                "targetMethod=$name, " +
+                "targetMethod=$targetMethod, " +
                 "hookMethod=$hookMethod, " +
                 "hookClass=$hookClass, " +
                 "filter=${filters.join(",")}}"
@@ -52,11 +63,21 @@ open class ProxyParam
 }
 
 
-open class ReplaceParam
-/**
- *被替换的方法名字
- */
-    (val name: String) {
+open class ReplaceParam constructor(
+    /**
+     * 不用管它给gradle TExtionsin用的
+     *
+     *   必须定义一个 name 属性，并且这个属性值初始化以后不要修改
+     */
+  private val name: String
+) {
+
+
+    /**
+     * 被替换的方法名
+     */
+    var targetMethod: String = name
+
     /**
      * 被替换方法所在的类
      */
@@ -75,7 +96,7 @@ open class ReplaceParam
 
     override fun toString(): String {
         return "ReplaceParam{ targetClass=$targetClass, " +
-                "targetMethod=$name, " +
+                "targetMethod=$targetMethod, " +
                 "hookMethod=$hookMethod, " +
                 "hookClass=$hookClass}"
     }

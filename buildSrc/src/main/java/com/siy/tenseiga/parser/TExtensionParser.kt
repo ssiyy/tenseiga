@@ -48,7 +48,7 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
                             infos.replaceInfo.add(
                                 ReplaceInfo(
                                     rp.targetClass!!.replace(".", "/"),
-                                    rp.name,
+                                    rp.targetMethod!!,
                                     cn.name,
                                     mn
                                 )
@@ -78,7 +78,7 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
                             infos.proxyInfo.add(
                                 ProxyInfo(
                                     pp.targetClass!!.replace(".", "/"),
-                                    pp.name,
+                                    pp.targetMethod!!,
                                     cn.name,
                                     mn,
                                     pp.filters

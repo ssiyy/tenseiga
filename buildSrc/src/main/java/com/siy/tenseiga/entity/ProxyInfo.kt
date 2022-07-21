@@ -34,12 +34,14 @@ class ProxyInfo(
     /**
      * 需要替换哪些用了targetClass 的 replace的包
      */
-    var filter: List<String> = listOf()
+     filters: List<String> = listOf()
 ) : ProxyParam(targetMethod) {
 
     init {
         this.targetClass = targetClass
         this.hookClass = hookClass
+        this.filters = filters
+        this.hookMethod = hookMethodNode.name
     }
 
     /**
@@ -55,7 +57,7 @@ class ProxyInfo(
     /**
      * 过滤的正则表达式
      */
-    val filterPattern = filter
+    val filterPattern = this.filters
         .map {
             if (withInnerClass) {
                 "${it}$REGEX_SUFFIX"
@@ -82,6 +84,6 @@ class ProxyInfo(
                 "hookClass=$hookClass, " +
                 "hookMethod=${hookMethodNode.name}, " +
                 "targetDesc=$targetDesc, " +
-                "filter=${filter.join(",")}}"
+                "filter=${filters.join(",")}}"
     }
 }

@@ -44,7 +44,7 @@ class TenseigaParser(extension: TExtension) : TransformParser {
             }
 
             replaceInfo.forEach {
-                PlaceHolderNodeJuster(it.hookMethod, REPLACE_TYPE).adjust()
+                PlaceHolderNodeJuster(it.hookMethodNode, REPLACE_TYPE).adjust()
             }
         }
     }

@@ -79,17 +79,17 @@ open class ReplaceParam constructor(
     /**
      * 被替换方法所在的类
      */
-    var targetClass: String? = null
+    lateinit var targetClass: String
 
     /**
      * hook方法
      */
-    var hookMethod: String? = null
+    lateinit var hookMethod: String
 
     /**
      * hook所在的类
      */
-    var hookClass: String? = null
+    lateinit var hookClass: String
 
 
     override fun toString(): String {

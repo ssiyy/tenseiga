@@ -1,4 +1,4 @@
-package com.siy.tenseiga.parser
+package com.siy.tenseiga.interfaces
 
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.MethodInsnNode

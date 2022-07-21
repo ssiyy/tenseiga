@@ -6,6 +6,7 @@ import com.siy.tenseiga.entity.TransformInfo
 import com.siy.tenseiga.ext.PROXY_TYPE
 import com.siy.tenseiga.ext.REPLACE_TYPE
 import com.siy.tenseiga.interfaces.TransformParser
+import com.siy.tenseiga.parser.annoparser.AnnotationParser
 import java.io.File
 
 

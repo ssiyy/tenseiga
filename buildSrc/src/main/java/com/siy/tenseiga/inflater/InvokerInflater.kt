@@ -1,7 +1,7 @@
 package com.siy.tenseiga.inflater
 
 import com.siy.tenseiga.ext.*
-import com.siy.tenseiga.parser.Inflater
+import com.siy.tenseiga.interfaces.Inflater
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type

@@ -17,6 +17,6 @@ interface NodeAdjuster {
 /**
  * 指令原样返回
  */
-val NONE = object : NodeAdjuster {
+val ADJUSTER_NONE = object : NodeAdjuster {
     override fun replace(insnNode: MethodInsnNode) = insnNode
 }

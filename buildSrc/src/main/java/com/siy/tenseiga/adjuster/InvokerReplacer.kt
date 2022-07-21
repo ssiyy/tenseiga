@@ -2,7 +2,7 @@ package com.siy.tenseiga.adjuster
 
 import com.siy.tenseiga.base.Invoker
 import com.siy.tenseiga.base.Self
-import com.siy.tenseiga.interfaces.NONE
+import com.siy.tenseiga.interfaces.ADJUSTER_NONE
 import com.siy.tenseiga.interfaces.NodeAdjuster
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.AbstractInsnNode
@@ -41,7 +41,7 @@ class PlaceHolderNodeJuster constructor(
         val owner = insnNode.owner
         val name = insnNode.name
 
-        var replacer = NONE
+        var replacer = ADJUSTER_NONE
 
         if (owner == Invoker.CLASS_NAME) {
             //如果是Invoker

@@ -20,7 +20,7 @@ open class ProxyParam constructor(
      *   必须定义一个 name 属性，并且这个属性值初始化以后不要修改
      */
     private val   name: String
-) {
+) :Filter(){
 
     /**
      * 被替换的方法名
@@ -41,9 +41,6 @@ open class ProxyParam constructor(
      * hook所在的类
      */
     lateinit var hookClass: String
-
-
-    var filters: List<String> = listOf()
 
     /**
      * 过滤的包名

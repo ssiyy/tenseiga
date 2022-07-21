@@ -2,7 +2,6 @@ package com.siy.tenseiga.entity
 
 import com.siy.tenseiga.base.tools.join
 import org.objectweb.asm.tree.MethodNode
-import java.util.regex.Pattern
 
 
 /**
@@ -34,7 +33,7 @@ class ProxyInfo(
     /**
      * 需要替换哪些用了targetClass 的 replace的包
      */
-     filters: List<String> = listOf()
+    filters: List<String> = listOf()
 ) : ProxyParam(targetMethod) {
 
     init {
@@ -43,31 +42,6 @@ class ProxyInfo(
         this.filters = filters
         this.hookMethod = hookMethodNode.name
     }
-
-    /**
-     * 是否包含内部类
-     */
-    private val withInnerClass = true
-
-    /**
-     * 配置内部类的后缀
-     */
-    private val REGEX_SUFFIX = "(|\\$.*)"
-
-    /**
-     * 过滤的正则表达式
-     */
-    val filterPattern = this.filters
-        .map {
-            if (withInnerClass) {
-                "${it}$REGEX_SUFFIX"
-            } else {
-                it
-            }
-        }
-        .map {
-            Pattern.compile(it)
-        }
 
     /**
      * 替换目标方法的desc

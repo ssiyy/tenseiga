@@ -19,8 +19,8 @@ open class ProxyParam constructor(
      *
      *   必须定义一个 name 属性，并且这个属性值初始化以后不要修改
      */
-    private val   name: String
-) :Filter(){
+    private val name: String
+) : Filter() {
 
     /**
      * 被替换的方法名
@@ -66,7 +66,7 @@ open class ReplaceParam constructor(
      *
      *   必须定义一个 name 属性，并且这个属性值初始化以后不要修改
      */
-  private val name: String
+    private val name: String
 ) {
     /**
      * 被替换的方法名

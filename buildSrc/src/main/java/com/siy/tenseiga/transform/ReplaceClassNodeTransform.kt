@@ -46,9 +46,7 @@ import org.objectweb.asm.tree.MethodNode
  */
 class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt: ClassNodeTransform?) : ClassNodeTransform(cnt) {
 
-
     private var tenseigaInflater: TenseigaInflater? = null
-
 
     /**
      * 如果不为空就是需要hook的类

@@ -47,9 +47,10 @@ class AnnotationParser : TransformParser {
     private fun checkAnnoParse(annos: List<String>?) {
         val haveRepalce = existAnno(annos, REPLACE_TYPE)
         val haveProxy = existAnno(annos, PROXY_TYPE)
+        val haveTryCatch = existAnno(annos, TRYCATCHHANDLER_TYPE)
 
-        if (haveRepalce && haveProxy) {
-            illegalState("$REPLACE_TYPE 和 $PROXY_TYPE 不能用在同一个方法上")
+        if (haveRepalce && haveProxy && haveTryCatch) {
+            illegalState("$REPLACE_TYPE 、 $PROXY_TYPE 和 $haveTryCatch 不能用在同一个方法上")
         }
     }
 
@@ -66,6 +67,9 @@ class AnnotationParser : TransformParser {
             }
             existAnno(annoDesc, PROXY_TYPE) -> {
                 ProxyAnnoParser
+            }
+            existAnno(annoDesc, TRYCATCHHANDLER_TYPE)->{
+                TryCatchHandlerParser
             }
 
             else -> PARSER_NONE

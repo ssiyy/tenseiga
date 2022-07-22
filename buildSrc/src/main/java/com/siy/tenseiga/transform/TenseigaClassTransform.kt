@@ -78,6 +78,14 @@ class TenseigaClassTransform(private val extension: TExtension) : ClassTransform
             )
         }
 
+        //注册一个
+        if (transformInfo?.tryCatchHandlerInfo?.isNotEmpty() == true) {
+            classNodeTransform = TryCatchHandlerNodeTransform(
+                transformInfo?.tryCatchHandlerInfo ?: listOf(),
+                classNodeTransform
+            )
+        }
+
         return classNodeTransform
     }
 

@@ -16,7 +16,7 @@ import org.objectweb.asm.tree.MethodNode
  * @author  Siy
  * @since  2022/7/21
  */
-object ReplaceAnnoParser :PlaceholderParser {
+object ReplaceAnnoParser : PlaceholderParser {
 
     override fun phParser(classNode: ClassNode, methodNode: MethodNode, transformInfo: TransformInfo) {
         val annotations = methodNode.visibleAnnotations
@@ -41,7 +41,7 @@ object ReplaceAnnoParser :PlaceholderParser {
                     methodNode
                 )
             )
-        }else{
+        } else {
             illegalState("$REPLACE_TYPE 需要 $TARGETCLASS_TYPE")
         }
     }

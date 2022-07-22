@@ -13,7 +13,7 @@ import org.objectweb.asm.tree.MethodNode
  * @author  Siy
  * @since  2022/7/21
  */
-object ProxyAnnoParser :PlaceholderParser{
+object ProxyAnnoParser : PlaceholderParser {
     override fun phParser(classNode: ClassNode, methodNode: MethodNode, transformInfo: TransformInfo) {
         val annotations = methodNode.visibleAnnotations
         var targetMethod: String? = null
@@ -45,7 +45,7 @@ object ProxyAnnoParser :PlaceholderParser{
                     filters
                 )
             )
-        }else{
+        } else {
             illegalState("$PROXY_TYPE 需要 $TARGETCLASS_TYPE")
         }
     }

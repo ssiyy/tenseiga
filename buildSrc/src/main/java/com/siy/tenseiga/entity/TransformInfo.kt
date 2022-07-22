@@ -23,6 +23,11 @@ class TransformInfo {
     val proxyInfo = mutableListOf<ProxyInfo>()
 
     /**
+     * 异常捕捉相关
+     */
+    val tryCatchHandlerInfo = mutableListOf<TryCatchHandlerInfo>()
+
+    /**
      *转换信息是否为空 true 空，false不为空
      */
     fun isEmpty() = replaceInfo.isEmpty() && proxyInfo.isEmpty()

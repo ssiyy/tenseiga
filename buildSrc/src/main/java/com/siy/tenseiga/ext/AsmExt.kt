@@ -1,23 +1,24 @@
 package com.siy.tenseiga.ext
 
 import com.didiglobal.booster.transform.asm.asIterable
+import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.AnnotationNode
 import org.objectweb.asm.tree.InsnList
-
+import org.objectweb.asm.tree.MethodNode
 
 /**
- *
- * @author  Siy
- * @since  2022/5/26
+ * 复制一份MethodNode
  */
+fun MethodNode.cloneSelf(): MethodNode {
+    val clone = MethodNode(Opcodes.ASM7, access, name, desc, signature, exceptions.toTypedArray())
+    accept(clone)
+    return clone
+}
 
 /**
  * 将注解的值转换成Map，
- *
- *
- *
  */
 val AnnotationNode.valueMaps: Map<String, Any>
     get() {

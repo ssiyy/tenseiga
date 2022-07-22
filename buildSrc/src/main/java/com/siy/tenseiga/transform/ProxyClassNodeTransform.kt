@@ -158,7 +158,7 @@ class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: Clas
             newMethodDesc,
             info.hookMethodNode.exceptions
         ) {
-            it.instructions.add(tenseigaInflater?.inflate(info.hookMethodNode, null, methodInsnNode, PROXY_TYPE))
+            it.instructions.add(tenseigaInflater?.inflate(info.cloneHookMethodNode(), null, methodInsnNode, PROXY_TYPE))
         }.also {
             klass?.methods?.add(it)
         }

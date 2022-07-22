@@ -163,14 +163,19 @@ class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt
      * @return 返回新生成的方法
      */
     private fun copyHookMethodAndReplacePlaceholder(info: ReplaceInfo, methodNode: MethodNode): MethodNode {
+        val newMethodDesc = descToStaticMethod(info.hookMethodNode.access, info.hookMethodNode.desc, info.targetClass)
+        val newMethodNname = info.hookClass.replace('/', '_').plus("_${info.hookMethodNode.name}")
+        return klass?.methods?.find {
+            it.desc == newMethodDesc && it.name == newMethodNname
+        } ?:
         //新生成一个方法，把hook方法拷贝过来，方法变成静态方法，替换里面Invoker,Self占位符
-        return createMethod(
+        createMethod(
             Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC,
-            info.hookClass.replace('/', '_').plus("_${info.hookMethodNode.name}"),
-            descToStaticMethod(info.hookMethodNode.access, info.hookMethodNode.desc, info.targetClass),
+            newMethodNname,
+            newMethodDesc,
             info.hookMethodNode.exceptions
         ) {
-            it.instructions.add(tenseigaInflater?.inflate(info.hookMethodNode, methodNode, null, REPLACE_TYPE))
+            it.instructions.add(tenseigaInflater?.inflate(info.cloneHookMethodNode(), methodNode, null, REPLACE_TYPE))
         }.also {
             klass?.methods?.add(it)
         }

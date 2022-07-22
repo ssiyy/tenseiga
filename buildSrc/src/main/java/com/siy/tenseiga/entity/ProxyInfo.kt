@@ -1,6 +1,7 @@
 package com.siy.tenseiga.entity
 
 import com.siy.tenseiga.base.tools.join
+import com.siy.tenseiga.ext.cloneSelf
 import org.objectweb.asm.tree.MethodNode
 
 
@@ -51,6 +52,9 @@ class ProxyInfo(
             return hookMethodNode.desc
         }
 
+    fun cloneHookMethodNode(): MethodNode {
+        return hookMethodNode.cloneSelf()
+    }
 
     override fun toString(): String {
         return "ProxyInfo{ targetClass=$targetClass, " +

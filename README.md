@@ -56,7 +56,7 @@ buildscript {
 ```
 buildscript {
     dependencies {
-        classpath "com.github.ssiyy.tenseiga:tenseiga-plugin:v1.0.0"
+        classpath "com.github.ssiyy.tenseiga:tenseiga-plugin:v1.0.1"
     }
 }
 ```
@@ -134,7 +134,7 @@ allprojects {
 ```
 ```
 dependencies {
-  implementation "com.github.ssiyy.tenseiga:tenseiga:v1.0.0"
+  implementation "com.github.ssiyy.tenseiga:tenseiga:v1.0.1"
 }
 ```
 以
@@ -161,7 +161,7 @@ ps:
 ###  提供额外操作方式
 想要使用提供的额外操作方式同样需要引入
 ```
-implementation "com.github.ssiyy.tenseiga:tenseiga:v1.0.0"
+implementation "com.github.ssiyy.tenseiga:tenseiga:v1.0.1"
 ```
 如：
 ```
@@ -181,6 +181,10 @@ Invoker.invoke(...)   用来调用待用返回值的原方法
 Invoker.invokeVoid(...) 用来调用不带返回值的原方法
 
 Self.get()  获取hook的实例方法所在对象，注意hook的静态方法获取不到对象
+
+Self.getField(fieldName) 获取hook的实例对象中的字段
+
+Self.putField(fieldValue,fieldName) 向hook的实例对象添加新的字段
 
 ###### 如果对上述解释有疑问，各位同学可以下载代码进一步了解
 

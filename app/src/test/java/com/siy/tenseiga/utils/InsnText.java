@@ -1,4 +1,4 @@
-package com.siy.tenseiga;
+package com.siy.tenseiga.utils;
 
 import static org.objectweb.asm.Opcodes.BIPUSH;
 import static org.objectweb.asm.Opcodes.SIPUSH;

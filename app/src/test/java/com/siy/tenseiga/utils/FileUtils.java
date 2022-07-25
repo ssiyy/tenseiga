@@ -1,4 +1,6 @@
-package com.siy.tenseiga;
+package com.siy.tenseiga.utils;
+
+import com.siy.tenseiga.MainActivity;
 
 import org.apache.commons.compress.utils.IOUtils;
 
@@ -23,7 +25,7 @@ import java.util.List;
 
 public class FileUtils {
     public static String getFilePath(String relativePath) {
-        String dir = FileUtils.class.getResource("/").getPath();
+        String dir = FileUtils.class.getResource("/").getPath().replace("debugUnitTest", "debug");
         return dir + relativePath;
     }
 
@@ -48,11 +50,9 @@ public class FileUtils {
             IOUtils.copy(in, bao);
 
             return bao.toByteArray();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(in);
         }
 
@@ -68,8 +68,7 @@ public class FileUtils {
              BufferedOutputStream buff = new BufferedOutputStream(out)) {
             buff.write(bytes);
             buff.flush();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -101,11 +100,9 @@ public class FileUtils {
                 list.add(line);
             }
             return list;
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(bufferReader);
             IOUtils.closeQuietly(reader);
             IOUtils.closeQuietly(in);
@@ -136,11 +133,9 @@ public class FileUtils {
                 bufferedWriter.write(line);
                 bufferedWriter.newLine();
             }
-        }
-        catch (IOException ex) {
+        } catch (IOException ex) {
             ex.printStackTrace();
-        }
-        finally {
+        } finally {
             IOUtils.closeQuietly(bufferedWriter);
             IOUtils.closeQuietly(writer);
             IOUtils.closeQuietly(out);
@@ -176,8 +171,7 @@ public class FileUtils {
                     delete(f);
                 }
             }
-        }
-        else {
+        } else {
             delete(file);
         }
     }
@@ -214,11 +208,9 @@ public class FileUtils {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             IOUtils.copy(in, out);
             return out.toByteArray();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             if (close) {
                 IOUtils.closeQuietly(in);
             }

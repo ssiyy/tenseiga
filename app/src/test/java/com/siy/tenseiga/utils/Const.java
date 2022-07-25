@@ -1,4 +1,4 @@
-package com.siy.tenseiga;
+package com.siy.tenseiga.utils;
 
 public class Const {
     public static final boolean DEBUG = true;

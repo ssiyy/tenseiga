@@ -4,6 +4,11 @@ import com.siy.tenseiga.nullability.NullDeferenceInterpreter;
 import com.siy.tenseiga.nullability.NullabilityAnalyzer;
 import com.siy.tenseiga.nullability.NullabilityInterpreter;
 import com.siy.tenseiga.nullability.NullabilityValue;
+import com.siy.tenseiga.transition.DestinationInterpreter;
+import com.siy.tenseiga.utils.FileUtils;
+import com.siy.tenseiga.utils.FrameUtils;
+import com.siy.tenseiga.utils.InsnText;
+import com.siy.tenseiga.utils.ValueUtils;
 
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
@@ -26,9 +31,14 @@ import java.util.function.Function;
 
 
 public class HelloWorldFrameTree {
+
+    private String getRelativePathByClass(Class<?> clazz){
+        return clazz.getName().replace('.','/')+".class";
+    }
+
     @Test
     public  void main() throws Exception {
-        String relative_path = "com/siy/tenseiga/ATest.class";
+        String relative_path = getRelativePathByClass(MainActivity.class);
         String filepath = FileUtils.getFilePath(relative_path);
         byte[] bytes = FileUtils.readBytes(filepath);
 

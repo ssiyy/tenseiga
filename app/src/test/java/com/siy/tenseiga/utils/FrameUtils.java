@@ -1,4 +1,4 @@
-package com.siy.tenseiga;
+package com.siy.tenseiga.utils;
 
 import com.siy.tenseiga.drawing.canvas.Canvas;
 import com.siy.tenseiga.drawing.canvas.TextAlign;

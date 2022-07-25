@@ -1,6 +1,6 @@
 package com.siy.tenseiga.drawing.canvas;
 
-import com.siy.tenseiga.StringUtils;
+import com.siy.tenseiga.utils.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

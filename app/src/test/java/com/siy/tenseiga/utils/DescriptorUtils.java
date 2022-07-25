@@ -1,4 +1,4 @@
-package com.siy.tenseiga;
+package com.siy.tenseiga.utils;
 
 public class DescriptorUtils {
     public static String simplify(String descriptor) {

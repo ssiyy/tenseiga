@@ -1,4 +1,4 @@
-package com.siy.tenseiga;
+package com.siy.tenseiga.transition;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;

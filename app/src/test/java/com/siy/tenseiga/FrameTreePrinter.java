@@ -4,6 +4,7 @@ import com.siy.tenseiga.nullability.NullDeferenceInterpreter;
 import com.siy.tenseiga.nullability.NullabilityAnalyzer;
 import com.siy.tenseiga.nullability.NullabilityInterpreter;
 import com.siy.tenseiga.nullability.NullabilityValue;
+import com.siy.tenseiga.test.HookJava;
 import com.siy.tenseiga.transition.DestinationInterpreter;
 import com.siy.tenseiga.utils.FileUtils;
 import com.siy.tenseiga.utils.FrameUtils;
@@ -30,15 +31,15 @@ import java.util.List;
 import java.util.function.Function;
 
 
-public class HelloWorldFrameTree {
+public class FrameTreePrinter {
 
-    private String getRelativePathByClass(Class<?> clazz){
-        return clazz.getName().replace('.','/')+".class";
+    private String getRelativePathByClass(Class<?> clazz) {
+        return clazz.getName().replace('.', '/') + ".class";
     }
 
     @Test
-    public  void main() throws Exception {
-        String relative_path = getRelativePathByClass(MainActivity.class);
+    public void printer() throws Exception {
+        String relative_path = getRelativePathByClass(HookJava.class);
         String filepath = FileUtils.getFilePath(relative_path);
         byte[] bytes = FileUtils.readBytes(filepath);
 
@@ -105,8 +106,7 @@ public class HelloWorldFrameTree {
                     if (value.isReference()) {
                         if (value == NullDeferenceInterpreter.NULL_VALUE) {
                             return "null";
-                        }
-                        else if (value == NullDeferenceInterpreter.MAYBE_NULL_VALUE) {
+                        } else if (value == NullDeferenceInterpreter.MAYBE_NULL_VALUE) {
                             return "may-be-null";
                         }
                     }

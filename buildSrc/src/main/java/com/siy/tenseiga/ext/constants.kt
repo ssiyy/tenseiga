@@ -36,7 +36,7 @@ val REPLACE_TYPE = Type.getType(Replace::class.java)!!
 
 val PROXY_TYPE = Type.getType(Proxy::class.java)!!
 
-val TRYCATCHHANDLER_TYPE = Type.getType(TryCatchHandler::class.java)!!
+val SAFETRYCATCHHANDLER_TYPE = Type.getType(SafeTryCatchHandler::class.java)!!
 
 val TARGETCLASS_TYPE = Type.getType(TargetClass::class.java)!!
 

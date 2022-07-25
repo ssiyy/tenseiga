@@ -1,8 +1,8 @@
 package com.siy.tenseiga.parser.annoparser
 
+import com.siy.tenseiga.entity.SafeTryCatchHandlerInfo
 import com.siy.tenseiga.entity.TransformInfo
-import com.siy.tenseiga.entity.TryCatchHandlerInfo
-import com.siy.tenseiga.ext.TRYCATCHHANDLER_TYPE
+import com.siy.tenseiga.ext.FILTER_TYPE
 import com.siy.tenseiga.ext.value
 import com.siy.tenseiga.interfaces.PlaceholderParser
 import org.objectweb.asm.tree.ClassNode
@@ -14,22 +14,22 @@ import org.objectweb.asm.tree.MethodNode
  * @author  Siy
  * @since  2022/7/22
  */
-object TryCatchHandlerParser : PlaceholderParser {
+object SafeTryCatchHandlerParser : PlaceholderParser {
     override fun phParser(classNode: ClassNode, methodNode: MethodNode, transformInfo: TransformInfo) {
         val annotations = methodNode.visibleAnnotations
         var filter = listOf<String>()
         annotations.forEach {
             when (it.desc) {
-                TRYCATCHHANDLER_TYPE.descriptor -> {
-                    filter = (it.value as? Array<String>)?.let { arr ->
-                        listOf(*arr)
+                FILTER_TYPE.descriptor -> {
+                    filter = (it.value as? ArrayList<*>)?.map { item ->
+                        item as String
                     } ?: listOf()
                 }
             }
         }
 
-        transformInfo.tryCatchHandlerInfo.add(
-            TryCatchHandlerInfo(
+        transformInfo.safeTryCatchHandlerInfo.add(
+            SafeTryCatchHandlerInfo(
                 classNode.name,
                 methodNode,
                 filter

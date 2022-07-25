@@ -9,8 +9,10 @@ import com.siy.tenseiga.R;
 import com.siy.tenseiga.Tools;
 import com.siy.tenseiga.base.Invoker;
 import com.siy.tenseiga.base.Self;
+import com.siy.tenseiga.base.annotations.Filter;
 import com.siy.tenseiga.base.annotations.Replace;
 import com.siy.tenseiga.base.annotations.TargetClass;
+import com.siy.tenseiga.base.annotations.SafeTryCatchHandler;
 
 /**
  * @author Siy
@@ -111,6 +113,13 @@ public class HookJava {
         Log.e("siy", "putField的值getField方式获取：" + newField);
 
         return a + b + "hook";
+    }
+
+
+    @Filter(value={"com.siy.tenseiga.MainActivity"})
+    @SafeTryCatchHandler
+    public static Throwable hookExceptionHandler(Throwable exception){
+        return exception;
     }
 
 

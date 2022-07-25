@@ -28,8 +28,8 @@ object ProxyAnnoParser : PlaceholderParser {
                     targetClass = (it.value as? String)?.replace(".", "/")
                 }
                 FILTER_TYPE.descriptor -> {
-                    filters = (it.value as? Array<String>)?.let { arr ->
-                        listOf(*arr)
+                    filters = (it.value as? ArrayList<*>)?.map { item ->
+                        item as String
                     } ?: listOf()
                 }
             }
@@ -46,7 +46,7 @@ object ProxyAnnoParser : PlaceholderParser {
                 )
             )
         } else {
-            illegalState("$PROXY_TYPE 需要 $TARGETCLASS_TYPE")
+            illegalState("方法(${methodNode.name})使用$PROXY_TYPE 需要 $TARGETCLASS_TYPE")
         }
     }
 

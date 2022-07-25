@@ -16,7 +16,7 @@ import org.objectweb.asm.tree.TypeInsnNode
  * @author  Siy
  * @since  2022/7/12
  */
-class InvokerAdjuster constructor(private val methodNode: MethodNode) : NodeAdjuster {
+class InvokerAdjuster constructor(private val methodNode: MethodNode,private val transformType: Type) : NodeAdjuster {
 
     private val methodType = Type.getMethodType(methodNode.desc)
 
@@ -35,6 +35,8 @@ class InvokerAdjuster constructor(private val methodNode: MethodNode) : NodeAdju
      * @param  insnNode 占位符所在的方法指令 ，如 Invoker.invoke(args)
      */
     override fun replace(insnNode: MethodInsnNode): AbstractInsnNode {
+        //检查一下是否Invoker是否可用
+        checkPlaceHolderAllow(insnNode.name)
         //检查一下返回值类型
         checkReturnType(insnNode)
         //替换成自己的opcode
@@ -58,6 +60,15 @@ class InvokerAdjuster constructor(private val methodNode: MethodNode) : NodeAdju
             methodNode.instructions.remove(insnNode.next)
         }
         return insnNode
+    }
+
+    /**
+     * 检查当前placeHolder是否可用
+     */
+    private fun checkPlaceHolderAllow(placeHolder: String) {
+        if (transformType == SAFETRYCATCHHANDLER_TYPE) {
+            illegalState("Invoker.$placeHolder 不允许在${SAFETRYCATCHHANDLER_TYPE.internalName}中使用")
+        }
     }
 
     /**

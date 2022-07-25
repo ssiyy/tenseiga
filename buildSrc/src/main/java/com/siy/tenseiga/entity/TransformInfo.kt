@@ -25,7 +25,7 @@ class TransformInfo {
     /**
      * 异常捕捉相关
      */
-    val tryCatchHandlerInfo = mutableListOf<TryCatchHandlerInfo>()
+    val safeTryCatchHandlerInfo = mutableListOf<SafeTryCatchHandlerInfo>()
 
     /**
      *转换信息是否为空 true 空，false不为空
@@ -36,10 +36,15 @@ class TransformInfo {
         val replaceInfoStr = replaceInfo.map {
             it.toString()
         }.join("\n")
+
         val proxyInfoStr = proxyInfo.map {
             it.toString()
         }.join("\n")
 
-        return "replaceInfoStr:\n${replaceInfoStr} \n\nproxyInfoStr:\n${proxyInfoStr}"
+        val safeTryCatchHandlerInfoStr = safeTryCatchHandlerInfo.map {
+            it.toString()
+        }.join("\n")
+
+        return "replaceInfoStr:\n${replaceInfoStr} \nproxyInfoStr:\n${proxyInfoStr} \nsafeTryCatchHandlerInfoStr:\n${safeTryCatchHandlerInfoStr}"
     }
 }

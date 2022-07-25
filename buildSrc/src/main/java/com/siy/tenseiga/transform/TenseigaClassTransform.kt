@@ -79,9 +79,9 @@ class TenseigaClassTransform(private val extension: TExtension) : ClassTransform
         }
 
         //注册一个
-        if (transformInfo?.tryCatchHandlerInfo?.isNotEmpty() == true) {
-            classNodeTransform = TryCatchHandlerNodeTransform(
-                transformInfo?.tryCatchHandlerInfo ?: listOf(),
+        if (transformInfo?.safeTryCatchHandlerInfo?.isNotEmpty() == true) {
+            classNodeTransform = SafeTryCatchHandlerNodeTransform(
+                transformInfo?.safeTryCatchHandlerInfo ?: listOf(),
                 classNodeTransform
             )
         }

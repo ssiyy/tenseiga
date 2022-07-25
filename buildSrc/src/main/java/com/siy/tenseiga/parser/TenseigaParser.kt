@@ -5,6 +5,7 @@ import com.siy.tenseiga.entity.TExtension
 import com.siy.tenseiga.entity.TransformInfo
 import com.siy.tenseiga.ext.PROXY_TYPE
 import com.siy.tenseiga.ext.REPLACE_TYPE
+import com.siy.tenseiga.ext.SAFETRYCATCHHANDLER_TYPE
 import com.siy.tenseiga.interfaces.TransformParser
 import com.siy.tenseiga.parser.annoparser.AnnotationParser
 import java.io.File
@@ -36,6 +37,7 @@ class TenseigaParser(extension: TExtension) : TransformParser {
             } else {
                 (acc.proxyInfo).addAll(item.proxyInfo)
                 (acc.replaceInfo).addAll(item.replaceInfo)
+                (acc.safeTryCatchHandlerInfo).addAll(item.safeTryCatchHandlerInfo)
                 acc
             }
         }.apply {
@@ -45,6 +47,10 @@ class TenseigaParser(extension: TExtension) : TransformParser {
 
             replaceInfo.forEach {
                 PlaceHolderNodeJuster(it.hookMethodNode, REPLACE_TYPE).adjust()
+            }
+
+            safeTryCatchHandlerInfo.forEach {
+                PlaceHolderNodeJuster(it.hookMethodNode, SAFETRYCATCHHANDLER_TYPE).adjust()
             }
         }
     }

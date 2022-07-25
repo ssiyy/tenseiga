@@ -84,7 +84,7 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
      */
     private fun checkPlaceHolderAllow(placeHolder: String) {
         if (transformType != REPLACE_TYPE) {
-            illegalState("Self.$placeHolder 只允许再${REPLACE_TYPE.internalName}中使用")
+            illegalState("Self.$placeHolder 只允许在${REPLACE_TYPE.internalName}中使用")
         }
     }
 

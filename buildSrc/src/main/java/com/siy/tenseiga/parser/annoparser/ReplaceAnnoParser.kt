@@ -42,7 +42,7 @@ object ReplaceAnnoParser : PlaceholderParser {
                 )
             )
         } else {
-            illegalState("$REPLACE_TYPE 需要 $TARGETCLASS_TYPE")
+            illegalState("方法(${methodNode.name})使用$REPLACE_TYPE 需要 $TARGETCLASS_TYPE")
         }
     }
 }

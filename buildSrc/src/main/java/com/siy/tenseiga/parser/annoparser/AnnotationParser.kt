@@ -44,13 +44,13 @@ class AnnotationParser : TransformParser {
      * 检查注解是否规范
      *
      */
-    private fun checkAnnoParse(annos: List<String>?) {
+    private fun checkAnnoParse(methodNode: MethodNode,annos: List<String>?) {
         val haveRepalce = existAnno(annos, REPLACE_TYPE)
         val haveProxy = existAnno(annos, PROXY_TYPE)
-        val haveTryCatch = existAnno(annos, TRYCATCHHANDLER_TYPE)
+        val haveTryCatch = existAnno(annos, SAFETRYCATCHHANDLER_TYPE)
 
         if (haveRepalce && haveProxy && haveTryCatch) {
-            illegalState("$REPLACE_TYPE 、 $PROXY_TYPE 和 $haveTryCatch 不能用在同一个方法上")
+            illegalState("$REPLACE_TYPE 、 $PROXY_TYPE 和 $SAFETRYCATCHHANDLER_TYPE 不能用在同一个方法(${methodNode.name})上")
         }
     }
 
@@ -59,7 +59,7 @@ class AnnotationParser : TransformParser {
             it.desc
         }
 
-        checkAnnoParse(annoDesc)
+        checkAnnoParse(methodNode,annoDesc)
 
         val placeholderParser = when {
             existAnno(annoDesc, REPLACE_TYPE) -> {
@@ -68,8 +68,8 @@ class AnnotationParser : TransformParser {
             existAnno(annoDesc, PROXY_TYPE) -> {
                 ProxyAnnoParser
             }
-            existAnno(annoDesc, TRYCATCHHANDLER_TYPE)->{
-                TryCatchHandlerParser
+            existAnno(annoDesc, SAFETRYCATCHHANDLER_TYPE)->{
+                SafeTryCatchHandlerParser
             }
 
             else -> PARSER_NONE

@@ -14,13 +14,13 @@ import org.objectweb.asm.tree.MethodNode
  */
 class PlaceHolderNodeJuster constructor(
     private val methodNode: MethodNode,
-    private val transformType: Type
+      transformType: Type
     ) : NodeAdjuster {
 
     /**
      * 处理[Invoker]
      */
-    private val invokerAdjuster = InvokerAdjuster(methodNode)
+    private val invokerAdjuster = InvokerAdjuster(methodNode,transformType)
 
     /**
      * 处理[Self]

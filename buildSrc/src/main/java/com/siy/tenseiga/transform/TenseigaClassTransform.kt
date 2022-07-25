@@ -8,6 +8,7 @@ import com.didiglobal.booster.transform.asm.ClassTransformer
 import com.siy.tenseiga.asmtools.forDebug
 import com.siy.tenseiga.entity.TExtension
 import com.siy.tenseiga.entity.TransformInfo
+import com.siy.tenseiga.ext.getReport
 import com.siy.tenseiga.ext.isCInitMethod
 import com.siy.tenseiga.ext.isInitMethod
 import com.siy.tenseiga.parser.TenseigaParser
@@ -36,7 +37,7 @@ class TenseigaClassTransform(private val extension: TExtension) : ClassTransform
     private var transformInfo: TransformInfo? = null
 
     override fun onPreTransform(context: TransformContext) {
-        this.logger = getReport(context, "report.txt").touch().printWriter()
+        this.logger = context.getReport("report.txt").touch().printWriter()
 
         //获取class输入路径
         (context as? TransformInvocation)?.inputs?.asSequence()?.map {

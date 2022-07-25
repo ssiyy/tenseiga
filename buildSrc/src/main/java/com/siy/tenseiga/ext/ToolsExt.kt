@@ -1,5 +1,6 @@
 package com.siy.tenseiga.ext
 
+import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.asIterable
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
@@ -7,6 +8,7 @@ import org.objectweb.asm.tree.AbstractInsnNode
 import org.objectweb.asm.tree.AnnotationNode
 import org.objectweb.asm.tree.InsnList
 import org.objectweb.asm.tree.MethodNode
+import java.io.File
 
 /**
  * 复制一份MethodNode
@@ -88,4 +90,22 @@ val Type.unBoxedType: Type
 
 fun <K> InsnList.groupBy(keySelector: (AbstractInsnNode) -> K): Map<K, List<AbstractInsnNode>> {
     return this.asIterable().groupBy(keySelector)
+}
+
+/**
+ * 获取报告文件
+ */
+fun TransformContext.getReport(name: String): File {
+    val report: File by lazy {
+        val dir = File(File(reportsDir, name), name)
+        if (!dir.exists()) {
+            dir.mkdirs()
+        }
+        val file = File(dir, name)
+        if (!file.exists()) {
+            file.createNewFile()
+        }
+        file
+    }
+    return report
 }

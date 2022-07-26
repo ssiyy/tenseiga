@@ -56,7 +56,7 @@ buildscript {
 ```
 buildscript {
     dependencies {
-        classpath "com.github.ssiyy.tenseiga:tenseiga-plugin:v1.0.2"
+        classpath "com.github.ssiyy.tenseiga:tenseiga-plugin:lastVersion"
     }
 }
 ```
@@ -134,7 +134,7 @@ allprojects {
 ```
 ```
 dependencies {
-  implementation "com.github.ssiyy.tenseiga:tenseiga:v1.0.2"
+  implementation "com.github.ssiyy.tenseiga:tenseiga:lastVersion"
 }
 ```
 以
@@ -161,7 +161,7 @@ ps:
 ###  提供额外操作方式
 想要使用提供的额外操作方式同样需要引入
 ```
-implementation "com.github.ssiyy.tenseiga:tenseiga:v1.0.2"
+implementation "com.github.ssiyy.tenseiga:tenseiga:lastVersion"
 ```
 如：
 ```

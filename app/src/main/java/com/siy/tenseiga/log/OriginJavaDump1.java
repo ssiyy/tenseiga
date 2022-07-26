@@ -1,4 +1,4 @@
-package com.siy.tenseiga.test;
+package com.siy.tenseiga.log;
 
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassWriter;

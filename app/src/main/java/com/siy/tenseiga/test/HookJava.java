@@ -9,10 +9,9 @@ import com.siy.tenseiga.R;
 import com.siy.tenseiga.Tools;
 import com.siy.tenseiga.base.Invoker;
 import com.siy.tenseiga.base.Self;
-import com.siy.tenseiga.base.annotations.Filter;
 import com.siy.tenseiga.base.annotations.Replace;
-import com.siy.tenseiga.base.annotations.TargetClass;
 import com.siy.tenseiga.base.annotations.SafeTryCatchHandler;
+import com.siy.tenseiga.base.annotations.TargetClass;
 
 /**
  * @author Siy
@@ -116,10 +115,10 @@ public class HookJava {
     }
 
 
-    @Filter(value = {"com.siy.tenseiga.MainActivity"})
+  //  @Filter(value = {"com.siy.tenseiga.MainActivity"})
     @SafeTryCatchHandler
-    public static void hookExceptionHandler(String exception) {
-        int a = 1 + 1;
+    public static void hookExceptionHandler(Exception exception) {
+        Log.e("siy", Log.getStackTraceString(exception));
     }
 
 

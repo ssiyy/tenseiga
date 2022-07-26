@@ -20,12 +20,11 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
 
     override fun parse(dir: Sequence<File>): TransformInfo {
         val transformInfo = TransformInfo()
-        if (extension.isEmpty()) {
-            return transformInfo
-        }
+
         dir.forEach {
             parseReplaceInfo(it, extension.replaces, transformInfo)
             parseProxyInfo(it, extension.proxys, transformInfo)
+            parseSafeTryCatchInfo(it, extension.safeTryCatchs, transformInfo)
         }
         return transformInfo
     }
@@ -33,7 +32,7 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
     /**
      * 解析出替换的info
      */
-    private fun parseReplaceInfo(file: File, replaceParams: Collection<ReplaceParam>, infos: TransformInfo) {
+    private fun parseReplaceInfo(file: File, replaceParams: Collection<ReplaceParam>, info: TransformInfo) {
         replaceParams.forEach { rp ->
             val hookClass = File(file, rp.hookClass?.trim()?.replace(".", "\\").plus(".class"))
             if (hookClass.exists()) {
@@ -45,7 +44,7 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
                         !(isCInitMethod(it) || isInitMethod(it) || isAbstractMethod(it.access) || isNativeMethod(it.access))
                     }.forEach { mn ->
                         if (mn.name == rp.hookMethod) {
-                            infos.replaceInfo.add(
+                            info.replaceInfo.add(
                                 ReplaceInfo(
                                     rp.targetClass!!.replace(".", "/"),
                                     rp.targetMethod!!,
@@ -63,7 +62,7 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
     /**
      * 解析出代理的info
      */
-    private fun parseProxyInfo(file: File, proxysParams: Collection<ProxyParam>, infos: TransformInfo) {
+    private fun parseProxyInfo(file: File, proxysParams: Collection<ProxyParam>, info: TransformInfo) {
         proxysParams.forEach { pp ->
             val hookClass = File(file, pp.hookClass?.trim()?.replace(".", "\\").plus(".class"))
             if (hookClass.exists()) {
@@ -75,7 +74,7 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
                         !(isCInitMethod(it) || isInitMethod(it) || isAbstractMethod(it.access) || isNativeMethod(it.access))
                     }.forEach { mn ->
                         if (mn.name == pp.hookMethod) {
-                            infos.proxyInfo.add(
+                            info.proxyInfo.add(
                                 ProxyInfo(
                                     pp.targetClass!!.replace(".", "/"),
                                     pp.targetMethod!!,
@@ -88,6 +87,36 @@ class TExtensionParser(private val extension: TExtension) : TransformParser {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * 解析出异常捕捉的info
+     */
+    private fun parseSafeTryCatchInfo(file: File, safeTryCatchParam: Collection<SafeTryCatchParam>, info: TransformInfo) {
+        safeTryCatchParam.forEach { scp ->
+            val hookClass = File(file, scp.hookClass?.trim()?.replace(".", "\\").plus(".class"))
+            if (hookClass.exists()) {
+                hookClass.inputStream().use { fs ->
+                    val cn = ClassNode()
+                    ClassReader(fs).accept(cn, 0)
+                    cn.methods.filter {
+                        //过滤掉 静态代码块 构造方法 抽象方法 本地方法
+                        !(isCInitMethod(it) || isInitMethod(it) || isAbstractMethod(it.access) || isNativeMethod(it.access))
+                    }.forEach { mn ->
+                        if (mn.name == scp.hookMethod) {
+                            info.safeTryCatchHandlerInfo.add(
+                                SafeTryCatchHandlerInfo(
+                                    cn.name,
+                                    mn,
+                                    scp.filters
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+
         }
     }
 }

@@ -97,6 +97,39 @@ open class ReplaceParam constructor(
     }
 }
 
+open class SafeTryCatchParam constructor(
+    /**
+     * 不用管它给gradle TExtionsin用的
+     *
+     *   必须定义一个 name 属性，并且这个属性值初始化以后不要修改
+     */
+    private val name: String
+) : Filter() {
+    /**
+     * hook方法
+     */
+    lateinit var hookMethod: String
+
+    /**
+     * hook所在的类
+     */
+    lateinit var hookClass: String
+
+    /**
+     * 过滤的包名
+     */
+    fun filter(vararg filters: String) {
+        this.filters = filters.toList()
+    }
+
+    override fun toString(): String {
+        return "SafeTryCatchParam{ " +
+                "hookClass=$hookClass, " +
+                "hookMethod=${hookMethod}, " +
+                "filter=${filters.join(",")}}"
+    }
+}
+
 
 open class TExtension constructor(
     project: Project
@@ -104,6 +137,8 @@ open class TExtension constructor(
     val replaces = project.container(ReplaceParam::class.java)
 
     val proxys = project.container(ProxyParam::class.java)
+
+    val safeTryCatchs = project.container(SafeTryCatchParam::class.java)
 
     fun replaces(action: Action<NamedDomainObjectContainer<ReplaceParam>>) {
         action.execute(replaces)
@@ -113,6 +148,7 @@ open class TExtension constructor(
         action.execute(proxys)
     }
 
-    fun isEmpty() = replaces.isNullOrEmpty() && proxys.isNullOrEmpty()
-
+    fun safeTryCatchs(action: Action<NamedDomainObjectContainer<SafeTryCatchParam>>) {
+        action.execute(safeTryCatchs)
+    }
 }

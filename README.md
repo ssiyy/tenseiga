@@ -155,8 +155,16 @@ ps:
 类似的还有
 
 @Proxy 表示当前方法以代理的方式织入，值是织入的方法名字
-
 @Filter 用来过滤代理织入方法的范围
+
+@SafeTryCatchHandler 为指定的类的方法添加异常捕捉
+```
+    @Filter(value = {"com.siy.tenseiga.MainActivity"})
+    @SafeTryCatchHandler
+    public static void hookExceptionHandler(Exception exception) {
+        Log.e("siy", Log.getStackTraceString(exception));
+    }
+```
 
 ###  提供额外操作方式
 想要使用提供的额外操作方式同样需要引入

@@ -95,6 +95,15 @@ TExtension {
             hookClass = "com.siy.tenseiga.test.HookJava"
         }
     }
+    
+    //添加异常捕捉
+    safeTryCatchs {
+        hookExceptionHandler {
+            hookClass = "com.siy.tenseiga.test.HookJava"
+            hookMethod = "hookExceptionHandler"
+            filter "com.siy.tenseiga.test.OriginJava"
+        }
+    }
 }
 ```
 以

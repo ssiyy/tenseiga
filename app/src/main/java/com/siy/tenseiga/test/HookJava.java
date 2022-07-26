@@ -10,6 +10,7 @@ import com.siy.tenseiga.Tools;
 import com.siy.tenseiga.base.Invoker;
 import com.siy.tenseiga.base.Self;
 import com.siy.tenseiga.base.annotations.Filter;
+import com.siy.tenseiga.base.annotations.Proxy;
 import com.siy.tenseiga.base.annotations.Replace;
 import com.siy.tenseiga.base.annotations.SafeTryCatchHandler;
 import com.siy.tenseiga.base.annotations.TargetClass;
@@ -113,6 +114,13 @@ public class HookJava {
         Log.e("siy", "putField的值getField方式获取：" + newField);
 
         return a + b + "hook";
+    }
+
+    @Proxy(value = "d")
+    @TargetClass(value = "android.util.Log")
+    @Filter(value = {"com.siy.tenseiga.MainActivity"})
+    public static int hookSysLogd(String tag, String msg) {
+        return Log.e(tag, msg);
     }
 
 

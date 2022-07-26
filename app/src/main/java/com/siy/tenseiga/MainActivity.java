@@ -50,14 +50,21 @@ public class MainActivity extends AppCompatActivity {
                 proxyUser();
             }
         });
+
+        findViewById(R.id.annoProxySys).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+              Log.d("siy","我用的Log.d");
+            }
+        });
     }
 
     private void proxyUser() {
         Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2, "x", findViewById(R.id.proxyUser), this, (byte) 0, (short) 11)));
-        int a = 2/0;
+        int a = 2 / 0;
     }
 
-    private void proxySys(){
+    private void proxySys() {
         Log.e("siy", getString(R.string.app_name));
     }
 }

@@ -155,7 +155,16 @@ ps:
 类似的还有
 
 @Proxy 表示当前方法以代理的方式织入，值是织入的方法名字
+
 @Filter 用来过滤代理织入方法的范围
+```
+ @Proxy(value = "d")
+    @TargetClass(value = "android.util.Log")
+    @Filter(value = {"com.siy.tenseiga.MainActivity"})
+    public static int hookSysLogd(String tag, String msg) {
+        return Log.e(tag, msg);
+    }
+```
 
 @SafeTryCatchHandler 为指定的类的方法添加异常捕捉
 ```

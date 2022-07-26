@@ -158,7 +158,7 @@ ps:
 
 @Filter 用来过滤代理织入方法的范围
 ```
- @Proxy(value = "d")
+    @Proxy(value = "d")
     @TargetClass(value = "android.util.Log")
     @Filter(value = {"com.siy.tenseiga.MainActivity"})
     public static int hookSysLogd(String tag, String msg) {

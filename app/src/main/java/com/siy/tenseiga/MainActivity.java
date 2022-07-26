@@ -53,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void proxyUser() {
-        int a = 2/0;
         Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2, "x", findViewById(R.id.proxyUser), this, (byte) 0, (short) 11)));
+        int a = 2/0;
     }
 
     private void proxySys(){

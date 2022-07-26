@@ -63,7 +63,6 @@ class SafeTryCatchHandlerNodeTransform(private val safeTryCatchHandlerInfo: List
 
         klass?.let { clazz ->
             infos.forEach { info ->
-                errOut("xxxxxxxxxxxxxxxxxxxxxxxxxx:${info.hookMethodNode.name}")
                 val hookMethod = copyHookMethodAndReplacePlaceholder(info)
                 addTryCatchHandler(method, hookMethod)
             }
@@ -94,14 +93,30 @@ class SafeTryCatchHandlerNodeTransform(private val safeTryCatchHandlerInfo: List
 
         //根据返回的类型，判断返回需要的Opcodes
         val returnType = Type.getReturnType(methodNode.desc)
-        if (returnType.sort == Type.VOID) {
-            insns.add(InsnNode(Opcodes.RETURN))
-        } else if (returnType.sort >= Type.BOOLEAN && returnType.sort <= Type.DOUBLE) {
-            insns.add(InsnNode(Opcodes.ICONST_1))
-            insns.add(InsnNode(Opcodes.IRETURN))
-        } else {
-            insns.add(InsnNode(Opcodes.ACONST_NULL))
-            insns.add(InsnNode(Opcodes.ARETURN))
+        when (returnType.sort) {
+            Type.VOID -> {
+                insns.add(InsnNode(Opcodes.RETURN))
+            }
+            Type.BOOLEAN, Type.CHAR, Type.BYTE, Type.SHORT, Type.INT -> {
+                insns.add(InsnNode(Opcodes.ICONST_0))
+                insns.add(InsnNode(Opcodes.IRETURN))
+            }
+            Type.FLOAT -> {
+                insns.add(InsnNode(Opcodes.FCONST_0))
+                insns.add(InsnNode(Opcodes.FRETURN))
+            }
+            Type.LONG -> {
+                insns.add(InsnNode(Opcodes.LCONST_0))
+                insns.add(InsnNode(Opcodes.LRETURN))
+            }
+            Type.DOUBLE -> {
+                insns.add(InsnNode(Opcodes.DCONST_0))
+                insns.add(InsnNode(Opcodes.DRETURN))
+            }
+            else -> {
+                insns.add(InsnNode(Opcodes.ACONST_NULL))
+                insns.add(InsnNode(Opcodes.ARETURN))
+            }
         }
     }
 

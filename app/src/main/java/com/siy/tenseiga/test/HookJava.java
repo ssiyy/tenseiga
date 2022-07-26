@@ -118,16 +118,8 @@ public class HookJava {
 
     @Filter(value = {"com.siy.tenseiga.MainActivity"})
     @SafeTryCatchHandler
-    public static String hookExceptionHandler(Throwable exception) {
-
-        try {
-            int a = 1 + 1;
-            return "123";
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw e;
-        }
-
+    public static void hookExceptionHandler(String exception) {
+        int a = 1 + 1;
     }
 
 

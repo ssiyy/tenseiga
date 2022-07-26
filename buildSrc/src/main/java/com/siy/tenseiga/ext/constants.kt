@@ -3,14 +3,6 @@ package com.siy.tenseiga.ext
 import com.siy.tenseiga.base.annotations.*
 import org.objectweb.asm.Type
 
-
-/**
- *
- * @author  Siy
- * @since  2022/7/12
- */
-
-
 val BYTE_TYPE = Type.getType(Byte::class.javaObjectType)!!
 
 val SHORT_TYPE = Type.getType(Short::class.javaObjectType)!!
@@ -29,6 +21,8 @@ val BOOLEAN_TYPE = Type.getType(Boolean::class.javaObjectType)!!
 
 val NUMBER_TYPE = Type.getType(Number::class.javaObjectType)!!
 
+
+val EXCEPTION_TYPE = Type.getType(Exception::class.java)!!
 
 val OBJECT_TYPE = Type.getType(Any::class.javaObjectType)!!
 

@@ -1,14 +1,12 @@
 package com.siy.tenseiga.transform
 
 import com.didiglobal.booster.transform.TransformContext
-import com.didiglobal.booster.transform.asm.filter
 import com.siy.tenseiga.entity.SafeTryCatchHandlerInfo
 import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.inflater.TenseigaInflater
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.tree.ClassNode
-import org.objectweb.asm.tree.LabelNode
-import org.objectweb.asm.tree.MethodNode
+import org.objectweb.asm.Type
+import org.objectweb.asm.tree.*
 
 
 /**
@@ -65,29 +63,45 @@ class SafeTryCatchHandlerNodeTransform(private val safeTryCatchHandlerInfo: List
 
         klass?.let { clazz ->
             infos.forEach { info ->
-
-
+                errOut("xxxxxxxxxxxxxxxxxxxxxxxxxx:${info.hookMethodNode.name}")
                 val hookMethod = copyHookMethodAndReplacePlaceholder(info)
+                addTryCatchHandler(method, hookMethod)
             }
         }
     }
 
-    private fun addTryCatchHandler(methodNode: MethodNode) {
+    private fun addTryCatchHandler(methodNode: MethodNode, hookMethodNode: MethodNode) {
         val startLabelNode = LabelNode()
         val endLabelNode = LabelNode()
-        val exceptionHandlerNode = LabelNode()
-        val returnLabelNode = LabelNode()
+        val handlerNode = LabelNode()
 
         val insns = methodNode.instructions
-        insns.filter {
-            //RETURN:
-            //IRETURN
-            //FRETURN
-            //ARETURN
-            //LRETURN
-            //DRETURN
-            //ATHROW
-            (it.opcode >= Opcodes.IRETURN && it.opcode <= Opcodes.RETURN) || it.opcode == Opcodes.ATHROW
+        methodNode.tryCatchBlocks.add(TryCatchBlockNode(startLabelNode, endLabelNode, handlerNode, EXCEPTION_TYPE.internalName))
+
+        insns.insertBefore(insns.first, startLabelNode)
+        insns.add(endLabelNode)
+        insns.add(handlerNode)
+        insns.add(InsnNode(Opcodes.DUP))
+
+        insns.add(
+            MethodInsnNode(
+                getOpcodesByAccess(hookMethodNode.access),
+                klass?.name,
+                hookMethodNode.name,
+                hookMethodNode.desc
+            )
+        )
+
+        //根据返回的类型，判断返回需要的Opcodes
+        val returnType = Type.getReturnType(methodNode.desc)
+        if (returnType.sort == Type.VOID) {
+            insns.add(InsnNode(Opcodes.RETURN))
+        } else if (returnType.sort >= Type.BOOLEAN && returnType.sort <= Type.DOUBLE) {
+            insns.add(InsnNode(Opcodes.ICONST_1))
+            insns.add(InsnNode(Opcodes.IRETURN))
+        } else {
+            insns.add(InsnNode(Opcodes.ACONST_NULL))
+            insns.add(InsnNode(Opcodes.ARETURN))
         }
     }
 
@@ -96,7 +110,6 @@ class SafeTryCatchHandlerNodeTransform(private val safeTryCatchHandlerInfo: List
      * 把hook方法的方法体拷贝一份并且替换里面的placeholder
      *
      * @param info 替换相关信息的数据体，里面有要拷贝的方法
-     * @param methodNode 被hook的方法，需要读取它的参数信息
      *
      * @return 返回新生成的方法
      */

@@ -75,7 +75,7 @@ class AnnotationParser : TransformParser {
             else -> PARSER_NONE
         }
 
-        placeholderParser.phParser(classNode, methodNode, transformInfo)
+        placeholderParser.parser(classNode, methodNode, transformInfo)
     }
 
     /**

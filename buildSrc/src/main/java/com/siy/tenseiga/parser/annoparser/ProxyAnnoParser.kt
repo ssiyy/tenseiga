@@ -3,7 +3,7 @@ package com.siy.tenseiga.parser.annoparser
 import com.siy.tenseiga.entity.ProxyInfo
 import com.siy.tenseiga.entity.TransformInfo
 import com.siy.tenseiga.ext.*
-import com.siy.tenseiga.interfaces.PlaceholderParser
+import com.siy.tenseiga.interfaces.AnnotationParser
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodNode
 
@@ -13,8 +13,8 @@ import org.objectweb.asm.tree.MethodNode
  * @author  Siy
  * @since  2022/7/21
  */
-object ProxyAnnoParser : PlaceholderParser {
-    override fun phParser(classNode: ClassNode, methodNode: MethodNode, transformInfo: TransformInfo) {
+object ProxyAnnoParser : AnnotationParser {
+    override fun parser(classNode: ClassNode, methodNode: MethodNode, transformInfo: TransformInfo) {
         val annotations = methodNode.visibleAnnotations
         var targetMethod: String? = null
         var targetClass: String? = null

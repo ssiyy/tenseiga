@@ -12,7 +12,7 @@ import org.objectweb.asm.tree.MethodNode
  * @author  Siy
  * @since  2022/7/21
  */
-interface PlaceholderParser {
+interface AnnotationParser {
 
     /**
      *
@@ -21,9 +21,9 @@ interface PlaceholderParser {
      * @param transformInfo
      *
      */
-    fun phParser(classNode: ClassNode, methodNode: MethodNode, transformInfo: TransformInfo)
+    fun parser(classNode: ClassNode, methodNode: MethodNode, transformInfo: TransformInfo)
 }
 
-val PARSER_NONE = object : PlaceholderParser {
-    override fun phParser(classNode: ClassNode, methodNode: MethodNode, transformInfo: TransformInfo) = Unit
+val PARSER_NONE = object : AnnotationParser {
+    override fun parser(classNode: ClassNode, methodNode: MethodNode, transformInfo: TransformInfo) = Unit
 }

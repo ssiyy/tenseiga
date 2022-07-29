@@ -18,6 +18,7 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
         if (isStaticMethod(methodNode.access)) {
             illegalState("静态方法不应该调用这个函数")
         }
+        checkPlaceHolderAllow(methodNode.name)
         when (insnNode.name) {
             "get" -> {
 //                methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Self", "get", "()Ljava/lang/Object;", false);
@@ -37,7 +38,7 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
 //                methodVisitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;", false);
 //                methodVisitor.visitLdcInsn("newField");       //把这个指令移除了
 //                methodVisitor.visitMethodInsn(INVOKESTATIC, "com/siy/tenseiga/base/Self", "putField", "(Ljava/lang/Object;Ljava/lang/String;)V", false);     //把newField名字给它
-                checkPlaceHolderAllow(insnNode.name)
+                checkGetPutFieldPlaceHolderAllow(insnNode.name)
                 insnNode.opcode = OPCODES_PUTFIELD
                 insnNode.name = getFieldName(insnNode.previous)
                 methodNode.instructions.remove(insnNode.previous)
@@ -55,7 +56,7 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
 //                methodVisitor.visitTypeInsn(CHECKCAST, "java/lang/Float");
 //                methodVisitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Float", "floatValue", "()F", false);
 //                methodVisitor.visitVarInsn(FSTORE, 5);
-                checkPlaceHolderAllow(insnNode.name)
+                checkGetPutFieldPlaceHolderAllow(insnNode.name)
                 insnNode.opcode = OPCODES_GETFIELD
                 insnNode.name = getFieldName(insnNode.previous)
                 methodNode.instructions.remove(insnNode.previous)
@@ -83,6 +84,15 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
      * 检查当前placeHolder是否可用
      */
     private fun checkPlaceHolderAllow(placeHolder: String) {
+        if (transformType == SERIALIZABLE_TYPE) {
+            illegalState("Self.$placeHolder 不允许在${transformType.internalName}中使用")
+        }
+    }
+
+    /**
+     * 检查当前placeHolder是否可用
+     */
+    private fun checkGetPutFieldPlaceHolderAllow(placeHolder: String) {
         if (transformType != REPLACE_TYPE) {
             illegalState("Self.$placeHolder 只允许在${REPLACE_TYPE.internalName}中使用")
         }

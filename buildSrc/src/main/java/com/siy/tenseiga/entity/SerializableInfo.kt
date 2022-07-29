@@ -15,7 +15,7 @@ class SerializableInfo(
     /**
      * 被替换的类名
      */
-    val targetClass: String,
+    val targetClass:List<String> = listOf(),
 
     /**
      * hook方法

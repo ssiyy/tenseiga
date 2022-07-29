@@ -57,9 +57,6 @@ class TenseigaClassTransform(private val extension: TExtension) : ClassTransform
      * 注册转换相关的类
      */
     private fun registerTransform(): ClassNodeTransform? {
-        if (transformInfo?.isEmpty() == true) {
-            return null
-        }
 
         var classNodeTransform: ClassNodeTransform? = null
 
@@ -79,10 +76,18 @@ class TenseigaClassTransform(private val extension: TExtension) : ClassTransform
             )
         }
 
-        //注册一个
+        //注册一个SafeTryCatchHandlerNodeTransform
         if (transformInfo?.safeTryCatchHandlerInfo?.isNotEmpty() == true) {
             classNodeTransform = SafeTryCatchHandlerNodeTransform(
                 transformInfo?.safeTryCatchHandlerInfo ?: listOf(),
+                classNodeTransform
+            )
+        }
+
+        //注册一个SerializableNodeTransform
+        if (transformInfo?.serializableParserInfo?.isNotEmpty() == true) {
+            classNodeTransform = SerializableNodeTransform(
+                transformInfo?.serializableParserInfo ?: listOf(),
                 classNodeTransform
             )
         }

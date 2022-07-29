@@ -25,7 +25,7 @@ object ProxyAnnoParser : AnnotationParser {
                     targetMethod = it.value as? String
                 }
                 TARGETCLASS_TYPE.descriptor -> {
-                    targetClass = (it.value as? String)?.replace(".", "/")
+                    targetClass = (it.value as? String)?.replace('.', '/')
                 }
                 FILTER_TYPE.descriptor -> {
                     filters = (it.value as? ArrayList<*>)?.map { item ->
@@ -38,7 +38,7 @@ object ProxyAnnoParser : AnnotationParser {
         if (targetMethod.orEmpty().isNotEmpty() && targetClass.orEmpty().isNotEmpty()) {
             transformInfo.proxyInfo.add(
                 ProxyInfo(
-                    targetClass!!.replace(".", "/"),
+                    targetClass!!.replace('.', '/'),
                     targetMethod!!,
                     classNode.name,
                     methodNode,

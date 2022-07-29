@@ -44,7 +44,10 @@ import org.objectweb.asm.tree.MethodNode
  * @author  Siy
  * @since  2022/5/31
  */
-class ReplaceClassNodeTransform(private val replaceInfos: List<ReplaceInfo>, cnt: ClassNodeTransform?) : ClassNodeTransform(cnt) {
+class ReplaceClassNodeTransform(
+    private val replaceInfos: List<ReplaceInfo>,
+    cnt: ClassNodeTransform?
+) : ClassNodeTransform(cnt) {
 
     private var tenseigaInflater: TenseigaInflater? = null
 

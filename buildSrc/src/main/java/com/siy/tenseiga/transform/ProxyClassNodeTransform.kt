@@ -38,7 +38,10 @@ import org.objectweb.asm.tree.MethodNode
  * @author  Siy
  * @since  2022/5/31
  */
-class ProxyClassNodeTransform(private val proxyInfos: List<ProxyInfo>, cnt: ClassNodeTransform?) : ClassNodeTransform(cnt) {
+class ProxyClassNodeTransform(
+    private val proxyInfos: List<ProxyInfo>,
+    cnt: ClassNodeTransform?
+) : ClassNodeTransform(cnt) {
 
 
     private var tenseigaInflater: TenseigaInflater? = null

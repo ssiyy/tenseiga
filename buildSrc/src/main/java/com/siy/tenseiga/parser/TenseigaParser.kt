@@ -6,6 +6,7 @@ import com.siy.tenseiga.entity.TransformInfo
 import com.siy.tenseiga.ext.PROXY_TYPE
 import com.siy.tenseiga.ext.REPLACE_TYPE
 import com.siy.tenseiga.ext.SAFETRYCATCHHANDLER_TYPE
+import com.siy.tenseiga.ext.SERIALIZABLE_TYPE
 import com.siy.tenseiga.interfaces.TransformParser
 import com.siy.tenseiga.parser.annoparser.AnnotationParser
 import java.io.File
@@ -51,6 +52,10 @@ class TenseigaParser(extension: TExtension) : TransformParser {
 
             safeTryCatchHandlerInfo.forEach {
                 PlaceHolderNodeJuster(it.hookMethodNode, SAFETRYCATCHHANDLER_TYPE).adjust()
+            }
+
+            serializableParserInfo.forEach {
+                PlaceHolderNodeJuster(it.hookMethodNode, SERIALIZABLE_TYPE).adjust()
             }
         }
     }

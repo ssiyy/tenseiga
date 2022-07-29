@@ -28,9 +28,9 @@ class TransformInfo {
     val safeTryCatchHandlerInfo = mutableListOf<SafeTryCatchHandlerInfo>()
 
     /**
-     *转换信息是否为空 true 空，false不为空
+     * 序列化相关
      */
-    fun isEmpty() = replaceInfo.isEmpty() && proxyInfo.isEmpty()
+    val serializableParserInfo = mutableListOf<SerializableInfo>()
 
     override fun toString(): String {
         val replaceInfoStr = replaceInfo.map {
@@ -45,6 +45,13 @@ class TransformInfo {
             it.toString()
         }.join("\n")
 
-        return "replaceInfoStr:\n${replaceInfoStr} \nproxyInfoStr:\n${proxyInfoStr} \nsafeTryCatchHandlerInfoStr:\n${safeTryCatchHandlerInfoStr}"
+        val serializableParserInfoStr = serializableParserInfo.map{
+            it.toString()
+        }.join("\n")
+
+        return "replaceInfoStr:\n${replaceInfoStr} " +
+                "\nproxyInfoStr:\n${proxyInfoStr} " +
+                "\nsafeTryCatchHandlerInfoStr:\n${safeTryCatchHandlerInfoStr} " +
+                "\nserializableParserInfo:${serializableParserInfoStr}"
     }
 }

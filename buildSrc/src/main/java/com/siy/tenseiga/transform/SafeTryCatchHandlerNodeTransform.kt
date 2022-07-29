@@ -14,7 +14,10 @@ import org.objectweb.asm.tree.*
  * @author  Siy
  * @since  2022/7/22
  */
-class SafeTryCatchHandlerNodeTransform(private val safeTryCatchHandlerInfo: List<SafeTryCatchHandlerInfo>, cnt: ClassNodeTransform?) : ClassNodeTransform(cnt) {
+class SafeTryCatchHandlerNodeTransform(
+    private val safeTryCatchHandlerInfo: List<SafeTryCatchHandlerInfo>,
+    cnt: ClassNodeTransform?
+) : ClassNodeTransform(cnt) {
 
     private var tenseigaInflater: TenseigaInflater? = null
 

@@ -1,5 +1,7 @@
 package com.siy.tenseiga.entity
 
+import org.objectweb.asm.tree.MethodNode
+
 
 /**
  *
@@ -9,8 +11,27 @@ package com.siy.tenseiga.entity
  * @since  2022/7/29
  */
 class SerializableInfo(
+
     /**
-     * 被替换的方法名
+     * 被替换的类名
      */
-    val targetMethod: String
-)
+    val targetClass: String,
+
+    /**
+     * hook方法
+     */
+     var hookMethodNode: MethodNode,
+
+    /**
+     * hook所在的类
+     */
+     var hookClass: String,
+
+){
+    override fun toString(): String {
+        return "SerializableInfo{ " +
+                "hookClass=$hookClass, " +
+                "hookMethod=${hookMethodNode.name}, " +
+                "targetClass=${targetClass}}"
+    }
+}

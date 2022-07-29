@@ -16,7 +16,7 @@ import org.objectweb.asm.tree.TypeInsnNode
  * @author  Siy
  * @since  2022/7/12
  */
-class InvokerAdjuster constructor(private val methodNode: MethodNode,private val transformType: Type) : NodeAdjuster {
+class InvokerAdjuster constructor(private val methodNode: MethodNode, private val transformType: Type) : NodeAdjuster {
 
     private val methodType = Type.getMethodType(methodNode.desc)
 
@@ -66,8 +66,8 @@ class InvokerAdjuster constructor(private val methodNode: MethodNode,private val
      * 检查当前placeHolder是否可用
      */
     private fun checkPlaceHolderAllow(placeHolder: String) {
-        if (transformType == SAFETRYCATCHHANDLER_TYPE) {
-            illegalState("Invoker.$placeHolder 不允许在${SAFETRYCATCHHANDLER_TYPE.internalName}中使用")
+        if (transformType == SAFETRYCATCHHANDLER_TYPE || transformType == SERIALIZABLE_TYPE) {
+            illegalState("Invoker.$placeHolder 不允许在${transformType.internalName}中使用")
         }
     }
 

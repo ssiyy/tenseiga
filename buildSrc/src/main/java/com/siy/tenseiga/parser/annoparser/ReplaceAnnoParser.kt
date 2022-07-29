@@ -35,7 +35,7 @@ object ReplaceAnnoParser : AnnotationParser {
         if (targetMethod.orEmpty().isNotEmpty() && targetClass.orEmpty().isNotEmpty()) {
             transformInfo.replaceInfo.add(
                 ReplaceInfo(
-                    targetClass!!.replace(".", "/"),
+                    targetClass!!.replace('.', '/'),
                     targetMethod!!,
                     classNode.name,
                     methodNode

@@ -24,47 +24,35 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.replaceUser).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.e("siy", String.valueOf(new OriginJava().replace(3, 2)));
+                Log.e("siy", String.valueOf(new OriginJava().replace(100, 101)));
             }
         });
 
-        findViewById(R.id.replaceUserAnno).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                Log.e("siy", new OriginJava().annoReplace(100, 101));
-            }
-        });
-
-        findViewById(R.id.proxySys).setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                proxySys();
-            }
-        });
 
         findViewById(R.id.proxyUser).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                proxyUser();
+                Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2, "x", findViewById(R.id.proxyUser), MainActivity.this, (byte) 0, (short) 11)));
             }
         });
 
-        findViewById(R.id.annoProxySys).setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.proxySys).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-              Log.d("siy","我用的Log.d");
+                Log.d("siy", "我用的Log.d");
+            }
+        });
+
+        findViewById(R.id.catchHandler).setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                throwException();
             }
         });
     }
 
-    private void proxyUser() {
-        Log.e("siy", String.valueOf(new OriginJava().proxy(1, 2, "x", findViewById(R.id.proxyUser), this, (byte) 0, (short) 11)));
-        int a = 2 / 0;
-    }
-
-    private void proxySys() {
-        Log.e("siy", getString(R.string.app_name));
+    private void throwException(){
+        int a = 2/0;
+        Log.e("siy",String.valueOf(a));
     }
 }

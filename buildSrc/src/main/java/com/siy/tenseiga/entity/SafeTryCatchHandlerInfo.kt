@@ -14,7 +14,7 @@ class SafeTryCatchHandlerInfo(
     /**
      * 替换的类,internalName
      */
-    hookClass: String,
+    val hookClass: String,
     /**
      * 替换的方法
      */
@@ -23,12 +23,7 @@ class SafeTryCatchHandlerInfo(
      * 需要替换哪些用了targetClass 的 replace的包
      */
     filters: List<String> = listOf()
-) : SafeTryCatchParam(hookClass) {
-    init {
-        this.hookClass = hookClass
-        this.filters = filters
-        this.hookMethod = hookMethodNode.name
-    }
+) : Filter(filters) {
 
     fun cloneHookMethodNode(): MethodNode {
         return hookMethodNode.cloneSelf()

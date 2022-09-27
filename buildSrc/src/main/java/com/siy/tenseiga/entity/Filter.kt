@@ -8,8 +8,7 @@ import java.util.regex.Pattern
  * @author  Siy
  * @since  2022/7/21
  */
-open class Filter {
-    var filters: List<String> = listOf()
+open class Filter(var filters: List<String> = listOf()) {
 
     /**
      * 是否包含内部类

@@ -16,17 +16,17 @@ class ProxyInfo(
     /**
      * 被替换的类,internalName
      */
-    targetClass: String,
+    val targetClass: String,
 
     /**
      * 被替换的方法名
      */
-    targetMethod: String,
+    val targetMethod: String,
 
     /**
      * 替换的类,internalName
      */
-    hookClass: String,
+    val hookClass: String,
     /**
      * 替换的方法
      */
@@ -35,14 +35,7 @@ class ProxyInfo(
      * 需要替换哪些用了targetClass 的 replace的包
      */
     filters: List<String> = listOf()
-) : ProxyParam(targetMethod) {
-
-    init {
-        this.targetClass = targetClass
-        this.hookClass = hookClass
-        this.filters = filters
-        this.hookMethod = hookMethodNode.name
-    }
+) : Filter(filters) {
 
     /**
      * 替换目标方法的desc

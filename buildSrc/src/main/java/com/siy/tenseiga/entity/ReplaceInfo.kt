@@ -11,33 +11,27 @@ import org.objectweb.asm.tree.MethodNode
  * @author  Siy
  * @since  2022/5/26
  */
- class ReplaceInfo(
+class ReplaceInfo(
     /**
      * 被替换的类,internalName
      */
-     targetClass: String,
+    val targetClass: String,
 
     /**
      * 被替换的方法名
      */
-     targetMethod: String,
+    val targetMethod: String,
 
     /**
      * 替换的类,internalName
      */
-     hookClass: String,
+    val hookClass: String,
     /**
      * 替换的方法
      */
-    val hookMethodNode: MethodNode,
+    val hookMethodNode: MethodNode
+) {
 
-    ) :ReplaceParam(targetMethod){
-
-    init {
-        this.targetClass = targetClass
-        this.hookClass = hookClass
-        this.hookMethod = hookMethodNode.name
-    }
 
     /**
      * 替换目标方法的desc

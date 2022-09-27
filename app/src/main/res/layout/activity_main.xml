@@ -1,83 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_centerInParent="true"
-    android:orientation="vertical"
-    tools:context=".MainActivity">
+    android:layout_margin="10dp"
+    android:background="@drawable/grup_round_conner"
+    android:orientation="vertical">
 
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/replaceUser"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@drawable/grup_round_conner"
-        android:orientation="vertical">
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:padding="20dp"
+        android:text="修改用户方法"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/replaceUser"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
-            android:padding="20dp"
-            android:text="修改用户方法"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/replaceUserAnno"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
-            android:padding="20dp"
-            android:text="修改用户方法(注解产生)"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-    </LinearLayout>
-
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/proxySys"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:background="@drawable/grup_round_conner"
-        android:orientation="vertical">
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:padding="20dp"
+        android:text="代理系统方法"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/proxySys"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
-            android:padding="20dp"
-            android:text="代理系统方法"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+    <TextView
+        android:id="@+id/proxyUser"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:padding="20dp"
+        android:text="代理用户方法"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/annoProxySys"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
-            android:padding="20dp"
-            android:text="代理系统方法(注解产生)"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-
-        <TextView
-            android:id="@+id/proxyUser"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="30dp"
-            android:padding="20dp"
-            android:text="代理用户方法"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/catchHandler"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:padding="20dp"
+        android:text="异常捕捉"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 </LinearLayout>

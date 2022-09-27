@@ -6,7 +6,6 @@ import com.didiglobal.booster.kotlinx.touch
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.ClassTransformer
 import com.siy.tenseiga.asmtools.forDebug
-import com.siy.tenseiga.entity.TExtension
 import com.siy.tenseiga.entity.TransformInfo
 import com.siy.tenseiga.ext.getReport
 import com.siy.tenseiga.ext.isCInitMethod
@@ -24,7 +23,7 @@ import java.io.PrintWriter
  * @author  Siy
  * @since  2022/5/26
  */
-class TenseigaClassTransform(private val extension: TExtension) : ClassTransformer {
+class TenseigaClassTransform() : ClassTransformer {
 
     /**
      *日志输出流
@@ -47,7 +46,7 @@ class TenseigaClassTransform(private val extension: TExtension) : ClassTransform
         }?.filter {
             it.isDirectory
         }?.let {
-            transformInfo = TenseigaParser(extension).parse(it)
+            transformInfo = TenseigaParser().parse(it)
 
             logger.println(transformInfo.toString())
         }

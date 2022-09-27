@@ -3,18 +3,15 @@ package com.siy.tenseiga.base.transform
 import com.android.build.api.variant.VariantInfo
 import com.didiglobal.booster.transform.Transformer
 import com.siy.tenseiga.base.asmtransformer.DoKitAsmTransformer
-import com.siy.tenseiga.entity.TExtension
 import com.siy.tenseiga.transform.TenseigaClassTransform
 import org.gradle.api.Project
 
-class DoKitCommTransformV34(project: Project,t: TExtension) : DoKitBaseTransform(project) {
-
-
+class DoKitCommTransformV34(project: Project) : DoKitBaseTransform(project) {
 
     override val transformers = listOf<Transformer>(
         DoKitAsmTransformer(
             listOf(
-                TenseigaClassTransform(t)
+                TenseigaClassTransform()
             )
         )
     )

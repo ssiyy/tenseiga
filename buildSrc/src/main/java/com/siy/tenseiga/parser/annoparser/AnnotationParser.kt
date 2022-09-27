@@ -3,7 +3,6 @@ package com.siy.tenseiga.parser.annoparser
 import com.siy.tenseiga.entity.TransformInfo
 import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.interfaces.PARSER_NONE
-import com.siy.tenseiga.interfaces.TransformParser
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.Type
 import org.objectweb.asm.tree.ClassNode
@@ -15,9 +14,9 @@ import java.io.File
  * @author  Siy
  * @since  2022/6/27
  */
-class AnnotationParser : TransformParser {
+class AnnotationParser {
 
-    override fun parse(dir: Sequence<File>): TransformInfo {
+     fun parse(dir: Sequence<File>): TransformInfo {
         val transformInfo = TransformInfo()
 
         dir.flatMap {

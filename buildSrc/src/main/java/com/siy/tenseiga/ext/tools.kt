@@ -47,16 +47,22 @@ fun isInitMethod(methodNode: MethodNode) = "<init>" == methodNode.name
 
 /**
  * 是否是静态初始化块
+ *
+ * @return true 是
  */
 fun isCInitMethod(methodNode: MethodNode) = "<clinit>" == methodNode.name
 
 /**
  * 是否是抽象方法
+ *
+ * @return true 是
  */
 fun isAbstractMethod(access: Int) = access and Opcodes.ACC_ABSTRACT != 0
 
 /**
  * 是否是本地方法
+ *
+ * @return true 是
  */
 fun isNativeMethod(access: Int) = access and Opcodes.ACC_NATIVE != 0
 

@@ -28,8 +28,8 @@ object Invoker {
      * @param params 如果原来方法有参数，params就是传入的参数
      */
     @JvmStatic
-    fun invoke(vararg params: Any) = Any()
+    fun invoke(vararg params: Any?) = Any()
 
     @JvmStatic
-    fun invokeVoid(vararg params: Any) = Unit
+    fun invokeVoid(vararg params: Any?) = Unit
 }

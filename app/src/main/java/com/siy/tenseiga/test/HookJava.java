@@ -12,6 +12,7 @@ import com.siy.tenseiga.base.annotations.Filter;
 import com.siy.tenseiga.base.annotations.InsertFunc;
 import com.siy.tenseiga.base.annotations.Proxy;
 import com.siy.tenseiga.base.annotations.Replace;
+import com.siy.tenseiga.base.annotations.SafeTryCatchHandler;
 import com.siy.tenseiga.base.annotations.TargetClass;
 import com.siy.tenseiga.base.annotations.Tenseiga;
 
@@ -19,7 +20,7 @@ import com.siy.tenseiga.base.annotations.Tenseiga;
  * @author Siy
  * @since 2022/6/2
  */
-@Tenseiga
+@Tenseiga(open = false)
 public class HookJava {
 
     @Replace(value = "replace")
@@ -68,23 +69,23 @@ public class HookJava {
     }
 
 
-   /* @Filter(value = {"com.siy.tenseiga.MainActivity"})
+    @Filter(value = {"com.siy.tenseiga.MainActivity"})
     @SafeTryCatchHandler
     public static void hookExceptionHandler(Exception exception) {
         Log.e("siy", Log.getStackTraceString(exception));
-    }*/
+    }
 
 
-    @Filter(value = {"com.siy.tenseiga.log.*"})
+    @Filter(value = {"com.siy.tenseiga.*"})
     @InsertFunc
     private static void insertFunction(int a,int b){
         int c = a+b;
     }
 
 
-    @Filter(value = {"com.siy.tenseiga.log.*"})
+    @Filter(value = {"com.siy.tenseiga.*"})
     @InsertFunc
-    private static void insertFunctionfdfdfdf(int a,int b){
+    private static void insertFunction_2(int a,int b){
         int c = a+b;
         int d = a+c;
     }

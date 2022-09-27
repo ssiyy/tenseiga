@@ -2,10 +2,7 @@ package com.siy.tenseiga.parser
 
 import com.siy.tenseiga.adjuster.PlaceHolderNodeJuster
 import com.siy.tenseiga.entity.TransformInfo
-import com.siy.tenseiga.ext.PROXY_TYPE
-import com.siy.tenseiga.ext.REPLACE_TYPE
-import com.siy.tenseiga.ext.SAFETRYCATCHHANDLER_TYPE
-import com.siy.tenseiga.ext.SERIALIZABLE_TYPE
+import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.parser.annoparser.AnnotationParser
 import java.io.File
 
@@ -33,6 +30,10 @@ class TenseigaParser {
 
                 serializableParserInfo.forEach {
                     PlaceHolderNodeJuster(it.hookMethodNode, SERIALIZABLE_TYPE).adjust()
+                }
+
+                insertFuncInfo.forEach {
+                    PlaceHolderNodeJuster(it.hookMethodNode, INSERTFUNC_TYPE).adjust()
                 }
             }
     }

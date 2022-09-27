@@ -24,6 +24,9 @@ fun MethodNode.cloneSelf(): MethodNode {
  */
 val AnnotationNode.valueMaps: Map<String, Any>
     get() {
+        if (values.isNullOrEmpty()) {
+            return emptyMap()
+        }
         val map = mutableMapOf<String, Any>()
         for (i in 0 until values.size / 2) {
             val key = values[i * 2]

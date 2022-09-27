@@ -91,6 +91,14 @@ class TenseigaClassTransform() : ClassTransformer {
             )
         }
 
+        //注册一个InsertFunNodeTransform
+        if (transformInfo?.insertFuncInfo?.isNotEmpty() == true){
+            classNodeTransform = InsertFuncNodeTransform(
+                transformInfo?.insertFuncInfo?: listOf(),
+                classNodeTransform
+            )
+        }
+
         return classNodeTransform
     }
 

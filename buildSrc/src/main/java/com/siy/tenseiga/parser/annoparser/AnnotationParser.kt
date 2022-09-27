@@ -16,7 +16,7 @@ import java.io.File
  */
 class AnnotationParser {
 
-     fun parse(dir: Sequence<File>): TransformInfo {
+    fun parse(dir: Sequence<File>): TransformInfo {
         val transformInfo = TransformInfo()
 
         dir.flatMap {
@@ -27,12 +27,25 @@ class AnnotationParser {
             file.inputStream().use { fs ->
                 val cn = ClassNode()
                 ClassReader(fs).accept(cn, 0)
-                cn.methods.filter {
-                    //过滤掉 静态代码块 构造方法 抽象方法 本地方法
-                    !(isCInitMethod(it) || isInitMethod(it) || isAbstractMethod(it.access) || isNativeMethod(it.access))
-                }.forEach {
-                    //遍历每个方法
-                    infoParse(cn, it, transformInfo)
+
+                val tenseiga = cn.visibleAnnotations?.find {
+                    it.desc == TENSEIGA_TYPE.descriptor
+                }
+
+                val isTenseigaOpen = if (tenseiga == null) {
+                    false
+                } else {
+                    tenseiga.valueMaps["open"] as? Boolean ?: true
+                }
+
+                if (isTenseigaOpen) {
+                    cn.methods.filter {
+                        //过滤掉 静态代码块 构造方法 抽象方法 本地方法
+                        !(isCInitMethod(it) || isInitMethod(it) || isAbstractMethod(it.access) || isNativeMethod(it.access))
+                    }.forEach {
+                        //遍历每个方法
+                        infoParse(cn, it, transformInfo)
+                    }
                 }
             }
         }
@@ -72,6 +85,9 @@ class AnnotationParser {
             }
             existAnno(annoDesc, SERIALIZABLE_TYPE) -> {
                 SerializableParser
+            }
+            existAnno(annoDesc, INSERTFUNC_TYPE) -> {
+                InsertFuncParser
             }
             else -> PARSER_NONE
         }

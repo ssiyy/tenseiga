@@ -66,7 +66,7 @@ class InvokerAdjuster constructor(private val methodNode: MethodNode, private va
      * 检查当前placeHolder是否可用
      */
     private fun checkPlaceHolderAllow(placeHolder: String) {
-        if (transformType == SAFETRYCATCHHANDLER_TYPE || transformType == SERIALIZABLE_TYPE) {
+        if (transformType == SAFETRYCATCHHANDLER_TYPE || transformType == SERIALIZABLE_TYPE || transformType == INSERTFUNC_TYPE) {
             illegalState("Invoker.$placeHolder 不允许在${transformType.internalName}中使用")
         }
     }

@@ -28,6 +28,11 @@ class TransformInfo {
     val safeTryCatchHandlerInfo = mutableListOf<SafeTryCatchHandlerInfo>()
 
     /**
+     * 插入方法的info
+     */
+    val insertFuncInfo = mutableListOf<InsertFuncInfo>()
+
+    /**
      * 序列化相关
      */
     val serializableParserInfo = mutableListOf<SerializableInfo>()

@@ -84,7 +84,7 @@ class SelfAdjuster(private val methodNode: MethodNode, private val transformType
      * 检查当前placeHolder是否可用
      */
     private fun checkPlaceHolderAllow(placeHolder: String) {
-        if (transformType == SERIALIZABLE_TYPE) {
+        if (transformType == SERIALIZABLE_TYPE || transformType == INSERTFUNC_TYPE) {
             illegalState("Self.$placeHolder 不允许在${transformType.internalName}中使用")
         }
     }

@@ -32,11 +32,15 @@ val PROXY_TYPE = Type.getType(Proxy::class.java)!!
 
 val SAFETRYCATCHHANDLER_TYPE = Type.getType(SafeTryCatchHandler::class.java)!!
 
+val INSERTFUNC_TYPE = Type.getType(InsertFunc::class.java)!!
+
 val SERIALIZABLE_TYPE = Type.getType(Serializable::class.java)!!
 
 val TARGETCLASS_TYPE = Type.getType(TargetClass::class.java)!!
 
 val FILTER_TYPE = Type.getType(Filter::class.java)!!
+
+val TENSEIGA_TYPE = Type.getType(Tenseiga::class.java)!!
 
 const val OPCODES_INVOKER = Int.MAX_VALUE - 5555
 

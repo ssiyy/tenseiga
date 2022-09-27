@@ -9,15 +9,17 @@ import com.siy.tenseiga.Tools;
 import com.siy.tenseiga.base.Invoker;
 import com.siy.tenseiga.base.Self;
 import com.siy.tenseiga.base.annotations.Filter;
+import com.siy.tenseiga.base.annotations.InsertFunc;
 import com.siy.tenseiga.base.annotations.Proxy;
 import com.siy.tenseiga.base.annotations.Replace;
-import com.siy.tenseiga.base.annotations.SafeTryCatchHandler;
 import com.siy.tenseiga.base.annotations.TargetClass;
+import com.siy.tenseiga.base.annotations.Tenseiga;
 
 /**
  * @author Siy
  * @since 2022/6/2
  */
+@Tenseiga
 public class HookJava {
 
     @Replace(value = "replace")
@@ -31,7 +33,7 @@ public class HookJava {
         //插入一个值，7.1应该是double类型的
         Self.putField(7.1, "newField");
 
-        //这里不能墙砖成float，会报错
+        //这里不能强转成float，会报错
         double fieldValue = (double) Tools.loadField(OriginJava.class, originJava, "newField");
         Log.e("siy", "putField的值反射方式获取：" + fieldValue);
 
@@ -66,9 +68,24 @@ public class HookJava {
     }
 
 
-    @Filter(value = {"com.siy.tenseiga.MainActivity"})
+   /* @Filter(value = {"com.siy.tenseiga.MainActivity"})
     @SafeTryCatchHandler
     public static void hookExceptionHandler(Exception exception) {
         Log.e("siy", Log.getStackTraceString(exception));
+    }*/
+
+
+    @Filter(value = {"com.siy.tenseiga.log.*"})
+    @InsertFunc
+    private static void insertFunction(int a,int b){
+        int c = a+b;
+    }
+
+
+    @Filter(value = {"com.siy.tenseiga.log.*"})
+    @InsertFunc
+    private static void insertFunctionfdfdfdf(int a,int b){
+        int c = a+b;
+        int d = a+c;
     }
 }

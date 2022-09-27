@@ -45,7 +45,7 @@ class TenseigaInflater(private val klass: ClassNode) {
                 InvoderInflater.inflate(hookMethodNode, invokers, invokeInsn)
             }
         }
-
+        //SAFETRYCATCHHANDLER_TYPE
         SelfPutFieldInflater(klass).inflate(hookMethodNode, groupInsn[OPCODES_PUTFIELD] ?: listOf(), null)
         SelfGetFieldInflater(klass).inflate(hookMethodNode, groupInsn[OPCODES_GETFIELD] ?: listOf(), null)
         return insn

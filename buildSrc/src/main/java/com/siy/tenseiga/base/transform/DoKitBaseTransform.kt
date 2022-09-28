@@ -5,23 +5,21 @@ import com.android.build.api.transform.Transform
 import com.android.build.api.transform.TransformInvocation
 import com.android.build.gradle.BaseExtension
 import com.android.build.gradle.internal.pipeline.TransformManager
+import com.didichuxing.doraemonkit.plugin.DoKitTransformInvocation
 import com.didiglobal.booster.gradle.*
 import com.didiglobal.booster.transform.AbstractKlassPool
 import com.didiglobal.booster.transform.Transformer
-import com.siy.tenseiga.base.BoosterTransformInvocation
 import org.gradle.api.Project
 
-
 /**
- *
- * @author  Siy
- * @since  2022/5/26
+ * Represents the transform base
+ * DoKitCommTransform 作用于 CommTransformer、BigImgTransformer、UrlConnectionTransformer、GlobalSlowMethodTransformer
+ * @author johnsonlee
  */
-open class DoKitBaseTransform protected constructor(val project: Project) : Transform() {
+open class DoKitBaseTransform(val project: Project) : Transform() {
 
-    /*transformers
+    /*
      * Preload transformers as List to fix NoSuchElementException caused by ServiceLoader in parallel mode
-     * booster 的默认出炉逻辑 DoKit已重写自处理
      */
     open val transformers = listOf<Transformer>()
 
@@ -46,8 +44,7 @@ open class DoKitBaseTransform protected constructor(val project: Project) : Tran
 
     override fun isCacheable() = !verifyEnabled
 
-    override fun getInputTypes(): MutableSet<QualifiedContent.ContentType> =
-        TransformManager.CONTENT_CLASS
+    override fun getInputTypes(): MutableSet<QualifiedContent.ContentType> = TransformManager.CONTENT_CLASS
 
     override fun getScopes(): MutableSet<in QualifiedContent.Scope> = when {
         transformers.isEmpty() -> mutableSetOf()
@@ -68,7 +65,7 @@ open class DoKitBaseTransform protected constructor(val project: Project) : Tran
     }
 
     final override fun transform(invocation: TransformInvocation) {
-        BoosterTransformInvocation(invocation, this).apply {
+        DoKitTransformInvocation(invocation, this).apply {
             if (isIncremental) {
                 doIncrementalTransform()
             } else {
@@ -77,8 +74,6 @@ open class DoKitBaseTransform protected constructor(val project: Project) : Tran
             }
         }
     }
-
-
 
 }
 

@@ -4,7 +4,6 @@ import com.didiglobal.booster.annotations.Priority
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.Transformer
 import com.didiglobal.booster.transform.asm.ClassTransformer
-import com.siy.tenseiga.ext.maxOrNull
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.tree.ClassNode
@@ -46,7 +45,6 @@ open class BaseDoKitAsmTransformer : Transformer {
         this.transformers = transformers
     }
 
-
     override fun onPreTransform(context: TransformContext) {
         this.transformers.forEach { transformer ->
             this.threadMxBean.sumCpuTime(transformer) {
@@ -76,7 +74,7 @@ open class BaseDoKitAsmTransformer : Transformer {
 
         val w1 = this.durations.keys.map {
             it.javaClass.name.length
-        }.maxOrNull() ?: 20
+        }.max() ?: 20
         this.durations.forEach { (transformer, ns) ->
             println("${transformer.javaClass.name.padEnd(w1 + 1)}: ${ns / 1000000} ms")
         }

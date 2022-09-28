@@ -1,6 +1,7 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
+    ext.kotlin_version = '1.5.31'
     apply from: "config.gradle"
 
     repositories {
@@ -12,6 +13,7 @@ buildscript {
     dependencies {
         classpath "com.android.tools.build:gradle:${rootProject.ext.agp_module_verson}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlin_version}"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 
         //classpath "com.github.ssiyy.tenseiga:tenseiga-plugin:v1.0.4"
         /* 👇👇👇👇 引用 Booster Gradle 插件 👇👇👇👇 */

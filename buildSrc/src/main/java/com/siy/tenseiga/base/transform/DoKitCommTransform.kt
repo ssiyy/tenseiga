@@ -1,9 +1,9 @@
 package com.siy.tenseiga.base.transform
 
-import com.didiglobal.booster.transform.Transformer
 import com.siy.tenseiga.base.asmtransformer.DoKitAsmTransformer
 import com.siy.tenseiga.transform.TenseigaClassTransform
 import org.gradle.api.Project
+import com.didiglobal.booster.transform.Transformer
 
 /**
  * Represents the transform base

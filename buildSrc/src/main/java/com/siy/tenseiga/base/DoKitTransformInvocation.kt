@@ -1,19 +1,18 @@
-package com.siy.tenseiga.base
-
+package com.didichuxing.doraemonkit.plugin
 
 import com.android.build.api.transform.*
 import com.android.build.api.transform.Status.*
-import com.android.dex.DexFormat
+import com.android.dx.command.dexer.Main
 import com.didiglobal.booster.gradle.*
 import com.didiglobal.booster.kotlinx.NCPU
 import com.didiglobal.booster.kotlinx.file
 import com.didiglobal.booster.kotlinx.green
 import com.didiglobal.booster.kotlinx.red
-import com.didiglobal.booster.transform.*
-import com.didiglobal.booster.transform.util.CompositeCollector
-import com.didiglobal.booster.transform.util.collect
+import com.didiglobal.booster.transform.AbstractKlassPool
+import com.didiglobal.booster.transform.ArtifactManager
+import com.didiglobal.booster.transform.TransformContext
+import com.didiglobal.booster.transform.artifacts
 import com.didiglobal.booster.transform.util.transform
-import com.siy.tenseiga.base.tools.dex
 import com.siy.tenseiga.base.transform.DoKitBaseTransform
 import java.io.File
 import java.net.URI
@@ -24,16 +23,14 @@ import java.util.concurrent.*
  *
  * @author johnsonlee
  */
-internal class BoosterTransformInvocation(
-    private val delegate: TransformInvocation,
-    internal val transform: DoKitBaseTransform
+internal class DoKitTransformInvocation(
+        private val delegate: TransformInvocation,
+        internal val transform: DoKitBaseTransform
 ) : TransformInvocation by delegate, TransformContext, ArtifactManager {
 
     private val project = transform.project
 
     private val outputs = CopyOnWriteArrayList<File>()
-
-    private val collectors = CopyOnWriteArrayList<Collector<*>>()
 
     override val name: String = delegate.context.variantName
 
@@ -53,12 +50,6 @@ internal class BoosterTransformInvocation(
 
     override val artifacts = this
 
-    override val dependencies: Collection<String> by lazy {
-        ResolvedArtifactResults(variant).map {
-            it.id.displayName
-        }
-    }
-
     override val klassPool: AbstractKlassPool = object : AbstractKlassPool(compileClasspath, transform.bootKlassPool) {}
 
     override val applicationId = delegate.applicationId
@@ -71,35 +62,15 @@ internal class BoosterTransformInvocation(
 
     override fun hasProperty(name: String) = project.hasProperty(name)
 
-    override fun <T> getProperty(name: String, default: T): T = project.getProperty(name, default)
+    @Suppress("UNCHECKED_CAST")
+    override fun <T> getProperty(name: String, default: T): T = project.properties[name] as? T
+            ?: default
 
     override fun get(type: String) = variant.artifacts.get(type)
-
-    override fun <R> registerCollector(collector: Collector<R>) {
-        this.collectors += collector
-    }
-
-    override fun <R> unregisterCollector(collector: Collector<R>) {
-        this.collectors -= collector
-    }
 
     internal fun doFullTransform() = doTransform(this::transformFully)
 
     internal fun doIncrementalTransform() = doTransform(this::transformIncrementally)
-
-    private fun lookAhead(executor: ExecutorService): Set<File> {
-        return this.inputs.asSequence().map {
-            it.jarInputs + it.directoryInputs
-        }.flatten().map { input ->
-            executor.submit(Callable {
-                input.file.takeIf { file ->
-                    file.collect(CompositeCollector(collectors)).isNotEmpty()
-                }
-            })
-        }.mapNotNull {
-            it.get()
-        }.toSet()
-    }
 
     private fun onPreTransform() {
         transform.transformers.forEach {
@@ -113,21 +84,13 @@ internal class BoosterTransformInvocation(
         }
     }
 
-    private fun doTransform(block: (ExecutorService, Set<File>) -> Iterable<Future<*>>) {
+    private fun doTransform(block: (ExecutorService) -> Iterable<Future<*>>) {
         this.outputs.clear()
-        this.collectors.clear()
-
-        val executor = Executors.newFixedThreadPool(NCPU)
-
         this.onPreTransform()
 
-        // Look ahead to determine which input need to be transformed even incremental build
-        val outOfDate = this.lookAhead(executor).onEach {
-            project.logger.info("✨ ${it.canonicalPath} OUT-OF-DATE ")
-        }
-
+        val executor = Executors.newFixedThreadPool(NCPU)
         try {
-            block(executor, outOfDate).forEach {
+            block(executor).forEach {
                 it.get()
             }
         } finally {
@@ -142,7 +105,7 @@ internal class BoosterTransformInvocation(
         }
     }
 
-    private fun transformFully(executor: ExecutorService, @Suppress("UNUSED_PARAMETER") outOfDate: Set<File>) = this.inputs.map {
+    private fun transformFully(executor: ExecutorService) = this.inputs.map {
         it.jarInputs + it.directoryInputs
     }.flatten().map { input ->
         executor.submit {
@@ -154,18 +117,15 @@ internal class BoosterTransformInvocation(
         }
     }
 
-    private fun transformIncrementally(executor: ExecutorService, outOfDate: Set<File>) = this.inputs.map { input ->
-        input.jarInputs.filter {
-            it.status != NOTCHANGED || outOfDate.contains(it.file)
-        }.map { jarInput ->
+    private fun transformIncrementally(executor: ExecutorService) = this.inputs.map { input ->
+        input.jarInputs.filter { it.status != NOTCHANGED }.map { jarInput ->
             executor.submit {
                 doIncrementalTransform(jarInput)
             }
-        } + input.directoryInputs.filter {
-            it.changedFiles.isNotEmpty() || outOfDate.contains(it.file)
-        }.map { dirInput ->
+        } + input.directoryInputs.filter { it.changedFiles.isNotEmpty() }.map { dirInput ->
+            val base = dirInput.file.toURI()
             executor.submit {
-                doIncrementalTransform(dirInput, dirInput.file.toURI())
+                doIncrementalTransform(dirInput, base)
             }
         }
     }.flatten()
@@ -174,7 +134,7 @@ internal class BoosterTransformInvocation(
     private fun doIncrementalTransform(jarInput: JarInput) {
         when (jarInput.status) {
             REMOVED -> jarInput.file.delete()
-            else -> {
+            CHANGED, ADDED -> {
                 project.logger.info("Transforming ${jarInput.file}")
                 outputProvider?.let { provider ->
                     jarInput.transform(provider.getContentLocation(jarInput.name, jarInput.contentTypes, jarInput.scopes, Format.JAR))
@@ -191,14 +151,14 @@ internal class BoosterTransformInvocation(
                     project.logger.info("Deleting $file")
                     outputProvider?.let { provider ->
                         provider.getContentLocation(dirInput.name, dirInput.contentTypes, dirInput.scopes, Format.DIRECTORY).parentFile.listFiles()?.asSequence()
-                            ?.filter { it.isDirectory }
-                            ?.map { File(it, dirInput.file.toURI().relativize(file.toURI()).path) }
-                            ?.filter { it.exists() }
-                            ?.forEach { it.delete() }
+                                ?.filter { it.isDirectory }
+                                ?.map { File(it, dirInput.file.toURI().relativize(file.toURI()).path) }
+                                ?.filter { it.exists() }
+                                ?.forEach { it.delete() }
                     }
                     file.delete()
                 }
-                else -> {
+                ADDED, CHANGED -> {
                     project.logger.info("Transforming $file")
                     outputProvider?.let { provider ->
                         val root = provider.getContentLocation(dirInput.name, dirInput.contentTypes, dirInput.scopes, Format.DIRECTORY)
@@ -214,11 +174,29 @@ internal class BoosterTransformInvocation(
     }
 
     private fun doVerify() {
-        outputs.sortedBy(File::nameWithoutExtension).forEach { input ->
-            val output = temporaryDir.file(input.name)
-            val rc = input.dex(output, variant.extension.defaultConfig.targetSdkVersion?.apiLevel ?: DexFormat.API_NO_EXTENDED_OPCODES)
-            println("${if (rc != 0) red("✗") else green("✓")} $input")
-            output.deleteRecursively()
+        outputs.sortedBy(File::nameWithoutExtension).forEach { output ->
+            val dex = temporaryDir.file(output.name)
+            val args = Main.Arguments().apply {
+                numThreads = NCPU
+                debug = true
+                warnings = true
+                emptyOk = true
+                multiDex = true
+                jarOutput = true
+                optimize = false
+                minSdkVersion = variant.extension.defaultConfig.targetSdkVersion?.apiLevel!!
+                fileNames = arrayOf(output.absolutePath)
+                outName = dex.absolutePath
+            }
+            val rc = try {
+                Main.run(args)
+            } catch (t: Throwable) {
+                t.printStackTrace()
+                -1
+            }
+
+            println("${if (rc != 0) red("✗") else green("✓")} $output")
+            dex.deleteRecursively()
         }
     }
 
@@ -231,7 +209,7 @@ internal class BoosterTransformInvocation(
 
     private fun ByteArray.transform(): ByteArray {
         return transform.transformers.fold(this) { bytes, transformer ->
-            transformer.transform(this@BoosterTransformInvocation, bytes)
+            transformer.transform(this@DoKitTransformInvocation, bytes)
         }
     }
 }

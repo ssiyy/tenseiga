@@ -25,7 +25,7 @@ class SerializableInfo(
     /**
      * hook所在的类
      */
-     var hookClass: String,
+     var hookClass: String
 
 ){
     override fun toString(): String {

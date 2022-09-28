@@ -20,7 +20,7 @@ import com.siy.tenseiga.base.annotations.Tenseiga;
  * @author Siy
  * @since 2022/6/2
  */
-@Tenseiga(open = false)
+@Tenseiga
 public class HookJava {
 
     @Replace(value = "replace")

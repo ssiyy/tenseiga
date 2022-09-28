@@ -140,3 +140,14 @@ fun replaceMethodBody(method: MethodNode, action: ((InsnList) -> Unit)) {
 fun illegalState(msg: String) {
     throw IllegalStateException(msg)
 }
+
+fun <T : Comparable<T>> Iterable<T>.maxOrNull(): T? {
+    val iterator = iterator()
+    if (!iterator.hasNext()) return null
+    var max = iterator.next()
+    while (iterator.hasNext()) {
+        val e = iterator.next()
+        if (max < e) max = e
+    }
+    return max
+}

@@ -3,6 +3,7 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'maven-publish'
 }
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 32
@@ -47,4 +48,10 @@ afterEvaluate {
             }
         }
     }
+}
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }

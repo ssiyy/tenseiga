@@ -13,8 +13,7 @@ buildscript {
         classpath "com.android.tools.build:gradle:${rootProject.ext.agp_module_verson}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${rootProject.ext.kotlin_version}"
 
-        classpath "com.github.ssiyy.tenseiga:tenseiga-plugin:v1.0.0"
-
+        //classpath "com.github.ssiyy.tenseiga:tenseiga-plugin:v1.0.4"
         /* 👇👇👇👇 引用 Booster Gradle 插件 👇👇👇👇 */
       //  classpath "com.didiglobal.booster:booster-gradle-plugin:${rootProject.ext.booster_version}"
     }

@@ -38,7 +38,7 @@ dependencies {
     implementation "com.android.tools.build:gradle:${rootProject.ext.agp_module_verson}"
 
     /* 👇👇👇👇 引用这两个模块 👇👇👇👇 */
-    kapt "com.google.auto.service:auto-service:1.0"
+   // kapt "com.google.auto.service:auto-service:1.0"
     implementation "com.didiglobal.booster:booster-api:${rootProject.ext.booster_version}"
     implementation "com.didiglobal.booster:booster-transform-asm:${rootProject.ext.booster_version}"
 }

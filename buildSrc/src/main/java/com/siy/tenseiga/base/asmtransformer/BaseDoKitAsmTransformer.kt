@@ -4,6 +4,7 @@ import com.didiglobal.booster.annotations.Priority
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.Transformer
 import com.didiglobal.booster.transform.asm.ClassTransformer
+import com.siy.tenseiga.ext.maxOrNull
 import org.objectweb.asm.ClassReader
 import org.objectweb.asm.ClassWriter
 import org.objectweb.asm.tree.ClassNode

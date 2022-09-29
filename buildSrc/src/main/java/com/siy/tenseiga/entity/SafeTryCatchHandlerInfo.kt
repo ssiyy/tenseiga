@@ -22,8 +22,15 @@ class SafeTryCatchHandlerInfo(
     /**
      * 需要替换哪些用了targetClass 的 replace的包
      */
-    filters: List<String> = listOf()
-) : Filter(filters) {
+    /**
+     * 需要替换哪些用了targetClass 的 replace的包
+     */
+    includes: List<String> = listOf(),
+    /**
+     * 需要排除的类
+     */
+    excludes:List<String> = listOf()
+) : Filter(includes) {
 
     fun cloneHookMethodNode(): MethodNode {
         return hookMethodNode.cloneSelf()
@@ -34,6 +41,7 @@ class SafeTryCatchHandlerInfo(
         return "SafeTryCatchHandlerInfo{ " +
                 "hookClass=$hookClass, " +
                 "hookMethod=${hookMethodNode.name}, " +
-                "filter=${filters.join(",")}}"
+                "excludes=${excludes.join(",")}, " +
+                "filter=${includes.join(",")}}"
     }
 }

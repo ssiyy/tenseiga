@@ -2,6 +2,7 @@
 
 buildscript {
     ext.kotlin_v = '1.5.31'
+//    ext.kotlin_v = '1.3.72'
 
     repositories {
         mavenCentral()
@@ -11,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath "com.android.tools.build:gradle:4.1.3"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_v"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${kotlin_v}"
 
         //classpath "com.github.ssiyy.tenseiga:tenseiga-plugin:v1.0.4"
         /* 👇👇👇👇 引用 Booster Gradle 插件 👇👇👇👇 */

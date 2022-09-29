@@ -6,5 +6,6 @@ package com.siy.tenseiga.base.annotations
 @kotlin.annotation.Retention(AnnotationRetention.RUNTIME)
 @Target(AnnotationTarget.FUNCTION, AnnotationTarget.PROPERTY_GETTER, AnnotationTarget.PROPERTY_SETTER)
 annotation class Filter(
-    vararg val value:String
+     val include: Array<String> = [],
+     val exclude: Array<String> = []
 )

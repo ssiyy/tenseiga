@@ -18,7 +18,10 @@ object ProxyAnnoParser : AnnotationParser {
         val annotations = methodNode.visibleAnnotations
         var targetMethod: String? = null
         var targetClass: String? = null
-        var filters = listOf<String>()
+
+        var includes = listOf<String>()
+        var excludes = listOf<String>()
+
         annotations.forEach {
             when (it.desc) {
                 PROXY_TYPE.descriptor -> {
@@ -27,8 +30,13 @@ object ProxyAnnoParser : AnnotationParser {
                 TARGETCLASS_TYPE.descriptor -> {
                     targetClass = (it.value as? String)?.replace('.', '/')
                 }
+
                 FILTER_TYPE.descriptor -> {
-                    filters = (it.value as? ArrayList<*>)?.map { item ->
+                    includes = (it.valueMaps["include"] as? ArrayList<*>)?.map { item ->
+                        item as String
+                    } ?: listOf()
+
+                    excludes = (it.valueMaps["exclude"] as? ArrayList<*>)?.map { item ->
                         item as String
                     } ?: listOf()
                 }
@@ -42,7 +50,8 @@ object ProxyAnnoParser : AnnotationParser {
                     targetMethod!!,
                     classNode.name,
                     methodNode,
-                    filters
+                    includes,
+                    excludes
                 )
             )
         } else {

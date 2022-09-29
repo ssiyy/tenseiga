@@ -63,27 +63,27 @@ public class HookJava {
 
     @Proxy(value = "d")
     @TargetClass(value = "android.util.Log")
-    @Filter(value = {"com.siy.tenseiga.MainActivity"})
+    @Filter(include = {"com.siy.tenseiga.MainActivity"})
     public static int hookSysLogd(String tag, String msg) {
         return Log.e(tag, msg);
     }
 
 
-    @Filter(value = {"com.siy.tenseiga.MainActivity"})
+    @Filter(include = {"com.siy.tenseiga.MainActivity"})
     @SafeTryCatchHandler
     public static void hookExceptionHandler(Exception exception) {
         Log.e("siy", Log.getStackTraceString(exception));
     }
 
 
-    @Filter(value = {"com.siy.tenseiga.*"})
+    @Filter(include = {"com.siy.tenseiga.*"})
     @InsertFunc
     private static void insertFunction(int a,int b){
         int c = a+b;
     }
 
 
-    @Filter(value = {"com.siy.tenseiga.*"})
+    @Filter(include = {"com.siy.tenseiga.*","com.siy.feic.*"})
     @InsertFunc
     private static void insertFunction_2(int a,int b){
         int c = a+b;

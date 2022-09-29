@@ -34,8 +34,12 @@ class ProxyInfo(
     /**
      * 需要替换哪些用了targetClass 的 replace的包
      */
-    filters: List<String> = listOf()
-) : Filter(filters) {
+    includes: List<String> = listOf(),
+    /**
+     * 需要排除的类
+     */
+    excludes:List<String> = listOf()
+    ) : Filter(includes,excludes) {
 
     /**
      * 替换目标方法的desc
@@ -55,6 +59,7 @@ class ProxyInfo(
                 "hookClass=$hookClass, " +
                 "hookMethod=${hookMethodNode.name}, " +
                 "targetDesc=$targetDesc, " +
-                "filter=${filters.join(",")}}"
+                "excludes=${excludes.join(",")}, " +
+                "includes=${includes.join(",")}}"
     }
 }

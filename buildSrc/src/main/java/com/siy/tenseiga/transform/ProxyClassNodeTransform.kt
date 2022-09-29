@@ -66,12 +66,12 @@ class ProxyClassNodeTransform(
         super.visitorClassNode(context, klass)
 
         infos = proxyInfos.filter {
-            val filterPattern = it.filterPattern
+            val filterPattern = it.includePattern
             if (filterPattern.isEmpty()) {
                 //如果没有过滤pattern，就不过滤
                 true
             } else {
-                val result = it.filterPattern.filter { pattern ->
+                val result = it.includePattern.filter { pattern ->
                     pattern.matcher(klass.name).matches()
                 }
                 result.isNotEmpty()

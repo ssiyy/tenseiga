@@ -33,7 +33,7 @@ class InsertFuncNodeTransform(
             field = value
         }
 
-    private lateinit var infos: List<InsertFuncInfo>
+    private lateinit var includeInfos: List<InsertFuncInfo>
 
     override fun visitorClassNode(context: TransformContext, klass: ClassNode) {
         super.visitorClassNode(context, klass)
@@ -42,20 +42,39 @@ class InsertFuncNodeTransform(
             return
         }
 
-        infos = insertFuncInfo.filter {
-            val filterPattern = it.filterPattern
-            if (filterPattern.isEmpty()) {
+        val excludeInfos = insertFuncInfo.filter {
+            val excludePattern = it.excludePattern
+            if (excludePattern.isEmpty()) {
                 //如果没有过滤pattern，就不过滤
                 true
             } else {
-                val result = it.filterPattern.filter { pattern ->
+                val result = it.excludePattern.filter { pattern ->
                     pattern.matcher(klass.name).matches()
                 }
                 result.isNotEmpty()
             }
         }
 
-        if (infos.isNotEmpty()) {
+        if (excludeInfos.isNotEmpty()){
+            //如果是需要排除就直接返回
+            return
+        }
+
+        includeInfos = insertFuncInfo.filter {
+            val filterPattern = it.includePattern
+            if (filterPattern.isEmpty()) {
+                //如果没有过滤pattern，就不过滤
+                true
+            } else {
+                val result = it.includePattern.filter { pattern ->
+                    pattern.matcher(klass.name).matches()
+                }
+                result.isNotEmpty()
+            }
+        }
+
+
+        if (includeInfos.isNotEmpty()) {
             //如果有proxyInfo就把当前klass记录下来
             this.klass = klass
             insertFuncToThisClass()
@@ -64,7 +83,7 @@ class InsertFuncNodeTransform(
 
     private fun insertFuncToThisClass() {
         klass?.let {_->
-            infos.forEach {
+            includeInfos.forEach {
                 copyHookMethod(it)
             }
         }

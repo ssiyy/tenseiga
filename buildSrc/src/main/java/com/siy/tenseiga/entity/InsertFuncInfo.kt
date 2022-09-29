@@ -19,8 +19,13 @@ class InsertFuncInfo(
     /**
      * 需要替换哪些用了targetClass 的 replace的包
      */
-    filters: List<String> = listOf()
-) : Filter(filters) {
+    filters: List<String> = listOf(),
+
+    /**
+     * 需要排除的文件
+     */
+    excludes:List<String> = listOf()
+) : Filter(filters,excludes) {
 
     fun cloneHookMethodNode(): MethodNode {
         return hookMethodNode.cloneSelf()
@@ -30,6 +35,6 @@ class InsertFuncInfo(
     override fun toString(): String {
         return "SafeTryCatchHandlerInfo{ " +
                 "hookMethod=${hookMethodNode.name}, " +
-                "filter=${filters.join(",")}}"
+                "filter=${includes.join(",")}}"
     }
 }

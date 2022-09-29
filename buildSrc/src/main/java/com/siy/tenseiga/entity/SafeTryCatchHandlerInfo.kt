@@ -29,8 +29,8 @@ class SafeTryCatchHandlerInfo(
     /**
      * 需要排除的类
      */
-    excludes:List<String> = listOf()
-) : Filter(includes) {
+    excludes: List<String> = listOf()
+) : Filter(includes, excludes) {
 
     fun cloneHookMethodNode(): MethodNode {
         return hookMethodNode.cloneSelf()
@@ -42,6 +42,6 @@ class SafeTryCatchHandlerInfo(
                 "hookClass=$hookClass, " +
                 "hookMethod=${hookMethodNode.name}, " +
                 "excludes=${excludes.join(",")}, " +
-                "filter=${includes.join(",")}}"
+                "includes=${includes.join(",")}}"
     }
 }

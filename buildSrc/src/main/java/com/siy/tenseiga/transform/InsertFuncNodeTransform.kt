@@ -8,6 +8,7 @@ import com.siy.tenseiga.inflater.TenseigaInflater
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.tree.ClassNode
 import org.objectweb.asm.tree.MethodNode
+import kotlin.random.Random
 
 
 /**
@@ -38,7 +39,7 @@ class InsertFuncNodeTransform(
     override fun visitorClassNode(context: TransformContext, klass: ClassNode) {
         super.visitorClassNode(context, klass)
 
-        if (isTenseigaHookClass(klass)){
+        if (isTenseigaHookClass(klass)) {
             return
         }
 
@@ -46,7 +47,7 @@ class InsertFuncNodeTransform(
             val excludePattern = it.excludePattern
             if (excludePattern.isEmpty()) {
                 //如果没有过滤pattern，就不过滤
-                true
+                false
             } else {
                 val result = it.excludePattern.filter { pattern ->
                     pattern.matcher(klass.name).matches()
@@ -55,7 +56,7 @@ class InsertFuncNodeTransform(
             }
         }
 
-        if (excludeInfos.isNotEmpty()){
+        if (excludeInfos.isNotEmpty()) {
             //如果是需要排除就直接返回
             return
         }
@@ -82,7 +83,7 @@ class InsertFuncNodeTransform(
     }
 
     private fun insertFuncToThisClass() {
-        klass?.let {_->
+        klass?.let { _ ->
             includeInfos.forEach {
                 copyHookMethod(it)
             }
@@ -98,7 +99,7 @@ class InsertFuncNodeTransform(
      */
     private fun copyHookMethod(info: InsertFuncInfo): MethodNode {
         val newMethodDesc = descToStaticMethod(info.hookMethodNode.access, info.hookMethodNode.desc, klass!!.name)
-        val newMethodNname = "${klass?.name?.replace('/', '_')}_insert_func_${info.hookMethodNode.name}"
+        val newMethodNname = "_insert_func_${Random.nextInt(9999)}_${info.hookMethodNode.name}"
         return klass?.methods?.find {
             //找一下有没有这个方法了如果有了就不创建了
             it.desc == newMethodDesc && it.name == newMethodNname

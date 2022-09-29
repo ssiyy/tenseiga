@@ -2,7 +2,7 @@ package com.siy.tenseiga
 
 import com.android.build.gradle.AppExtension
 import com.didiglobal.booster.gradle.getAndroid
-import com.siy.tenseiga.base.transform.DoKitCommTransform
+import com.siy.tenseiga.base.transform.HaneeConfuseTransform
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -14,7 +14,7 @@ class TenseigaPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         when {
             project.plugins.hasPlugin("com.android.application") || project.plugins.hasPlugin("com.android.dynamic-feature") -> {
-                project.getAndroid<AppExtension>().registerTransform( DoKitCommTransform(project))
+                project.getAndroid<AppExtension>().registerTransform( HaneeConfuseTransform(project))
             }
         }
     }

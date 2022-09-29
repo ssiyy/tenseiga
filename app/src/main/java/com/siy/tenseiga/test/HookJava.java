@@ -75,15 +75,7 @@ public class HookJava {
         Log.e("siy", Log.getStackTraceString(exception));
     }
 
-
-    @Filter(include = {"com.siy.tenseiga.*"})
-    @InsertFunc
-    private static void insertFunction(int a,int b){
-        int c = a+b;
-    }
-
-
-    @Filter(include = {"com.siy.tenseiga.*","com.siy.feic.*"})
+    @Filter(exclude = {"com.siy.tenseiga.log.OriginJavaDump"})
     @InsertFunc
     private static void insertFunction_2(int a,int b){
         int c = a+b;

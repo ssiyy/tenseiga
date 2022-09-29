@@ -33,8 +33,9 @@ class InsertFuncInfo(
 
 
     override fun toString(): String {
-        return "SafeTryCatchHandlerInfo{ " +
+        return "InsertFuncInfo{ " +
                 "hookMethod=${hookMethodNode.name}, " +
-                "filter=${includes.join(",")}}"
+                "excludes=${excludes.join(",")}, " +
+                "includes=${includes.join(",")}}"
     }
 }

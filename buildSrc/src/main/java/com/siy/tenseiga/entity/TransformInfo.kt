@@ -46,16 +46,21 @@ class TransformInfo {
             it.toString()
         }.join("\n")
 
+        val insertFuncInfo = insertFuncInfo.map {
+            it.toString()
+        }.join("\n")
+
         val safeTryCatchHandlerInfoStr = safeTryCatchHandlerInfo.map {
             it.toString()
         }.join("\n")
 
-        val serializableParserInfoStr = serializableParserInfo.map{
+        val serializableParserInfoStr = serializableParserInfo.map {
             it.toString()
         }.join("\n")
 
         return "replaceInfoStr:\n${replaceInfoStr} " +
                 "\nproxyInfoStr:\n${proxyInfoStr} " +
+                "\ninsertFuncInfo:\n${insertFuncInfo} " +
                 "\nsafeTryCatchHandlerInfoStr:\n${safeTryCatchHandlerInfoStr} " +
                 "\nserializableParserInfo:${serializableParserInfoStr}"
     }

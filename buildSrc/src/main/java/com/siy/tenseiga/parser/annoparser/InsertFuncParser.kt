@@ -31,6 +31,7 @@ object InsertFuncParser : AnnotationParser {
         transformInfo.insertFuncInfo.add(
             InsertFuncInfo(
                 methodNode,
+                classNode.name,
                 includes,
                 excludes
             )

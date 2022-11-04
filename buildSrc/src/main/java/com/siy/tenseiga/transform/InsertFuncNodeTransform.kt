@@ -1,13 +1,16 @@
 package com.siy.tenseiga.transform
 
 import com.didiglobal.booster.transform.TransformContext
+import com.didiglobal.booster.transform.asm.isInterface
+import com.didiglobal.booster.transform.asm.simpleName
 import com.siy.tenseiga.entity.InsertFuncInfo
-import com.siy.tenseiga.ext.createMethod
-import com.siy.tenseiga.ext.descToStaticMethod
+import com.siy.tenseiga.ext.STRING_TYPE
+import com.siy.tenseiga.ext.illegalState
+import com.siy.tenseiga.ext.isAbstractMethod
+import com.siy.tenseiga.ext.isNativeMethod
 import com.siy.tenseiga.inflater.TenseigaInflater
 import org.objectweb.asm.Opcodes
-import org.objectweb.asm.tree.ClassNode
-import org.objectweb.asm.tree.MethodNode
+import org.objectweb.asm.tree.*
 import kotlin.random.Random
 
 
@@ -42,6 +45,8 @@ class InsertFuncNodeTransform(
         if (isTenseigaHookClass(klass)) {
             return
         }
+
+        putFieldloadArg(klass)
 
         val excludeInfos = insertFuncInfo.filter {
             val excludePattern = it.excludePattern
@@ -78,42 +83,42 @@ class InsertFuncNodeTransform(
         if (includeInfos.isNotEmpty()) {
             //如果有proxyInfo就把当前klass记录下来
             this.klass = klass
-            insertFuncToThisClass()
         }
     }
 
-    private fun insertFuncToThisClass() {
-        klass?.let { _ ->
-            includeInfos.forEach {
-                copyHookMethod(it)
+    private fun putFieldloadArg(classNode: ClassNode) {
+
+        val insn = "${classNode.simpleName}_${Random.nextInt(99999)}"
+
+        if (classNode.fields.any {
+                it.name == insn
+            }) {
+            //如果已经存在了字段
+            illegalState("插入的字段已经存在")
+        }
+        //创建字段
+        val fieldNode = if (classNode.isInterface) {
+            FieldNode(Opcodes.ACC_PUBLIC or Opcodes.ACC_FINAL or Opcodes.ACC_STATIC, insn, STRING_TYPE.descriptor, null, null)
+        } else {
+            FieldNode(Opcodes.ACC_PRIVATE, insn, STRING_TYPE.descriptor, null, null)
+        }
+        classNode.fields.add(fieldNode)
+    }
+
+    override fun visitorMethod(context: TransformContext, method: MethodNode) {
+        super.visitorMethod(context, method)
+
+        if (isNativeMethod(method.access) || isAbstractMethod(method.access)) {
+            return
+        }
+
+        klass?.let {
+            includeInfos.forEach { info ->
+                val first = method.instructions.first
+                method.instructions.insertBefore(first, InsnList().apply {
+                    add(MethodInsnNode(Opcodes.INVOKESTATIC, info.hookClass, info.hookMethodNode.name, info.hookMethodNode.desc, false))
+                })
             }
-        }
-    }
-
-    /**
-     * 把hook方法的方法体拷贝一份并且替换里面的placeholder
-     *
-     * @param info 替换相关信息的数据体，里面有要拷贝的方法
-     *
-     * @return 返回新生成的方法
-     */
-    private fun copyHookMethod(info: InsertFuncInfo): MethodNode {
-        val newMethodDesc = descToStaticMethod(info.hookMethodNode.access, info.hookMethodNode.desc, klass!!.name)
-        val newMethodNname = "_insert_func_${Random.nextInt(9999)}_${info.hookMethodNode.name}"
-        return klass?.methods?.find {
-            //找一下有没有这个方法了如果有了就不创建了
-            it.desc == newMethodDesc && it.name == newMethodNname
-        } ?:
-        //新生成一个方法，把hook方法拷贝过来，方法变成静态方法，替换里面的Self占位符
-        createMethod(
-            Opcodes.ACC_PRIVATE + Opcodes.ACC_STATIC,
-            newMethodNname,
-            newMethodDesc,
-            info.hookMethodNode.exceptions
-        ) {
-            it.instructions.add(info.cloneHookMethodNode().instructions)
-        }.also {
-            klass?.methods?.add(it)
         }
     }
 }

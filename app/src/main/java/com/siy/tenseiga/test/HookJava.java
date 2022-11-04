@@ -75,7 +75,6 @@ public class HookJava {
         Log.e("siy", Log.getStackTraceString(exception));
     }
 
-    @Filter(exclude = {"com.siy.tenseiga.log.OriginJavaDump"})
     @InsertFunc
     private static void insertFunction_2(int a,int b){
         int c = a+b;

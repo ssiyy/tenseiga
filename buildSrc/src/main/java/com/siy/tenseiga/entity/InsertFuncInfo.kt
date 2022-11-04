@@ -16,6 +16,12 @@ class InsertFuncInfo(
      * 替换的方法
      */
     val hookMethodNode: MethodNode,
+
+    /**
+     * 替换的类,internalName
+     */
+    val hookClass: String,
+
     /**
      * 需要替换哪些用了targetClass 的 replace的包
      */

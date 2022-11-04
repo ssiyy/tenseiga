@@ -22,6 +22,9 @@ val BOOLEAN_TYPE = Type.getType(Boolean::class.javaObjectType)!!
 val NUMBER_TYPE = Type.getType(Number::class.javaObjectType)!!
 
 
+
+val STRING_TYPE = Type.getType(String::class.javaObjectType)!!
+
 val EXCEPTION_TYPE = Type.getType(Exception::class.java)!!
 
 val OBJECT_TYPE = Type.getType(Any::class.javaObjectType)!!

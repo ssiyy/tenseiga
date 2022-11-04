@@ -46,8 +46,6 @@ class InsertFuncNodeTransform(
             return
         }
 
-        putFieldloadArg(klass)
-
         val excludeInfos = insertFuncInfo.filter {
             val excludePattern = it.excludePattern
             if (excludePattern.isEmpty()) {
@@ -83,6 +81,7 @@ class InsertFuncNodeTransform(
         if (includeInfos.isNotEmpty()) {
             //如果有proxyInfo就把当前klass记录下来
             this.klass = klass
+            putFieldloadArg(klass)
         }
     }
 

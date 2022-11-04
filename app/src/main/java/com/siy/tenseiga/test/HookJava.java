@@ -25,7 +25,7 @@ public class HookJava {
 
     @Replace(value = "replace")
     @TargetClass(value = "com.siy.tenseiga.test.OriginJava")
-    public float hookReplace(int a, int  b) {
+    public float hookReplace(int a, int b) {
         Log.e("siy", "OriginJava-replace-");
 
         OriginJava originJava = (OriginJava) Self.get();
@@ -76,8 +76,7 @@ public class HookJava {
     }
 
     @InsertFunc
-    private static void insertFunction_2(int a,int b){
-        int c = a+b;
-        int d = a+c;
+    @Filter(exclude = {"com.siy.tenseiga.test.OriginJava"})
+    public static void insertFunction_2() {
     }
 }

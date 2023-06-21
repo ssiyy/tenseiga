@@ -42,7 +42,7 @@ dependencies {
     compileOnly localGroovy()
     compileOnly gradleApi()
 
-    implementation "com.android.tools.build:gradle:4.1.3"
+    implementation  "com.android.tools.build:gradle:3.4.3"
 
 
     /* 👇👇👇👇 引用这两个模块 👇👇👇👇 */

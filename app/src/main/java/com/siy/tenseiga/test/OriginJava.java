@@ -1,6 +1,8 @@
 package com.siy.tenseiga.test;
 
 import android.content.Context;
+import android.provider.Settings;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -30,5 +32,14 @@ public class OriginJava {
      */
     public void showToast() {
         Toast.makeText(App.INSTANCE, "OriginJava-showToast", Toast.LENGTH_SHORT).show();
+    }
+
+    public static String getAndroidId(Context context){
+        String ANDROID_ID = Settings.System.getString(context.getContentResolver(), Settings.Secure.ANDROID_ID);
+        if(TextUtils.isEmpty(ANDROID_ID)){
+            return "";
+        }else {
+            return ANDROID_ID;
+        }
     }
 }

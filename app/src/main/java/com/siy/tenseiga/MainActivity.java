@@ -43,12 +43,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        findViewById(R.id.proxyInnerClassSys).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                innerClassSys();
+            }
+        });
+
         findViewById(R.id.catchHandler).setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
                 throwException();
             }
         });
+    }
+
+    private void innerClassSys(){
+        OriginJava.getAndroidId(this);
     }
 
     private void throwException(){

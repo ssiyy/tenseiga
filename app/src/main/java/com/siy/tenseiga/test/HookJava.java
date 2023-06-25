@@ -1,6 +1,8 @@
 package com.siy.tenseiga.test;
 
+import android.content.ContentResolver;
 import android.content.Context;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 
@@ -15,6 +17,8 @@ import com.siy.tenseiga.base.annotations.Replace;
 import com.siy.tenseiga.base.annotations.SafeTryCatchHandler;
 import com.siy.tenseiga.base.annotations.TargetClass;
 import com.siy.tenseiga.base.annotations.Tenseiga;
+
+import java.util.Objects;
 
 /**
  * @author Siy
@@ -58,6 +62,20 @@ public class HookJava {
         //这里的1，3，1，2都是int类型，这里就会需要先转成Number再转换成byte ,short
         int total = (int) Invoker.invoke(a, b, "hah", new View(App.INSTANCE), null, 1, 2);
         return total - b;
+    }
+
+    @Proxy(value = "getString")
+    @TargetClass(value = "android.provider.Settings$System")
+    @Filter(include = {"com.siy.tenseiga.test.OriginJava"})
+    public static String hookSysGetAndroidId(ContentResolver contentresolver, String name) {
+        if (Objects.equals(name, Settings.Secure.ANDROID_ID)) {
+            Log.e("siy", "hook 之前");
+            String androidId = Settings.System.getString(contentresolver, name);
+            Log.e("siy", "hook 之后");
+            return androidId;
+        } else {
+            return Settings.System.getString(contentresolver, name);
+        }
     }
 
 

@@ -71,7 +71,8 @@ public class HookJava {
         if (Objects.equals(name, Settings.Secure.ANDROID_ID)) {
             Log.e("siy", "hook 之前");
             String androidId = Settings.System.getString(contentresolver, name);
-            Log.e("siy", "hook 之后");
+            Log.e("siy", "hook 之后"+Log.e("siy",Log.getStackTraceString(new Throwable())));
+
             return androidId;
         } else {
             return Settings.System.getString(contentresolver, name);

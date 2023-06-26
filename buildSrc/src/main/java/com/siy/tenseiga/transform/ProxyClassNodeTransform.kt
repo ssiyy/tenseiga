@@ -84,12 +84,7 @@ class ProxyClassNodeTransform(
         }
     }
 
-    private var mMethodNode: MethodNode? = null
 
-    override fun visitorMethod(context: TransformContext, method: MethodNode) {
-        super.visitorMethod(context, method)
-        this.mMethodNode = method
-    }
 
     /**
      * 判断当前方法调用的指令是否是调用的需要代理的方法
@@ -98,7 +93,7 @@ class ProxyClassNodeTransform(
      * @param insnMethod 被hook方法调用的那个指令
      * @param info
      */
-    private fun checkMethodInsnIsHook(context: TransformContext, insnMethod: MethodInsnNode, info: ProxyInfo): Boolean {
+    private fun checkMethodInsnIsHook(context: TransformContext, method: MethodNode,insnMethod: MethodInsnNode, info: ProxyInfo): Boolean {
         //方法所在的类一样  或者是其子类
         val sameOwner = (insnMethod.owner == info.targetClass) || (context.klassPool[info.targetClass].isAssignableFrom(insnMethod.owner))
         //方法名一样
@@ -108,19 +103,24 @@ class ProxyClassNodeTransform(
 
         //当前找到的方法是不是hookMethod,不能套娃
         val isOrgHook = klass?.name == info.hookClass
-        val isOrgMethod = (mMethodNode?.name == info.hookMethodNode.name) && (mMethodNode?.desc == info.hookMethodNode.desc)
+        val isOrgMethod = (method?.name == info.hookMethodNode.name) && (method?.desc == info.hookMethodNode.desc)
 
         return sameOwner && sameName && sameDesc && !(isOrgHook && isOrgMethod)
     }
 
-    override fun visitorInsnMethod(context: TransformContext, insnMethod: MethodInsnNode) {
-        super.visitorInsnMethod(context, insnMethod)
+    override fun visitorInsnMethod(context: TransformContext, klass: ClassNode,methodNode: MethodNode,insnMethod: MethodInsnNode) {
+        super.visitorInsnMethod(context,klass,methodNode, insnMethod)
         klass?.let { clazz ->
             for (info in infos) {
-                if (checkMethodInsnIsHook(context, insnMethod, info)) {
+                if (checkMethodInsnIsHook(context,methodNode, insnMethod, info)) {
                     //判断一下hook方法和真实方法是不是都是静态的
                     if (isStaticMethod(info.hookMethodNode.access) != isStaticMethodInsn(insnMethod.opcode)) {
                         throw IllegalStateException(info.hookClass + "." + info.hookMethodNode.name + " 应该有相同的静态标志 " + clazz.name + "." + insnMethod.name)
+                    }
+
+                    if(insnMethod.owner =="android/provider/Settings\$System" && insnMethod.name == "getString" ){
+                        System.err.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:${klass?.name},${methodNode?.name},${insnMethod.owner},${ insnMethod.name}")
+                        System.err.println("结束")
                     }
 
                     val hookMethod = copyHookMethodAndReplacePlaceholder(info, insnMethod)

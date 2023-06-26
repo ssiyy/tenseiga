@@ -66,7 +66,6 @@ public class HookJava {
 
     @Proxy(value = "getString")
     @TargetClass(value = "android.provider.Settings$System")
-    @Filter(include = {"com.siy.tenseiga.test.OriginJava"})
     public static String hookSysGetAndroidId(ContentResolver contentresolver, String name) {
         if (Objects.equals(name, Settings.Secure.ANDROID_ID)) {
             Log.e("siy", "hook 之前");

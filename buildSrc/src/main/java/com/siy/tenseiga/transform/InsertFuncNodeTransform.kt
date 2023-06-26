@@ -37,7 +37,7 @@ class InsertFuncNodeTransform(
             field = value
         }
 
-    private lateinit var includeInfos: List<InsertFuncInfo>
+    private var includeInfos: List<InsertFuncInfo> = listOf()
 
     override fun visitorClassNode(context: TransformContext, klass: ClassNode) {
         super.visitorClassNode(context, klass)
@@ -104,8 +104,8 @@ class InsertFuncNodeTransform(
         classNode.fields.add(fieldNode)
     }
 
-    override fun visitorMethod(context: TransformContext, method: MethodNode) {
-        super.visitorMethod(context, method)
+    override fun visitorMethod(context: TransformContext,klass: ClassNode, method: MethodNode) {
+        super.visitorMethod(context,klass, method)
 
         if (isNativeMethod(method.access) || isAbstractMethod(method.access)) {
             return

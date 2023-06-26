@@ -28,15 +28,15 @@ abstract class ClassNodeTransform(private val cnt: ClassNodeTransform?) {
     /**
      * 访问方法
      */
-    open fun visitorMethod(context: TransformContext, method: MethodNode) {
-        cnt?.visitorMethod(context, method)
+    open fun visitorMethod(context: TransformContext, klass: ClassNode,method: MethodNode) {
+        cnt?.visitorMethod(context, klass,method)
     }
 
     /**
      * 访问方法的指令集
      */
-    open fun visitorInsnMethod(context: TransformContext, insnMethod: MethodInsnNode) {
-        cnt?.visitorInsnMethod(context, insnMethod)
+    open fun visitorInsnMethod(context: TransformContext, klass: ClassNode,method: MethodNode, insnMethod: MethodInsnNode) {
+        cnt?.visitorInsnMethod(context,klass, method,insnMethod)
     }
 
     /**

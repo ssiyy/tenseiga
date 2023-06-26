@@ -57,8 +57,8 @@ class SafeTryCatchHandlerNodeTransform(
     }
 
 
-    override fun visitorMethod(context: TransformContext, method: MethodNode) {
-        super.visitorMethod(context, method)
+    override fun visitorMethod(context: TransformContext,klass: ClassNode, method: MethodNode) {
+        super.visitorMethod(context, klass,method)
 
         if (isNativeMethod(method.access) || isAbstractMethod(method.access) || isInitMethod(method) || isCInitMethod(method)) {
             return

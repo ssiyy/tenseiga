@@ -1,11 +1,11 @@
 package com.siy.tenseiga.transform
 
 import com.android.build.api.transform.TransformInvocation
-import com.didiglobal.booster.kotlinx.asIterable
 import com.didiglobal.booster.kotlinx.touch
 import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.ClassTransformer
 import com.siy.tenseiga.asmtools.forDebug
+import com.siy.tenseiga.base.tools.asIterable
 import com.siy.tenseiga.entity.TransformInfo
 import com.siy.tenseiga.ext.getReport
 import com.siy.tenseiga.ext.isCInitMethod
@@ -107,16 +107,15 @@ class TenseigaClassTransform() : ClassTransformer {
         //如果没有注册任何转换器就直接返回
         val classNodeTransform = registerTransform() ?: return klass
 
-        klass.let {
-            classNodeTransform.visitorClassNode(context, it)
-            it
-        }.methods?.filter {
+        classNodeTransform.visitorClassNode(context, klass)
+        klass.methods?.filter {
             !(isInitMethod(it) || isCInitMethod(it))
-        }?.flatMap {
-            classNodeTransform.visitorMethod(context, it)
-            it?.instructions?.iterator()?.asIterable()?.filterIsInstance(MethodInsnNode::class.java) ?: arrayListOf()
         }?.forEach {
-            classNodeTransform.visitorInsnMethod(context, it)
+            classNodeTransform.visitorMethod(context, klass,it)
+            val  insnMethods =  it?.instructions?.iterator()?.asIterable()?.filterIsInstance(MethodInsnNode::class.java) ?: arrayListOf()
+            insnMethods.forEach {insn->
+                classNodeTransform.visitorInsnMethod(context, klass,it,insn)
+            }
         }
 
         return klass

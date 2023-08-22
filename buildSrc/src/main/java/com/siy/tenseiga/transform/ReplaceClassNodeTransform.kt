@@ -112,7 +112,7 @@ class ReplaceClassNodeTransform(
             return
         }
 
-        klass?.let { clazz ->
+        klass.let { clazz ->
             infos.forEach { info ->
                 if (checkMethodIsHook(context, clazz, method, info)) {
                     //判断一下hook方法和真实方法是不是都是静态的

@@ -4,12 +4,12 @@ import com.didiglobal.booster.transform.TransformContext
 import com.didiglobal.booster.transform.asm.isInterface
 import com.didiglobal.booster.transform.asm.simpleName
 import com.siy.tenseiga.entity.InsertFuncInfo
-import com.siy.tenseiga.ext.STRING_TYPE
-import com.siy.tenseiga.ext.illegalState
-import com.siy.tenseiga.ext.isAbstractMethod
-import com.siy.tenseiga.ext.isNativeMethod
+import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.inflater.TenseigaInflater
+import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
+import org.objectweb.asm.Type
+import org.objectweb.asm.commons.AdviceAdapter
 import org.objectweb.asm.tree.*
 import kotlin.random.Random
 
@@ -104,14 +104,14 @@ class InsertFuncNodeTransform(
         classNode.fields.add(fieldNode)
     }
 
-    override fun visitorMethod(context: TransformContext,klass: ClassNode, method: MethodNode) {
-        super.visitorMethod(context,klass, method)
+    override fun visitorMethod(context: TransformContext, klass: ClassNode, method: MethodNode) {
+        super.visitorMethod(context, klass, method)
 
         if (isNativeMethod(method.access) || isAbstractMethod(method.access)) {
             return
         }
 
-        klass?.let {
+        klass.let {
             includeInfos.forEach { info ->
                 val first = method.instructions.first
                 method.instructions.insertBefore(first, InsnList().apply {
@@ -119,5 +119,60 @@ class InsertFuncNodeTransform(
                 })
             }
         }
+
+        jisuanShijian(method)
+
+        System.err.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxyyyyyyyyyyyyyyy")
+        System.err.println("结束")
+    }
+
+    private fun jisuanShijian(methodNode: MethodNode) {
+        if (isCInitMethod(methodNode) || isInitMethod(methodNode)) {
+            return
+        }
+
+        val newMethodNode = MethodNode(Opcodes.ASM7, methodNode.access, methodNode.name, methodNode.desc, methodNode.signature, methodNode.exceptions.toTypedArray())
+        val addLocalVarAdapter = MethodTimerAdapter(Opcodes.ASM7, newMethodNode, methodNode.access, methodNode.name, methodNode.desc)
+        methodNode.accept(addLocalVarAdapter)
+    }
+}
+
+
+private class MethodTimerAdapter(
+    api: Int,
+    mv: MethodVisitor,
+    access: Int,
+    name: String,
+    descriptor: String
+) : AdviceAdapter(api, mv, access, name, descriptor) {
+
+    private var mSlotIndex = -1
+    val slotIndex
+        get() = mSlotIndex
+
+
+    override fun onMethodEnter() {
+          mSlotIndex = newLocal(Type.LONG_TYPE);
+          mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
+          mv.visitVarInsn(LSTORE, slotIndex);
+    }
+
+    override fun onMethodExit(opcode: Int) {
+         if ((opcode in IRETURN..RETURN) || opcode == ATHROW) {
+             mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false)
+             mv.visitVarInsn(LLOAD, slotIndex)
+             mv.visitInsn(LSUB)
+             mv.visitVarInsn(LSTORE, slotIndex);
+             mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;")
+             mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
+             mv.visitInsn(DUP)
+             mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false)
+             mv.visitLdcInsn("$name$methodDesc method execute: ")
+             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false)
+             mv.visitVarInsn(LLOAD, slotIndex)
+             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(J)Ljava/lang/StringBuilder;", false)
+             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false)
+             mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false)
+         }
     }
 }

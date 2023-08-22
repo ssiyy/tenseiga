@@ -110,17 +110,12 @@ class ProxyClassNodeTransform(
 
     override fun visitorInsnMethod(context: TransformContext, klass: ClassNode,methodNode: MethodNode,insnMethod: MethodInsnNode) {
         super.visitorInsnMethod(context,klass,methodNode, insnMethod)
-        klass?.let { clazz ->
+        klass.let { clazz ->
             for (info in infos) {
                 if (checkMethodInsnIsHook(context,methodNode, insnMethod, info)) {
                     //判断一下hook方法和真实方法是不是都是静态的
                     if (isStaticMethod(info.hookMethodNode.access) != isStaticMethodInsn(insnMethod.opcode)) {
                         throw IllegalStateException(info.hookClass + "." + info.hookMethodNode.name + " 应该有相同的静态标志 " + clazz.name + "." + insnMethod.name)
-                    }
-
-                    if(insnMethod.owner =="android/provider/Settings\$System" && insnMethod.name == "getString" ){
-                        System.err.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx:${klass?.name},${methodNode?.name},${insnMethod.owner},${ insnMethod.name}")
-                        System.err.println("结束")
                     }
 
                     val hookMethod = copyHookMethodAndReplacePlaceholder(info, insnMethod)

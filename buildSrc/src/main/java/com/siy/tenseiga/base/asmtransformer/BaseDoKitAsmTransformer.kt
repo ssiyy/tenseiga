@@ -56,7 +56,7 @@ open class BaseDoKitAsmTransformer : Transformer {
     override fun transform(context: TransformContext, bytecode: ByteArray): ByteArray {
         return ClassWriter(ClassWriter.COMPUTE_MAXS).also { writer ->
             this.transformers.fold(ClassNode().also { klass ->
-                ClassReader(bytecode).accept(klass, 0)
+                ClassReader(bytecode).accept(klass, ClassReader.EXPAND_FRAMES)
             }) { klass, transformer ->
                 this.threadMxBean.sumCpuTime(transformer) {
                     transformer.transform(context, klass)

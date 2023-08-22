@@ -117,23 +117,24 @@ class InsertFuncNodeTransform(
                 method.instructions.insertBefore(first, InsnList().apply {
                     add(MethodInsnNode(Opcodes.INVOKESTATIC, info.hookClass, info.hookMethodNode.name, info.hookMethodNode.desc, false))
                 })
+
+                jisuanShijian(method)
             }
         }
-
-        jisuanShijian(method)
-
-        System.err.println("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxyyyyyyyyyyyyyyy")
-        System.err.println("结束")
     }
 
-    private fun jisuanShijian(methodNode: MethodNode) {
-        if (isCInitMethod(methodNode) || isInitMethod(methodNode)) {
+    private fun jisuanShijian(method: MethodNode) {
+        if (isCInitMethod(method) || isInitMethod(method)) {
             return
         }
 
-        val newMethodNode = MethodNode(Opcodes.ASM7, methodNode.access, methodNode.name, methodNode.desc, methodNode.signature, methodNode.exceptions.toTypedArray())
-        val addLocalVarAdapter = MethodTimerAdapter(Opcodes.ASM7, newMethodNode, methodNode.access, methodNode.name, methodNode.desc)
-        methodNode.accept(addLocalVarAdapter)
+        val newMethodNode = MethodNode(Opcodes.ASM7, method.access, method.name, method.desc, method.signature, method.exceptions.toTypedArray())
+        val addLocalVarAdapter = MethodTimerAdapter(Opcodes.ASM7, newMethodNode, method.access, method.name, method.desc)
+        method.accept(addLocalVarAdapter)
+
+        method.instructions.clear()
+        method.instructions.add(newMethodNode.instructions)
+
     }
 }
 
@@ -153,8 +154,8 @@ private class MethodTimerAdapter(
 
     override fun onMethodEnter() {
           mSlotIndex = newLocal(Type.LONG_TYPE);
-          mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false);
-          mv.visitVarInsn(LSTORE, slotIndex);
+          mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false)
+          mv.visitVarInsn(LSTORE, slotIndex)
     }
 
     override fun onMethodExit(opcode: Int) {
@@ -162,7 +163,7 @@ private class MethodTimerAdapter(
              mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false)
              mv.visitVarInsn(LLOAD, slotIndex)
              mv.visitInsn(LSUB)
-             mv.visitVarInsn(LSTORE, slotIndex);
+             mv.visitVarInsn(LSTORE, slotIndex)
              mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;")
              mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
              mv.visitInsn(DUP)

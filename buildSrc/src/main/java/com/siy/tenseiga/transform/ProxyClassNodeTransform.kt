@@ -85,7 +85,6 @@ class ProxyClassNodeTransform(
     }
 
 
-
     /**
      * 判断当前方法调用的指令是否是调用的需要代理的方法
      *
@@ -93,7 +92,7 @@ class ProxyClassNodeTransform(
      * @param insnMethod 被hook方法调用的那个指令
      * @param info
      */
-    private fun checkMethodInsnIsHook(context: TransformContext, method: MethodNode,insnMethod: MethodInsnNode, info: ProxyInfo): Boolean {
+    private fun checkMethodInsnIsHook(context: TransformContext, method: MethodNode, insnMethod: MethodInsnNode, info: ProxyInfo): Boolean {
         //方法所在的类一样  或者是其子类
         val sameOwner = (insnMethod.owner == info.targetClass) || (context.klassPool[info.targetClass].isAssignableFrom(insnMethod.owner))
         //方法名一样
@@ -108,16 +107,17 @@ class ProxyClassNodeTransform(
         return sameOwner && sameName && sameDesc && !(isOrgHook && isOrgMethod)
     }
 
-    override fun visitorInsnMethod(context: TransformContext, klass: ClassNode,methodNode: MethodNode,insnMethod: MethodInsnNode) {
-        super.visitorInsnMethod(context,klass,methodNode, insnMethod)
+    override fun visitorInsnMethod(context: TransformContext, klass: ClassNode, methodNode: MethodNode, insnMethod: MethodInsnNode) {
+        super.visitorInsnMethod(context, klass, methodNode, insnMethod)
         klass.let { clazz ->
             for (info in infos) {
-                if (checkMethodInsnIsHook(context,methodNode, insnMethod, info)) {
+                if (checkMethodInsnIsHook(context, methodNode, insnMethod, info)) {
                     //判断一下hook方法和真实方法是不是都是静态的
                     if (isStaticMethod(info.hookMethodNode.access) != isStaticMethodInsn(insnMethod.opcode)) {
                         throw IllegalStateException(info.hookClass + "." + info.hookMethodNode.name + " 应该有相同的静态标志 " + clazz.name + "." + insnMethod.name)
                     }
 
+                    printProxyMethodLog(insnMethod, methodNode, info)
                     val hookMethod = copyHookMethodAndReplacePlaceholder(info, insnMethod)
 
                     insnMethod.run {
@@ -129,6 +129,18 @@ class ProxyClassNodeTransform(
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * 打印代理具体的代理方法
+     *
+     * @param insnMethod
+     * @param info
+     */
+    private fun printProxyMethodLog(insnMethod: MethodInsnNode, methodNode: MethodNode, info: ProxyInfo) {
+        if (insnMethod.owner == info.targetClass && insnMethod.name == info.targetMethod && insnMethod.desc == info.targetDesc) {
+            println("${info.hookMethodNode.name} proxy point:${klass?.name},${methodNode.name}")
         }
     }
 

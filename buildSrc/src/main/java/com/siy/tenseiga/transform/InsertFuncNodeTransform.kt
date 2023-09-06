@@ -6,6 +6,7 @@ import com.didiglobal.booster.transform.asm.simpleName
 import com.siy.tenseiga.entity.InsertFuncInfo
 import com.siy.tenseiga.ext.*
 import com.siy.tenseiga.inflater.TenseigaInflater
+import org.objectweb.asm.Label
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
 import org.objectweb.asm.Type
@@ -129,7 +130,7 @@ class InsertFuncNodeTransform(
         }
 
         val newMethodNode = MethodNode(Opcodes.ASM7, method.access, method.name, method.desc, method.signature, method.exceptions.toTypedArray())
-        val addLocalVarAdapter = MethodTimerAdapter(Opcodes.ASM7, newMethodNode, method.access, method.name, method.desc)
+        val addLocalVarAdapter = MethodTimerAdapter(Opcodes.ASM7, newMethodNode, method.access, method.name, method.desc,klass!!)
         method.accept(addLocalVarAdapter)
 
         method.instructions.clear()
@@ -144,7 +145,8 @@ private class MethodTimerAdapter(
     mv: MethodVisitor,
     access: Int,
     name: String,
-    descriptor: String
+    descriptor: String,
+    private val klass: ClassNode
 ) : AdviceAdapter(api, mv, access, name, descriptor) {
 
     private var mSlotIndex = -1
@@ -153,27 +155,33 @@ private class MethodTimerAdapter(
 
 
     override fun onMethodEnter() {
-          mSlotIndex = newLocal(Type.LONG_TYPE);
-          mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false)
-          mv.visitVarInsn(LSTORE, slotIndex)
+        mSlotIndex = newLocal(Type.LONG_TYPE);
+        mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false)
+        mv.visitVarInsn(LSTORE, slotIndex)
     }
 
     override fun onMethodExit(opcode: Int) {
-         if ((opcode in IRETURN..RETURN) || opcode == ATHROW) {
-             mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false)
-             mv.visitVarInsn(LLOAD, slotIndex)
-             mv.visitInsn(LSUB)
-             mv.visitVarInsn(LSTORE, slotIndex)
-             mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;")
-             mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
-             mv.visitInsn(DUP)
-             mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false)
-             mv.visitLdcInsn("$name$methodDesc method execute: ")
-             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false)
-             mv.visitVarInsn(LLOAD, slotIndex)
-             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(J)Ljava/lang/StringBuilder;", false)
-             mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false)
-             mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false)
-         }
+        if ((opcode in IRETURN..RETURN) || opcode == ATHROW) {
+            mv.visitMethodInsn(INVOKESTATIC, "java/lang/System", "currentTimeMillis", "()J", false)
+            mv.visitVarInsn(LLOAD, slotIndex)
+            mv.visitInsn(LSUB)
+            mv.visitVarInsn(LSTORE, slotIndex)
+            mv.visitVarInsn(LLOAD,slotIndex)
+            mv.visitLdcInsn(2L)
+            mv.visitInsn(LCMP)
+            val label0 = Label()
+            mv.visitJumpInsn(IFLE, label0)
+            mv.visitFieldInsn(GETSTATIC, "java/lang/System", "out", "Ljava/io/PrintStream;")
+            mv.visitTypeInsn(NEW, "java/lang/StringBuilder");
+            mv.visitInsn(DUP)
+            mv.visitMethodInsn(INVOKESPECIAL, "java/lang/StringBuilder", "<init>", "()V", false)
+            mv.visitLdcInsn("${klass.name}-$name$methodDesc method execute: ")
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;", false)
+            mv.visitVarInsn(LLOAD, slotIndex)
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "append", "(J)Ljava/lang/StringBuilder;", false)
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/lang/StringBuilder", "toString", "()Ljava/lang/String;", false)
+            mv.visitMethodInsn(INVOKEVIRTUAL, "java/io/PrintStream", "println", "(Ljava/lang/String;)V", false)
+            mv.visitLabel(label0)
+        }
     }
 }
